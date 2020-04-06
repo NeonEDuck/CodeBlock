@@ -4,38 +4,89 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler {
+public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler, IPointerDownHandler {
     //GameObject parentToReturnTo = null;
     public GameObject blockGridPrefab = null;
     public CanvasGroup canvasGroup = null;
     public Transform dropOn = null;
 
+    private bool draging = false;
+
     private Vector2 pointerOffset;
+    private Vector2 pointerOrigin;
+    private float onHoldTimer = 0.0f;
+    private Transform target;
+    private bool holding = false;
+    private List<Transform> childList;
+
+    public void OnPointerDown( PointerEventData eventData ) {
+        onHoldTimer = 0.0f;
+        holding = true;
+    }
 
     public void OnBeginDrag( PointerEventData eventData ) {
-        Transform parent = transform.parent;
-        transform.SetParent( transform.parent.parent );
-
-        if ( parent.childCount == 0 )
-        {
-            Destroy( parent.gameObject );
-        }
-
-        canvasGroup.blocksRaycasts = false;
+        target = transform;
+        pointerOrigin = eventData.position;
         pointerOffset = new Vector2( transform.position.x, transform.position.y ) - eventData.position;
     }
 
     public void OnDrag( PointerEventData eventData ) {
-        transform.position = eventData.position + pointerOffset;
+
+        // if cursor move, select one block
+        if ( !draging ) {
+            if ( pointerOrigin != eventData.position ) {
+                Transform parent = transform.parent;
+                transform.SetParent( transform.parent.parent );
+
+                if ( parent.childCount == 0 ) {
+                    Destroy( parent.gameObject );
+                }
+
+                canvasGroup.blocksRaycasts = false;
+                draging = true;
+            }
+
+            if ( onHoldTimer > 0.25f ) {
+                childList = new List<Transform>();
+                Transform oldParent = transform.parent;
+
+                Transform newParent = Instantiate( blockGridPrefab, transform.parent ).GetComponent<Transform>();
+                newParent.position = transform.position;
+                newParent.SetParent( oldParent.parent );
+
+                for ( int i = transform.GetSiblingIndex(); i < oldParent.childCount; i++ ) {
+                    childList.Add( oldParent.GetChild( i ) );
+                }
+
+                int j = 0;
+                foreach ( Transform child in childList ) {
+                    child.SetParent( newParent.transform );
+                    child.SetSiblingIndex( j++ );
+                }
+
+                if ( oldParent.childCount == 0 ) {
+                    Destroy( oldParent.gameObject );
+                }
+
+                canvasGroup.blocksRaycasts = false;
+                target = newParent;
+                draging = true;
+            }
+        }
+        
+        if ( draging ) {
+            target.position = eventData.position + pointerOffset;
+        }
     }
 
     public void OnEndDrag( PointerEventData eventData )
     {
-
-
+        draging = false;
         dropOn = null;
         canvasGroup.blocksRaycasts = true;
         createBlockGrid(eventData.position + pointerOffset );
+        holding = false;
+        childList = null;
     }
 
     public void OnDrop( PointerEventData eventData ) {
@@ -48,19 +99,39 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
             Debug.Log( holding.name + " is being drop on " + name );
             Debug.Log( transform.GetSiblingIndex() );
 
-            holding.transform.SetParent( transform.parent );
-            if ( eventData.position.y < transform.position.y ) {
-                holding.transform.SetSiblingIndex( transform.GetSiblingIndex()+1 );
+            Transform oldParent = holding.transform.parent;
+
+            int i = 0;
+            foreach ( Transform child in holding.GetComponent<BlockPhysic>().getChildList() ) {
+                Debug.Log( child );
+                child.SetParent( transform.parent );
+                if ( eventData.position.y < transform.position.y ) {
+                    Debug.Log( "Down" );
+                    child.SetSiblingIndex( transform.GetSiblingIndex() + i++ + 1 );
+                }
+                else {
+                    Debug.Log( "Up" );
+                    child.SetSiblingIndex( transform.GetSiblingIndex() );
+                }
             }
-            else {
-                holding.transform.SetSiblingIndex( transform.GetSiblingIndex() );
+
+            if ( oldParent.name.StartsWith( "BlockGrid" ) && oldParent.childCount == 0 ) {
+                Destroy( oldParent.gameObject );
             }
+
         }
     }
 
     void Start()
     {
         createBlockGrid( transform.position );
+    }
+
+    void Update() {
+        if ( holding ) {
+            onHoldTimer += Time.deltaTime;
+            //Debug.Log( onHoldTimer );
+        }
     }
 
     void createBlockGrid( Vector3 position )
@@ -79,5 +150,15 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
             blockGrid.transform.position = position;
             transform.SetParent(blockGrid.transform);
         }
+    }
+
+    public List<Transform> getChildList() {
+        if ( childList == null ) {
+            List<Transform> selfList = new List<Transform>();
+            selfList.Add( transform );
+
+            return selfList;
+        }
+        return childList;
     }
 }
