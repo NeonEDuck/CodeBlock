@@ -124,6 +124,14 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
                 Destroy( oldParent.gameObject );
             }
 
+            string codeString = "";
+
+            for (int j = 0; j < transform.parent.childCount; j++)
+            {
+                codeString += transform.parent.GetChild(j).GetComponent<BlockInfo>().getBlockCodeString() + "\n";
+            }
+            Debug.Log(codeString);
+
         }
     }
 
