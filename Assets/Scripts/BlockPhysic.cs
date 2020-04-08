@@ -22,12 +22,12 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     public void OnPointerDown( PointerEventData eventData ) {
         onHoldTimer = 0.0f;
         holding = true;
+        pointerOffset = new Vector2(transform.position.x, transform.position.y) - eventData.position;
     }
 
     public void OnBeginDrag( PointerEventData eventData ) {
         target = transform;
         pointerOrigin = eventData.position;
-        pointerOffset = new Vector2( transform.position.x, transform.position.y ) - eventData.position;
     }
 
     public void OnDrag( PointerEventData eventData ) {
@@ -35,41 +35,46 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         // if cursor move, select one block
         if ( !draging ) {
             if ( pointerOrigin != eventData.position ) {
-                Transform parent = transform.parent;
-                transform.SetParent( transform.parent.parent );
-
-                if ( parent.childCount == 0 ) {
-                    Destroy( parent.gameObject );
-                }
-
-                canvasGroup.blocksRaycasts = false;
-                draging = true;
-            }
-
-            if ( onHoldTimer > 0.25f ) {
                 childList = new List<Transform>();
                 Transform oldParent = transform.parent;
 
-                Transform newParent = Instantiate( blockGridPrefab, transform.parent ).GetComponent<Transform>();
+                Transform newParent = Instantiate(blockGridPrefab, transform.parent).GetComponent<Transform>();
                 newParent.position = transform.position;
-                newParent.SetParent( oldParent.parent );
+                newParent.SetParent(oldParent.parent);
 
-                for ( int i = transform.GetSiblingIndex(); i < oldParent.childCount; i++ ) {
-                    childList.Add( oldParent.GetChild( i ) );
+                for (int i = transform.GetSiblingIndex(); i < oldParent.childCount; i++)
+                {
+                    childList.Add(oldParent.GetChild(i));
                 }
 
                 int j = 0;
-                foreach ( Transform child in childList ) {
-                    child.SetParent( newParent.transform );
-                    child.SetSiblingIndex( j++ );
+                foreach (Transform child in childList)
+                {
+                    child.SetParent(newParent.transform);
+                    child.SetSiblingIndex(j++);
                 }
 
-                if ( oldParent.childCount == 0 ) {
-                    Destroy( oldParent.gameObject );
+                if (oldParent.childCount == 0)
+                {
+                    Destroy(oldParent.gameObject);
                 }
 
                 canvasGroup.blocksRaycasts = false;
                 target = newParent;
+                draging = true;
+            }
+
+            if ( onHoldTimer > 0.25f )
+            {
+                Transform parent = transform.parent;
+                transform.SetParent(transform.parent.parent);
+
+                if (parent.childCount == 0)
+                {
+                    Destroy(parent.gameObject);
+                }
+
+                canvasGroup.blocksRaycasts = false;
                 draging = true;
             }
         }
