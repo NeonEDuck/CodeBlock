@@ -2158,10 +2158,30 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 5208282125617268136, guid: 8c736d09eebc78045b680163778a9504,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 300
+      objectReference: {fileID: 0}
+    - target: {fileID: 5208282125617268136, guid: 8c736d09eebc78045b680163778a9504,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 250
+      objectReference: {fileID: 0}
     - target: {fileID: 5208282125617268137, guid: 8c736d09eebc78045b680163778a9504,
         type: 3}
       propertyPath: m_Name
       value: BlockGrid
+      objectReference: {fileID: 0}
+    - target: {fileID: 5208282125617268139, guid: 8c736d09eebc78045b680163778a9504,
+        type: 3}
+      propertyPath: m_ChildScaleWidth
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5208282125617268139, guid: 8c736d09eebc78045b680163778a9504,
+        type: 3}
+      propertyPath: m_ChildScaleHeight
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8c736d09eebc78045b680163778a9504, type: 3}
