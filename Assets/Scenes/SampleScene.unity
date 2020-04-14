@@ -926,12 +926,12 @@ PrefabInstance:
     - target: {fileID: 1733049511104675454, guid: 45ca22c9206bacf449cf76bd3efc58ec,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 205
+      value: 140
       objectReference: {fileID: 0}
     - target: {fileID: 1733049511104675454, guid: 45ca22c9206bacf449cf76bd3efc58ec,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -115
+      value: 166
       objectReference: {fileID: 0}
     - target: {fileID: 1733049511104675454, guid: 45ca22c9206bacf449cf76bd3efc58ec,
         type: 3}
@@ -3127,6 +3127,21 @@ PrefabInstance:
       propertyPath: m_textInfo.pageCount
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1733049510526628119, guid: 45ca22c9206bacf449cf76bd3efc58ec,
+        type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1733049510526628119, guid: 45ca22c9206bacf449cf76bd3efc58ec,
+        type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1733049510526628119, guid: 45ca22c9206bacf449cf76bd3efc58ec,
+        type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1733049511104675454, guid: 45ca22c9206bacf449cf76bd3efc58ec,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -3485,7 +3500,7 @@ PrefabInstance:
     - target: {fileID: 5208282125617268136, guid: 8c736d09eebc78045b680163778a9504,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 300
+      value: 304
       objectReference: {fileID: 0}
     - target: {fileID: 5208282125617268136, guid: 8c736d09eebc78045b680163778a9504,
         type: 3}

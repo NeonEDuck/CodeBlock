@@ -5,31 +5,22 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerDownHandler {
-
-    [SerializeField] const float CONNECTOR_HEIGHT = 24.0f;
-    [SerializeField] const float BLOCK_HEIGHT = 84.0f;
-    [SerializeField] const float BLOCK_WIDTH = 304.0f;
-    [SerializeField] const float BEAM_WIDTH = 84.0f;
-
-
     public GameObject blockGridPrefab = null;
     public CanvasGroup canvasGroup = null;
     public Transform dropOn = null;
-    public Transform placeHolderParent;
+    [HideInInspector] 
+    public Transform placeHolderParent;             // Where placeHolder is going to be
 
-    private bool draging = false;
-
-    private Vector2 size;
-    private Vector2 pointerOffset;
-    private Vector2 pointerOrigin;
-    private float onHoldTimer = 0.0f;
-    private Transform target;
-    private bool holding = false;
-    private List<Transform> childList;
-    private GameObject placeHolder;
-    private Transform oldParent;
-    private int maxStack = 0;
-    private float gridHeight;
+    private Vector2 size;                           // Current Block size
+    private Vector2 pointerOffset;                  // From center of the block to cursor
+    private float onHoldTimer = 0.0f;               // How much time did player start holding
+    private Transform target;                       // What cursor is holding
+    private bool holding = false;                   // Check if player is holding
+    private List<Transform> childList;              // List of what player is holding
+    private GameObject placeHolder;                 // To prefill the gap for holding Block
+    private Transform oldParent;                    // What the Block was belong to
+    private int maxStack = 0;                       // For resizing porpose, check for width (Ex. ForLoop IfElse)
+    private float gridHeight;                       // GridHeight
 
     public void OnPointerDown( PointerEventData eventData ) {
         onHoldTimer = 0.0f;
@@ -38,58 +29,56 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     }
 
     public void OnBeginDrag( PointerEventData eventData ) {
-        target = transform;
-        pointerOrigin = eventData.position;
         maxStack = 0;
+
         oldParent = transform.parent;
+        childList = new List<Transform>();
 
-        if (onHoldTimer > 0.25f) // Single
+        // Create new BlockGrid to drag
+        Transform newParent = Instantiate(blockGridPrefab, transform.parent).GetComponent<Transform>();
+        newParent.position = transform.position;
+        newParent.SetParent(oldParent.parent);
+
+        if (onHoldTimer > 0.25f) // Single Block
         {
-            placeHolder = new GameObject();
-            placeHolderParent = transform.parent;
-            placeHolder.AddComponent<RectTransform>().sizeDelta = size;
-            placeHolder.transform.SetSiblingIndex(transform.GetSiblingIndex());
-            transform.SetParent(oldParent.parent);
-
-            if (oldParent.childCount == 0)
-            {
-                oldParent.gameObject.GetComponent<CanvasGroup>().blocksRaycasts = false;
-            }
-
-            canvasGroup.blocksRaycasts = false;
-            draging = true;
+            childList.Add(transform);
         }
-        else // Mutiple
+        else // Mutiple Block
         {
-            childList = new List<Transform>();
-
-            Transform newParent = Instantiate(blockGridPrefab, transform.parent).GetComponent<Transform>();
-            newParent.position = transform.position;
-            newParent.SetParent(oldParent.parent);
-
             for (int i = transform.GetSiblingIndex(); i < oldParent.childCount; i++)
             {
                 childList.Add(oldParent.GetChild(i));
             }
-
-            placeHolder = new GameObject();
-            placeHolderParent = transform.parent;
-            placeHolder.AddComponent<RectTransform>().sizeDelta = new Vector2(size.x, BLOCK_HEIGHT * childList.Count);
-            placeHolder.transform.SetSiblingIndex(transform.GetSiblingIndex());
-
-            int j = 0;
-            foreach (Transform child in childList)
-            {
-                child.SetParent(newParent.transform);
-                child.SetSiblingIndex(j++);
-            }
-
-            canvasGroup.blocksRaycasts = false;
-            target = newParent;
-            target.GetComponent<CanvasGroup>().blocksRaycasts = false;
-            draging = true;
         }
 
+        // Create PlaceHolder
+        placeHolder = new GameObject();
+        placeHolder.name = "PlaceHolder";
+        placeHolderParent = transform.parent;
+        placeHolder.AddComponent<RectTransform>().sizeDelta = new Vector2(GameUtility.BLOCK_WIDTH, GameUtility.CONNECTOR_HEIGHT + (GameUtility.BLOCK_HEIGHT - GameUtility.CONNECTOR_HEIGHT) * childList.Count);
+        placeHolder.transform.SetSiblingIndex(transform.GetSiblingIndex());
+        VerticalLayoutGroup phcg = placeHolder.AddComponent<VerticalLayoutGroup>();
+        phcg.spacing = -GameUtility.CONNECTOR_HEIGHT;
+        phcg.childAlignment = TextAnchor.UpperCenter;
+
+        // Transfer All block to the new BlockGrid
+        for (int i = 0; i < childList.Count; i++) {
+            childList[i].SetParent(newParent.transform);
+            childList[i].SetSiblingIndex(i);
+            Transform phc = Instantiate(childList[i]);
+            phc.SetParent(placeHolder.transform);
+            phc.GetComponent<CanvasGroup>().blocksRaycasts = false;
+        }
+
+        setAlpha(placeHolder.transform, 0.2f);
+
+        // Turning blocksRaycasts off to not disturb OnDrop Event
+        canvasGroup.blocksRaycasts = false;
+        target = newParent;
+        target.GetComponent<CanvasGroup>().blocksRaycasts = false;
+
+        // if the original BlockGrid doesn't have Block anymore, there is no reason to return back
+        // Prevent snapping to an seemingly empty space
         if (oldParent.childCount == 0)
         {
             oldParent.gameObject.GetComponent<CanvasGroup>().blocksRaycasts = false;
@@ -98,24 +87,25 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
     public void OnDrag( PointerEventData eventData ) {
 
-        // if cursor move, select one block
-        target.position = eventData.position + pointerOffset;
+        // It's holding BlockGrid, move it up half of height ( BlockGrid's pivot point is on the top )
+        target.position = eventData.position + pointerOffset + new Vector2(0f, gridHeight / 2);
 
-        if (target.gameObject.name.StartsWith("BlockGrid")) // if it's holding BlockGrid, move it up half of height
-        {
-            //Debug.Log(new Vector3(0f, target.GetComponent<RectTransform>().sizeDelta.y / 2, 0f));
-            target.position = target.position + new Vector3( 0f, gridHeight / 2, 0f );
-        }
+        //Debug.DrawLine(eventData.position, eventData.position + new Vector2(0, (GameUtility.BLOCK_HEIGHT - GameUtility.CONNECTOR_HEIGHT) / 2) , Color.red);
 
+        // placeHolderParent will be null if the cursor is not pointing to any BlockGrid
         if (placeHolderParent != null)
         {
+            // Moving the placeHolder to the desired location
             placeHolder.transform.SetParent(placeHolderParent);
 
             for (int i = 0; i < placeHolderParent.childCount; i++)
             {
                 Transform phpc = placeHolderParent.GetChild(i);
-                if (transform.position.y + BLOCK_HEIGHT / 2 > phpc.position.y)
+
+                // Desired location: where cursor is pointing > Block's center without connector (Block's center + connector's height/2)
+                if (eventData.position.y > phpc.position.y+ GameUtility.CONNECTOR_HEIGHT /2)
                 {
+                    //Debug.DrawLine(phpc.position + new Vector3(0, GameUtility.CONNECTOR_HEIGHT,1f) / 2, phpc.position + new Vector3(2f, GameUtility.CONNECTOR_HEIGHT / 2,1f), Color.red);
                     placeHolder.transform.SetSiblingIndex(i);
                     break;
                 }
@@ -123,87 +113,73 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         }
         else
         {
+            placeHolder.transform.SetParent(target.parent);
+            placeHolder.transform.position = new Vector3(0f, -100f - placeHolder.transform.childCount * (GameUtility.BLOCK_HEIGHT + GameUtility.CONNECTOR_HEIGHT));
             //Debug.Log("null");
         }
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        draging = false;
-        dropOn = null;
+        // Turn blocksRaycasts back on
         target.GetComponent<CanvasGroup>().blocksRaycasts = true;
         canvasGroup.blocksRaycasts = true;
 
-
+        // Calculate how's the height of the gridBlock should be
         float height = 0f;
-        if (target.gameObject.name.StartsWith("BlockGrid")) // Multiple
+        for (int i = 0; i < childList.Count; i++)
         {
-
-            if (placeHolderParent != null)
-            {
-                int i = 0;
-                while (target.childCount > 0)
-                {
-                    Transform child = target.GetChild(0);
-                    height += BLOCK_HEIGHT - CONNECTOR_HEIGHT;
-                    child.SetParent(placeHolderParent);
-                    child.SetSiblingIndex(placeHolder.transform.GetSiblingIndex() + i++);
-                }
-                Destroy(target.gameObject);
-            }
-            else
-            {
-                for (int i = 0; i < target.childCount; i++)
-                {
-                    height += BLOCK_HEIGHT;
-                }
-                height -= target.childCount * 24f;
-                placeHolderParent = transform.parent;
-            }
+            height += GameUtility.BLOCK_HEIGHT - GameUtility.CONNECTOR_HEIGHT;
         }
-        else //Single
-        {
 
-            if (placeHolderParent != null)
-            {
-                height = BLOCK_HEIGHT- CONNECTOR_HEIGHT;
-                transform.SetParent(placeHolderParent);
-                transform.SetSiblingIndex(placeHolder.transform.GetSiblingIndex());
-            }
-            else
-            {
-                createBlockGrid(eventData.position + pointerOffset);
-                height = BLOCK_HEIGHT - CONNECTOR_HEIGHT;
-                placeHolderParent = transform.parent;
-            }
-        }
         if (placeHolderParent != null)
         {
-            Vector2 phpSize = placeHolderParent.GetComponent<RectTransform>().sizeDelta;
-            placeHolderParent.GetComponent<RectTransform>().sizeDelta = new Vector2(Mathf.Max(maxStack * BEAM_WIDTH + BLOCK_WIDTH, phpSize.x), phpSize.y + height);
-            //placeHolderParent.position = new Vector2(placeHolderParent.position.x, placeHolderParent.position.y + height);
+            // Transfer all block to the new BlockGrid
+            for (int i = 0; i < childList.Count; i++)
+            {
+                Transform child = childList[i];
+                child.SetParent(placeHolderParent);
+                child.SetSiblingIndex(placeHolder.transform.GetSiblingIndex() + i);
+            }
+
+            // Destroy the BlockGrid you were holding
+            Destroy(target.gameObject);
+        }
+        else
+        {
+            placeHolderParent = transform.parent;
         }
 
-        holding = false;
-        childList = null;
-
+        // Destroy PlaceHolder
         if (placeHolder != null)
         {
             placeHolder.transform.SetParent(placeHolder.transform.parent.parent);
             Destroy(placeHolder);
         }
 
+        // Resize the BlockGrid
+        Debug.Log(placeHolderParent.childCount);
+        Resize( placeHolderParent, maxStack, placeHolderParent.childCount );
+        //placeHolderParent.position = new Vector2(placeHolderParent.position.x, placeHolderParent.position.y + height);
+
+        // Resize the previous BlockGrid
         if (oldParent != null)
         {
-            Vector2 opSize = oldParent.GetComponent<RectTransform>().sizeDelta;
-            oldParent.GetComponent<RectTransform>().sizeDelta = new Vector2(opSize.x, opSize.y - height);
-            // oldParent.position = new Vector2(oldParent.position.x, oldParent.position.y + height / 2);
             if (oldParent.childCount == 0)
             {
                 Destroy(oldParent.gameObject);
             }
+            else
+            {
+                Resize(oldParent, 0, oldParent.childCount);
+            }
+            // oldParent.position = new Vector2(oldParent.position.x, oldParent.position.y + height / 2);
             oldParent = null;
         }
+
+        // Reset value
+        holding = false;
+        childList = null;
 
     }
 
@@ -231,16 +207,23 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
         string parent = transform.parent.name;
 
-        if ( !parent.StartsWith( "BlockGrid" ) )
+        if ( !parent.StartsWith( "BlockGrid" ) && !parent.StartsWith("PlaceHolder"))
         {
-            GameObject blockGrid = Instantiate(blockGridPrefab, transform.parent);
-            blockGrid.transform.position = position + new Vector3(0, gridHeight/2, 0);
-            transform.SetParent(blockGrid.transform);
-            //blockGrid.GetComponent<RectTransform>().sizeDelta = new Vector2(GetComponent<RectTransform>().sizeDelta.x, GetComponent<RectTransform>().sizeDelta.y * ( getChildList().Count + 1) );
+            Transform blockGrid = Instantiate(blockGridPrefab, transform.parent).GetComponent<Transform>();
+            blockGrid.position = position + new Vector3(0, gridHeight/2, 0);
+            transform.SetParent(blockGrid);
+            Resize( blockGrid, 0, 1 );
         }
     }
+    void Resize( Transform transform, int row, int column )
+    {
+        float width = GameUtility.BEAM_WIDTH * row + GameUtility.BLOCK_WIDTH;
+        float height = GameUtility.BLOCK_HEIGHT + (GameUtility.BLOCK_HEIGHT - GameUtility.CONNECTOR_HEIGHT) * column;
 
-    public List<Transform> getChildList() {
+        transform.GetComponent<RectTransform>().sizeDelta = new Vector2( width, height );
+    }
+
+    public List<Transform> GetChildList() {
         if ( childList == null ) {
             List<Transform> selfList = new List<Transform>();
             selfList.Add( transform );
@@ -248,5 +231,26 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
             return selfList;
         }
         return childList;
+    }
+
+    public void setAlpha(Transform gameObject ,float alpha)
+    {
+        Color newColor = new Color(1.0f, 1.0f, 1.0f, alpha);
+        for (int i = 0; i < gameObject.transform.childCount; i++)
+        {
+            Transform child = gameObject.transform.GetChild(i);
+
+            if (child.GetComponent<Image>() != null) 
+                child.GetComponent<Image>().color = newColor;
+
+            setAlpha(child, alpha);
+        }
+        //
+        //foreach (SpriteRenderer c in child)
+        //{
+        //    newColor = c.color;
+        //    newColor.a = alpha;
+        //    c.color = newColor;
+        //}
     }
 }
