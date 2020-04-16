@@ -6,17 +6,8 @@ using UnityEngine.UI;
 
 public class BlockInfo : MonoBehaviour
 {
-    public enum BlockType
-    {
-        setBlcok,
-        defineBlock,
-        forBlock,
-        ifBlock,
-        endForBlock,
-        endIfBlock
-    }
 
-    public BlockType blockType = BlockType.setBlcok;
+    public BlockType blockType = BlockType.setBlock;
     public List<TMP_InputField> inputFields;
 
     public string getBlockCodeString()
@@ -24,7 +15,7 @@ public class BlockInfo : MonoBehaviour
         string outputCode = "";
         switch (blockType)
         {
-            case BlockType.setBlcok:
+            case BlockType.setBlock:
 
                 if (inputFields.Count >= 2)
                 {

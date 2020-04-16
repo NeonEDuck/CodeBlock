@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerDownHandler {
     public GameObject blockGridPrefab = null;
     public CanvasGroup canvasGroup = null;
-    public Transform dropOn = null;
+    public BlockInfo blockInfo = null;
     [HideInInspector] 
     public Transform placeHolderParent;             // Where placeHolder is going to be
 
@@ -21,6 +21,7 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     private Transform oldParent;                    // What the Block was belong to
     private int maxStack = 0;                       // For resizing porpose, check for width (Ex. ForLoop IfElse)
     private float gridHeight;                       // GridHeight
+    private bool accessAllow;
 
     public void OnPointerDown( PointerEventData eventData ) {
         onHoldTimer = 0.0f;
@@ -57,6 +58,7 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         placeHolderParent = transform.parent;
         placeHolder.AddComponent<RectTransform>().sizeDelta = new Vector2(GameUtility.BLOCK_WIDTH, GameUtility.CONNECTOR_HEIGHT + (GameUtility.BLOCK_HEIGHT - GameUtility.CONNECTOR_HEIGHT) * childList.Count);
         placeHolder.transform.SetSiblingIndex(transform.GetSiblingIndex());
+        placeHolder.AddComponent<BlockInfo>().blockType = BlockType.placeHolder;
         VerticalLayoutGroup phcg = placeHolder.AddComponent<VerticalLayoutGroup>();
         phcg.spacing = -GameUtility.CONNECTOR_HEIGHT;
         phcg.childAlignment = TextAnchor.UpperCenter;
@@ -92,6 +94,8 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
         //Debug.DrawLine(eventData.position, eventData.position + new Vector2(0, (GameUtility.BLOCK_HEIGHT - GameUtility.CONNECTOR_HEIGHT) / 2) , Color.red);
 
+        accessAllow = false;
+
         // placeHolderParent will be null if the cursor is not pointing to any BlockGrid
         if (placeHolderParent != null)
         {
@@ -105,13 +109,21 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
                 // Desired location: where cursor is pointing > Block's center without connector (Block's center + connector's height/2)
                 if (eventData.position.y > phpc.position.y+ GameUtility.CONNECTOR_HEIGHT /2)
                 {
+                    if (blockInfo.blockType == BlockType.startBlock && i > 0)
+                    {
+                        accessAllow = false;
+                        break;
+                    }
+                    if (phpc.GetComponent<BlockInfo>().blockType == BlockType.startBlock) break;
                     //Debug.DrawLine(phpc.position + new Vector3(0, GameUtility.CONNECTOR_HEIGHT,1f) / 2, phpc.position + new Vector3(2f, GameUtility.CONNECTOR_HEIGHT / 2,1f), Color.red);
                     placeHolder.transform.SetSiblingIndex(i);
+                    accessAllow = true;
                     break;
                 }
             }
         }
-        else
+
+        if (!accessAllow)
         {
             placeHolder.transform.SetParent(target.parent);
             placeHolder.transform.position = new Vector3(0f, -100f - placeHolder.transform.childCount * (GameUtility.BLOCK_HEIGHT + GameUtility.CONNECTOR_HEIGHT));
@@ -132,7 +144,7 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
             height += GameUtility.BLOCK_HEIGHT - GameUtility.CONNECTOR_HEIGHT;
         }
 
-        if (placeHolderParent != null)
+        if (placeHolderParent != null && accessAllow)
         {
             // Transfer all block to the new BlockGrid
             for (int i = 0; i < childList.Count; i++)
