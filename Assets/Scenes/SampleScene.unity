@@ -2261,21 +2261,6 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2159325883979740902, guid: 592cfc506e16b32409cbf7d1addc7351,
-        type: 3}
-      propertyPath: m_BlocksRaycasts
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2159325883979740902, guid: 592cfc506e16b32409cbf7d1addc7351,
-        type: 3}
-      propertyPath: m_IgnoreParentGroups
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2496628504459199813, guid: 592cfc506e16b32409cbf7d1addc7351,
-        type: 3}
-      propertyPath: connectRule.Array.data[0]
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 2997180800108833879, guid: 592cfc506e16b32409cbf7d1addc7351,
         type: 3}
       propertyPath: m_AnchorMin.y
@@ -2310,11 +2295,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2997180800619766590, guid: 592cfc506e16b32409cbf7d1addc7351,
-        type: 3}
-      propertyPath: m_RaycastTarget
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3821395313766609803, guid: 592cfc506e16b32409cbf7d1addc7351,
         type: 3}
@@ -2441,36 +2421,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: ForBlock
       objectReference: {fileID: 0}
-    - target: {fileID: 4985714385673601937, guid: 592cfc506e16b32409cbf7d1addc7351,
-        type: 3}
-      propertyPath: m_RaycastTarget
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5498918729496974546, guid: 592cfc506e16b32409cbf7d1addc7351,
-        type: 3}
-      propertyPath: m_BlocksRaycasts
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5498918729496974546, guid: 592cfc506e16b32409cbf7d1addc7351,
-        type: 3}
-      propertyPath: m_IgnoreParentGroups
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6460474273782578356, guid: 592cfc506e16b32409cbf7d1addc7351,
-        type: 3}
-      propertyPath: m_RaycastTarget
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7890145588723131924, guid: 592cfc506e16b32409cbf7d1addc7351,
-        type: 3}
-      propertyPath: m_BlocksRaycasts
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7890145588723131924, guid: 592cfc506e16b32409cbf7d1addc7351,
-        type: 3}
-      propertyPath: m_IgnoreParentGroups
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 8542904499856363809, guid: 592cfc506e16b32409cbf7d1addc7351,
         type: 3}
       propertyPath: m_AnchorMin.y
@@ -2491,10 +2441,7 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 7890145588723131924, guid: 592cfc506e16b32409cbf7d1addc7351, type: 3}
-    - {fileID: 5498918729496974546, guid: 592cfc506e16b32409cbf7d1addc7351, type: 3}
-    - {fileID: 2159325883979740902, guid: 592cfc506e16b32409cbf7d1addc7351, type: 3}
+    m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 592cfc506e16b32409cbf7d1addc7351, type: 3}
 --- !u!1 &1130305117
 GameObject:
