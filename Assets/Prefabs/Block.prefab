@@ -129,6 +129,7 @@ MonoBehaviour:
     type: 3}
   canvasGroup: {fileID: 9062704958607820539}
   blockInfo: {fileID: 8655384888283589237}
+  gameManager: {fileID: 0}
   placeHolderParent: {fileID: 0}
 --- !u!114 &8655384888283589237
 MonoBehaviour:
@@ -144,6 +145,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   blockType: 0
   inputFields: []
+  connectRule: 0101
 --- !u!225 &9062704958607820539
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -155,7 +157,7 @@ CanvasGroup:
   m_Alpha: 1
   m_Interactable: 1
   m_BlocksRaycasts: 1
-  m_IgnoreParentGroups: 0
+  m_IgnoreParentGroups: 1
 --- !u!114 &4583160952605838666
 MonoBehaviour:
   m_ObjectHideFlags: 0

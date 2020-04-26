@@ -9,6 +9,8 @@ public static class GameUtility
     public const float CONNECTOR_HEIGHT = 24.0f;
     public const float BLOCK_HEIGHT = 84.0f;
     public const float BLOCK_WIDTH = 354.0f;
+    public const float VALUE_HEIGHT = 44.0f;
+    public const float VALUE_WIDTH = 104.0f;
     public const float BEAM_WIDTH = 84.0f;
     public const float GRID_HEIGHT = 84.0f;
 
@@ -25,4 +27,9 @@ public enum BlockType
     valueBlock,
     beam,
     placeHolder
+}
+public enum BlockGridType {
+    Block,
+    Value,
+    Logic
 }

@@ -9,6 +9,7 @@ public class BlockInfo : MonoBehaviour
 
     public BlockType blockType = BlockType.setBlock;
     public List<TMP_InputField> inputFields;
+    public bool[] connectRule = { true, true };
 
     public string getBlockCodeString()
     {

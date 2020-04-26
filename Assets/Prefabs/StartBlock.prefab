@@ -138,5 +138,10 @@ PrefabInstance:
       propertyPath: blockType
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 8655384888283589237, guid: 45ca22c9206bacf449cf76bd3efc58ec,
+        type: 3}
+      propertyPath: connectRule.Array.data[0]
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 45ca22c9206bacf449cf76bd3efc58ec, type: 3}
