@@ -46,6 +46,7 @@ public class BlockGridDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandl
     }
 
     public void PriorityGiving() {
+        //transform.position = new Vector3( transform.position.x, transform.position.y, blockGridInfo.priority * 0.01f );
         for (int i = 0; i < transform.childCount; i++ ) {
             Transform child = transform.GetChild( i );
 
@@ -54,9 +55,10 @@ public class BlockGridDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandl
             switch ( child.GetComponent<BlockInfo>().blockType ) {
                 case BlockType.forBlock:
                     Debug.Log("For");
-                    BlockGridDropZone nextBlockGrid = child.GetChild( 1 ).GetChild( 1 ).GetComponent<BlockGridDropZone>();
-                    nextBlockGrid.blockGridInfo.priority = blockGridInfo.priority + 1;
-                    nextBlockGrid.PriorityGiving();
+                    Transform nextBlockGrid = child.GetChild( 1 ).GetChild( 1 );
+                    BlockGridDropZone nextBlockGridDropZone = nextBlockGrid.GetComponent<BlockGridDropZone>();
+                    nextBlockGridDropZone.blockGridInfo.priority = blockGridInfo.priority + 1;
+                    nextBlockGridDropZone.PriorityGiving();
                     break;
             }
         }
@@ -66,7 +68,7 @@ public class BlockGridDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandl
         gameManager.blockGrids.Remove( transform );
     }
 
-    public void Resize() {
+    public void Resize( float additional = 0f ) {
         rect.sizeDelta = Vector2.zero;
         float width = 0f;
         float height = 0f;
@@ -111,7 +113,7 @@ public class BlockGridDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandl
                 break;
         }
 
-        rect.sizeDelta = new Vector2( Mathf.Max( width, rect.sizeDelta.x ), Mathf.Max( height, rect.sizeDelta.y ) );
+        rect.sizeDelta = new Vector2( Mathf.Max( width, rect.sizeDelta.x ), Mathf.Max( height + additional, rect.sizeDelta.y ) );
     }
 
     public void OnPointerEnter(PointerEventData eventData)

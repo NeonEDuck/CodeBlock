@@ -24,6 +24,7 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     private int maxStack = 0;                       // For resizing porpose, check for width (Ex. ForLoop IfElse)
     private float gridHeight;                       // GridHeight
     private bool accessAllow;
+    private bool additional;
 
     public void OnPointerDown( PointerEventData eventData ) {
         onHoldTimer = 0.0f;
@@ -69,13 +70,20 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         phcg.childControlHeight = false;
         phcg.childControlWidth = false;
 
+        float height = GameUtility.CONNECTOR_HEIGHT;
+
         // Transfer All block to the new BlockGrid
         for (int i = 0; i < childList.Count; i++) {
             childList[i].SetParent(newParent.transform);
             childList[i].SetSiblingIndex(i);
+            height += childList[i].GetComponent<RectTransform>().sizeDelta.y - GameUtility.CONNECTOR_HEIGHT;
             Transform phc = Instantiate(childList[i]);
             phc.SetParent(placeHolder.transform);
             phc.GetComponent<CanvasGroup>().blocksRaycasts = false;
+        }
+        placeHolder.GetComponent<RectTransform>().sizeDelta = new Vector2( GameUtility.BLOCK_WIDTH, height );
+        foreach ( Image i in placeHolder.GetComponentsInChildren<Image>() ) {
+            i.raycastTarget = false;
         }
 
         setAlpha(placeHolder.transform, 0.2f);
@@ -118,6 +126,14 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
                     biggestPriority = _p;
                 }
             }
+            if ( placeHolderParent != gameManager.preSelectedBlockGrids ) {
+                Debug.Log( placeHolderParent );
+                Debug.Log( gameManager.preSelectedBlockGrids );
+                gameManager.whichStack = -1;
+                additional = false;
+            }
+
+            gameManager.preSelectedBlockGrids = placeHolderParent;
 
             Debug.Log( biggestPriority );
 
@@ -150,33 +166,89 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
             accessAllow = true;
             // Moving the placeHolder to the desired location
-            placeHolder.transform.SetParent(placeHolderParent);
+            if ( gameManager.whichStack == -1 ) {
+                for ( int i = 0; i < placeHolderParent.childCount; i++ ) {
+                    Transform phpc = placeHolderParent.GetChild( i );
+                    if ( phpc == placeHolder.transform ) continue;
+                    RectTransform phpcRect = phpc.GetComponent<RectTransform>();
 
-            for (int i = 0; i < placeHolderParent.childCount; i++)
-            {
-                Transform phpc = placeHolderParent.GetChild(i);
-
-                // Desired location: where cursor is pointing > Block's center without connector (Block's center + connector's height/2)
-                if (eventData.position.y > phpc.position.y+ GameUtility.CONNECTOR_HEIGHT /2)
-                {
-                    if ( ( blockInfo.connectRule[0] == false && i > 0 ) || ( phpc.GetComponent<BlockInfo>().connectRule[0] == false ) ||
-                        ( blockInfo.connectRule[1] == false && i == 0 && placeHolderParent.childCount > 1 ) || ( i > 0 && placeHolderParent.GetChild( i-1 ).GetComponent<BlockInfo>().connectRule[1] == false ) ) {
-                        accessAllow = false;
+                    // Desired location: where cursor is pointing > Block's center without connector (Block's center + connector's height/2)
+                    if ( eventData.position.y > phpc.position.y + GameUtility.CONNECTOR_HEIGHT / 2 ) {
+                        if ( ( blockInfo.connectRule[0] == false && i > 0 ) || ( phpc.GetComponent<BlockInfo>().connectRule[0] == false ) ||
+                            ( blockInfo.connectRule[1] == false) || ( i > 0 && placeHolderParent.GetChild( i - 1 ).GetComponent<BlockInfo>().connectRule[1] == false ) ) {
+                            accessAllow = false;
+                            break;
+                        }
+                        gameManager.whichStack = i;
+                        //Debug.DrawLine(phpc.position + new Vector3(0, GameUtility.CONNECTOR_HEIGHT,1f) / 2, phpc.position + new Vector3(2f, GameUtility.CONNECTOR_HEIGHT / 2,1f), Color.red);
                         break;
                     }
+                }
 
-                    //Debug.DrawLine(phpc.position + new Vector3(0, GameUtility.CONNECTOR_HEIGHT,1f) / 2, phpc.position + new Vector3(2f, GameUtility.CONNECTOR_HEIGHT / 2,1f), Color.red);
-                    placeHolder.transform.SetSiblingIndex(i);
-                    break;
+                if ( accessAllow && gameManager.whichStack == -1 && placeHolderParent.childCount > 0 ) {
+                    BlockInfo phplcbi = placeHolderParent.GetChild( placeHolderParent.childCount - 1 ).GetComponent<BlockInfo>();
+                    if ( phplcbi.connectRule[1] == false ) {
+                        if ( phplcbi.connectRule[0] == false ) {
+                            accessAllow = false;
+                        }
+                        Debug.Log( "Yes" );
+                        gameManager.whichStack = placeHolderParent.childCount - 1;
+                    }
+
                 }
             }
+            else {
+                if ( gameManager.whichStack != 0 ) {
+                    Transform phpc = placeHolderParent.GetChild( gameManager.whichStack - 1 );
+                    RectTransform phpcRect = phpc.GetComponent<RectTransform>();
+                    if ( eventData.position.y > phpc.position.y + GameUtility.CONNECTOR_HEIGHT / 2 + ( phpcRect.sizeDelta.y - GameUtility.CONNECTOR_HEIGHT ) / 4 ) {
+                        if ( blockInfo.connectRule[1] == true && phpc.GetComponent<BlockInfo>().connectRule[0] == true ) {
+                            gameManager.whichStack--;
+                            Debug.Log( "Up" );
+                            goto jump_out;
+                        }
+                    }
+                }
+                if ( gameManager.whichStack != placeHolderParent.childCount - 1 ) {
+                    Transform phpc = placeHolderParent.GetChild( gameManager.whichStack + 1 );
+                    RectTransform phpcRect = phpc.GetComponent<RectTransform>();
+                    if ( eventData.position.y < phpc.position.y - GameUtility.CONNECTOR_HEIGHT / 2 - ( phpcRect.sizeDelta.y - GameUtility.CONNECTOR_HEIGHT ) / 4 ) {
+                        if ( blockInfo.connectRule[0] == true && phpc.GetComponent<BlockInfo>().connectRule[1] == true ) {
+                            gameManager.whichStack++;
+                            Debug.Log( "Down" );
+                            goto jump_out;
+                        }
+                    }
+                }
+            }
+
+            if ( gameManager.whichStack != placeHolderParent.childCount - 1 && gameManager.whichStack != -1 ) {
+                additional = true;
+            }
+
+            if ( additional ) {
+                placeHolderParent.GetComponent<BlockGridDropZone>().Resize();
+            }
+
         }
+        else {
+            gameManager.preSelectedBlockGrids = null;
+            additional = false;
+        }
+
         jump_out:
 
         if (!accessAllow)
         {
             placeHolder.transform.SetParent( gameManager.gameBoard );
             placeHolder.transform.position = new Vector3(0f, -100f - placeHolder.transform.childCount * (GameUtility.BLOCK_HEIGHT + GameUtility.CONNECTOR_HEIGHT));
+        }
+        else {
+            placeHolder.transform.SetParent( placeHolderParent );
+            placeHolder.transform.SetSiblingIndex( gameManager.whichStack );
+        }
+        if ( gameManager.blockGridsUnderPointer.Count == 0 && placeHolderParent != null ) {
+            placeHolderParent.GetComponent<BlockGridDropZone>().Resize();
         }
     }
 
@@ -203,6 +275,7 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
                 child.SetParent(placeHolderParent);
                 child.SetSiblingIndex(placeHolder.transform.GetSiblingIndex() + i);
             }
+            BlockRaycastWithChildGrid( placeHolderParent, true );
 
             // Destroy the BlockGrid you were holding
             Destroy(target.gameObject);
@@ -305,15 +378,20 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     public void setAlpha(Transform gameObject ,float alpha)
     {
         Color newColor = new Color(1.0f, 1.0f, 1.0f, alpha);
-        for (int i = 0; i < gameObject.transform.childCount; i++)
-        {
-            Transform child = gameObject.transform.GetChild(i);
 
-            if (child.GetComponent<Image>() != null) 
-                child.GetComponent<Image>().color = newColor;
-
-            setAlpha(child, alpha);
+        foreach ( Image img in gameObject.GetComponentsInChildren<Image>() ) {
+            img.color = newColor;
         }
+
+        //for (int i = 0; i < gameObject.transform.childCount; i++)
+        //{
+        //    Transform child = gameObject.transform.GetChild(i);
+
+        //    if (child.GetComponent<Image>() != null) 
+        //        child.GetComponent<Image>().color = newColor;
+
+        //    setAlpha(child, alpha);
+        //}
         //
         //foreach (SpriteRenderer c in child)
         //{

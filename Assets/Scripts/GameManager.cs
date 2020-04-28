@@ -10,6 +10,8 @@ public class GameManager : MonoBehaviour
     public List<Transform> blockGridsUnderPointer = new List<Transform>();
     public bool isDraging = false;
     public Transform gameBoard = null;
+    public int whichStack = 0;
+    public Transform preSelectedBlockGrids = null;
 
     public void BlockGridBlockRaycast( bool enable ) {
         foreach ( Transform bg in blockGrids ) {
