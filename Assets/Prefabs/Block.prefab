@@ -127,10 +127,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   blockGridPrefab: {fileID: 5208282125617268137, guid: 8c736d09eebc78045b680163778a9504,
     type: 3}
+  placeHolderPrefab: {fileID: 1990506819207902144, guid: 4dea5e2cc082d5c48944565e581df5b9,
+    type: 3}
   canvasGroup: {fileID: 9062704958607820539}
   blockInfo: {fileID: 8655384888283589237}
   gameManager: {fileID: 0}
-  placeHolderParent: {fileID: 0}
+  placeHolderParents: []
 --- !u!114 &8655384888283589237
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -143,7 +145,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9fa6d75a426fb304687a6dd54c887892, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  blockType: 0
+  blockType: 10
   inputFields: []
   connectRule: 0101
 --- !u!225 &9062704958607820539

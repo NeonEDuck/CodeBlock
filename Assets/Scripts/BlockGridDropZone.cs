@@ -50,16 +50,24 @@ public class BlockGridDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandl
         for (int i = 0; i < transform.childCount; i++ ) {
             Transform child = transform.GetChild( i );
 
-            Debug.Log( child.GetComponent<BlockInfo>().blockType );
+            //Debug.Log( child.GetComponent<BlockInfo>().blockType );
+            Transform nextBlockGrid = null;
+            BlockGridDropZone nextBlockGridDropZone = null;
 
             switch ( child.GetComponent<BlockInfo>().blockType ) {
                 case BlockType.forBlock:
-                    Debug.Log("For");
-                    Transform nextBlockGrid = child.GetChild( 1 ).GetChild( 1 );
-                    BlockGridDropZone nextBlockGridDropZone = nextBlockGrid.GetComponent<BlockGridDropZone>();
+                    nextBlockGrid = child.GetChild( 1 ).GetChild( 1 );
+                    nextBlockGridDropZone = nextBlockGrid.GetComponent<BlockGridDropZone>();
                     nextBlockGridDropZone.blockGridInfo.priority = blockGridInfo.priority + 1;
                     nextBlockGridDropZone.PriorityGiving();
                     break;
+                case BlockType.setBlock:
+                    nextBlockGrid = child.GetComponent<BlockInfo>().inputFields[0].GetComponent<ValueBlockSwap>().valueBlockGrid;
+                    nextBlockGridDropZone = nextBlockGrid.GetComponent<BlockGridDropZone>();
+                    nextBlockGridDropZone.blockGridInfo.priority = blockGridInfo.priority + 1;
+                    nextBlockGridDropZone.PriorityGiving();
+                    break;
+
             }
         }
     }

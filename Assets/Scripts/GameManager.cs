@@ -23,7 +23,7 @@ public class GameManager : MonoBehaviour
 
     public void ResetAll() {
         foreach ( Transform bg in blockGrids ) {
-            if ( bg != null ) {
+            if ( bg != null && bg.parent.name.StartsWith( "GameBoard" ) ) {
                 bg.GetComponent<BlockGridDropZone>().InfoReset();
             }
         }

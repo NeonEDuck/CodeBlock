@@ -616,6 +616,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   blockGridPrefab: {fileID: 5208282125617268137, guid: 8c736d09eebc78045b680163778a9504,
     type: 3}
+  placeHolderPrefab: {fileID: 1990506819207902144, guid: 4dea5e2cc082d5c48944565e581df5b9,
+    type: 3}
   canvasGroup: {fileID: 2845965950022789579}
   blockInfo: {fileID: 2496628504459199813}
   gameManager: {fileID: 0}

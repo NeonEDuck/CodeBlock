@@ -851,17 +851,17 @@ PrefabInstance:
     - target: {fileID: 3171369356557460966, guid: e617c0de16091134092f36be232685fb,
         type: 3}
       propertyPath: m_textInfo.characterCount
-      value: 13
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 3171369356557460966, guid: e617c0de16091134092f36be232685fb,
         type: 3}
       propertyPath: m_textInfo.spaceCount
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3171369356557460966, guid: e617c0de16091134092f36be232685fb,
         type: 3}
       propertyPath: m_textInfo.wordCount
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3171369356557460966, guid: e617c0de16091134092f36be232685fb,
         type: 3}
@@ -1005,6 +1005,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e617c0de16091134092f36be232685fb, type: 3}
+--- !u!224 &3494594192143788164 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 3171369356580808341, guid: e617c0de16091134092f36be232685fb,
+    type: 3}
+  m_PrefabInstance: {fileID: 2053005120447270417}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &3441440527694414434
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1121,6 +1127,26 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: SetBlock
+      objectReference: {fileID: 0}
+    - target: {fileID: 8655384888283589237, guid: 45ca22c9206bacf449cf76bd3efc58ec,
+        type: 3}
+      propertyPath: inputFields.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8655384888283589237, guid: 45ca22c9206bacf449cf76bd3efc58ec,
+        type: 3}
+      propertyPath: inputFields.Array.data[0]
+      value: 
+      objectReference: {fileID: 3494594192143788164}
+    - target: {fileID: 8655384888283589237, guid: 45ca22c9206bacf449cf76bd3efc58ec,
+        type: 3}
+      propertyPath: inputFields.Array.data[1]
+      value: 
+      objectReference: {fileID: 9119852295484392255}
+    - target: {fileID: 8655384888283589237, guid: 45ca22c9206bacf449cf76bd3efc58ec,
+        type: 3}
+      propertyPath: blockType
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 45ca22c9206bacf449cf76bd3efc58ec, type: 3}

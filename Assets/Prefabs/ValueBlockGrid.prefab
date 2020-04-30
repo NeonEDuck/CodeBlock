@@ -7,6 +7,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1657299636794140223, guid: 8c736d09eebc78045b680163778a9504,
+        type: 3}
+      propertyPath: m_IgnoreParentGroups
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4008343827892144461, guid: 8c736d09eebc78045b680163778a9504,
         type: 3}
       propertyPath: blockGridType

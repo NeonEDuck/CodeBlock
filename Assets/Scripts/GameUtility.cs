@@ -26,7 +26,8 @@ public enum BlockType
     startBlock,
     valueBlock,
     beam,
-    placeHolder
+    placeHolder,
+    other
 }
 public enum BlockGridType {
     Block,
