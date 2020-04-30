@@ -97,14 +97,44 @@ public class BlockGridDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandl
 
                 height -= Mathf.Max( 0f, transform.childCount - 1 ) * GameUtility.CONNECTOR_HEIGHT;
 
-                if ( transform.childCount > 0 && ( transform.GetChild( 0 ).GetComponent<BlockInfo>().connectRule[1] == false  || !gameManager.isDraging) ) {
+                bool extend = false;
+                if ( transform.childCount > 0 ) {
+                    if ( transform.parent.name.StartsWith( "GameBoard" ) ) {
+                        if ( gameManager.isDraging ) {
+                            extend = true;
+                        }
+                    }
+                    else if ( gameManager.blockGridsUnderPointer.Contains( transform ) ) {
+                        if ( transform.childCount > 0 && gameManager.isDraging ) {
+                            extend = false;
+                        }
+                    }
 
+                    if ( transform.GetChild( 0 ).GetComponent<BlockInfo>().connectRule[1] == false ) {
+                        extend = false;
+                    }
                 }
                 else {
+                    extend = true;
+                }
+
+                if ( extend ) {
                     if ( width == 0f ) width = GameUtility.BLOCK_WIDTH;
                     if ( height == 0f ) height += GameUtility.CONNECTOR_HEIGHT;
                     height += GameUtility.BLOCK_HEIGHT - GameUtility.CONNECTOR_HEIGHT;
                 }
+
+                if ( transform.parent.name.StartsWith( "Beam" ) ) {
+                    transform.parent.GetComponent<RectTransform>().sizeDelta = new Vector2( transform.parent.GetComponent<RectTransform>().sizeDelta.x, height );
+                    transform.parent.GetChild( 0 ).GetComponent<RectTransform>().sizeDelta = new Vector2( transform.parent.GetChild( 0 ).GetComponent<RectTransform>().sizeDelta.x, height );
+                    Transform block = transform.parent.parent;
+                    float blockHeight = 0f;
+                    for ( int i = 0; i < block.childCount; i++ ) {
+                        blockHeight += block.GetChild( i ).GetComponent<RectTransform>().sizeDelta.y - GameUtility.CONNECTOR_HEIGHT;
+                    }
+                    block.GetComponent<RectTransform>().sizeDelta = new Vector2( block.GetComponent<RectTransform>().sizeDelta.x, blockHeight + GameUtility.CONNECTOR_HEIGHT );
+                }
+
                 break;
 
             case BlockGridType.Value:
@@ -116,30 +146,7 @@ public class BlockGridDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandl
         rect.sizeDelta = new Vector2( Mathf.Max( width, rect.sizeDelta.x ), Mathf.Max( height + additional, rect.sizeDelta.y ) );
     }
 
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        //GameObject d = eventData.pointerDrag;
-        //if ( d != null ) {
-        //    switch ( blockGridInfo.blockGridType ) {
-        //        case BlockGridType.Block:
-        //            if ( d.GetComponent<BlockInfo>().blockType == BlockType.valueBlock ) {
-        //                return;
-        //            }
-        //            break;
-        //        case BlockGridType.Value:
-        //            if ( d.GetComponent<BlockInfo>().blockType != BlockType.valueBlock ) {
-        //                return;
-        //            }
-        //            break;
-        //        case BlockGridType.Logic:
-        //            if ( d.GetComponent<BlockInfo>().blockType != BlockType.valueBlock ) {
-        //                return;
-        //            }
-        //            break;
-        //    }
-        //    d.GetComponent<BlockPhysic>().placeHolderParents.Add( transform );
-        //}
-        //Debug.Log( "Enter to :" + transform );
+    public void OnPointerEnter(PointerEventData eventData) {
 
         if ( GetComponent<CanvasGroup>().blocksRaycasts == true ) {
         
@@ -151,29 +158,7 @@ public class BlockGridDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandl
 
         gameManager.blockGridsUnderPointer.Add( transform );
     }
-    public void OnPointerExit(PointerEventData eventData)
-    {
-        //GameObject d = eventData.pointerDrag;
-        //if ( d != null ) {
-        //    switch ( blockGridInfo.blockGridType ) {
-        //        case BlockGridType.Block:
-        //            if ( d.GetComponent<BlockInfo>().blockType == BlockType.valueBlock ) {
-        //                return;
-        //            }
-        //            break;
-        //        case BlockGridType.Value:
-        //            if ( d.GetComponent<BlockInfo>().blockType != BlockType.valueBlock ) {
-        //                return;
-        //            }
-        //            break;
-        //        case BlockGridType.Logic:
-        //            if ( d.GetComponent<BlockInfo>().blockType != BlockType.valueBlock ) {
-        //                return;
-        //            }
-        //            break;
-        //    }
-        //    d.GetComponent<BlockPhysic>().placeHolderParents.Remove( transform );
-        //}
+    public void OnPointerExit(PointerEventData eventData) {
 
         //Debug.Log( "Leave to :" + transform );
 

@@ -98,6 +98,9 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         if ( oldParent.childCount == 0 && oldParent.GetComponent<BlockGridInfo>().blockGridType == BlockGridType.Block && oldParent.parent == gameManager.gameBoard ) {
             oldParent.gameObject.GetComponent<CanvasGroup>().blocksRaycasts = false;
             gameManager.blockGridsUnderPointer.Remove( oldParent );
+            foreach ( BlockGridDropZone opc in oldParent.GetComponentsInChildren<BlockGridDropZone>() ) {
+                gameManager.blockGridsUnderPointer.Remove( opc.transform );
+            }
             gameManager.blockGridsUnderPointer.Remove( transform.parent );
         }
 
@@ -132,10 +135,6 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
                 gameManager.whichStack = -1;
                 additional = false;
             }
-
-            gameManager.preSelectedBlockGrids = placeHolderParent;
-
-            Debug.Log( biggestPriority );
 
             //int priority = 0;
             //foreach ( Transform php in placeHolderParents ) {
@@ -194,6 +193,9 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
                         Debug.Log( "Yes" );
                         gameManager.whichStack = placeHolderParent.childCount - 1;
                     }
+                    if ( blockInfo.connectRule[0] == false ) {
+                        accessAllow = false;
+                    }
 
                 }
             }
@@ -201,7 +203,7 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
                 if ( gameManager.whichStack != 0 ) {
                     Transform phpc = placeHolderParent.GetChild( gameManager.whichStack - 1 );
                     RectTransform phpcRect = phpc.GetComponent<RectTransform>();
-                    if ( eventData.position.y > phpc.position.y + GameUtility.CONNECTOR_HEIGHT / 2 + ( phpcRect.sizeDelta.y - GameUtility.CONNECTOR_HEIGHT ) / 4 ) {
+                    if ( eventData.position.y > phpc.position.y + GameUtility.CONNECTOR_HEIGHT / 2  ) {
                         if ( blockInfo.connectRule[1] == true && phpc.GetComponent<BlockInfo>().connectRule[0] == true ) {
                             gameManager.whichStack--;
                             Debug.Log( "Up" );
@@ -209,10 +211,10 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
                         }
                     }
                 }
-                if ( gameManager.whichStack != placeHolderParent.childCount - 1 ) {
+                if ( gameManager.whichStack < placeHolderParent.childCount - 1 ) {
                     Transform phpc = placeHolderParent.GetChild( gameManager.whichStack + 1 );
                     RectTransform phpcRect = phpc.GetComponent<RectTransform>();
-                    if ( eventData.position.y < phpc.position.y - GameUtility.CONNECTOR_HEIGHT / 2 - ( phpcRect.sizeDelta.y - GameUtility.CONNECTOR_HEIGHT ) / 4 ) {
+                    if ( eventData.position.y < phpc.position.y - GameUtility.CONNECTOR_HEIGHT / 2  ) {
                         if ( blockInfo.connectRule[0] == true && phpc.GetComponent<BlockInfo>().connectRule[1] == true ) {
                             gameManager.whichStack++;
                             Debug.Log( "Down" );
@@ -247,8 +249,11 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
             placeHolder.transform.SetParent( placeHolderParent );
             placeHolder.transform.SetSiblingIndex( gameManager.whichStack );
         }
-        if ( gameManager.blockGridsUnderPointer.Count == 0 && placeHolderParent != null ) {
+        if ( ( gameManager.blockGridsUnderPointer.Count == 0 && placeHolderParent != null ) || ( gameManager.preSelectedBlockGrids != placeHolderParent ) ) {
             placeHolderParent.GetComponent<BlockGridDropZone>().Resize();
+        }
+        if ( gameManager.blockGridsUnderPointer.Count > 0 ) {
+            gameManager.preSelectedBlockGrids = placeHolderParent;
         }
     }
 
