@@ -6,6 +6,12 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
+    public GameObject blockGridPrefab;
+    public GameObject setBlockPrefab;
+    public GameObject defineBlockPrefab;
+    public GameObject forBlockPrefab;
+    public GameObject ifBlockPrefab;
+    public GameObject startBlockPrefab;
     public List<Transform> blockGrids = new List<Transform>();
     public List<Transform> blockGridsUnderPointer = new List<Transform>();
     public bool isDraging = false;
@@ -24,7 +30,10 @@ public class GameManager : MonoBehaviour
     public void ResetAll() {
         foreach ( Transform bg in blockGrids ) {
             if ( bg != null && bg.parent.name.StartsWith( "GameBoard" ) ) {
-                bg.GetComponent<BlockGridDropZone>().InfoReset();
+                BlockGridDropZone bgdz = bg.GetComponent<BlockGridDropZone>();
+                if ( bgdz != null ) {
+                    bgdz.InfoReset();
+                }
             }
         }
     }

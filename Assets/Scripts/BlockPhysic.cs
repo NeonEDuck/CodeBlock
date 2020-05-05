@@ -79,11 +79,19 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
             img.color = newColor;
             img.raycastTarget = false;
         }
+        foreach ( CanvasGroup cg in placeHolder.GetComponentsInChildren<CanvasGroup>() ) {
+            cg.blocksRaycasts = false;
+            cg.interactable = false;
+        }
 
         // Turning blocksRaycasts off to not disturb OnDrop Event
         gameManager.BlockBlockRaycast( false );
         target = newParent;
         BlockRaycastWithChildGrid(target, false);
+
+        foreach ( BlockGridDropZone cbg in GetComponentsInChildren<BlockGridDropZone>() ) {
+            gameManager.blockGridsUnderPointer.Remove( cbg.transform );
+        }
 
         // if the original BlockGrid doesn't have Block anymore, there is no reason to return back
         // Prevent snapping to an seemingly empty space

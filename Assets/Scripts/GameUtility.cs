@@ -14,6 +14,16 @@ public static class GameUtility
     public const float BEAM_WIDTH = 84.0f;
     public const float GRID_HEIGHT = 84.0f;
 
+    static public GameManager getGameManager() {
+        GameManager gameManager = null;
+        if ( GameObject.FindGameObjectWithTag( "GameManager" ) == null ) {
+            Debug.LogError( "No GameManager Found" );
+        }
+        else {
+            gameManager = GameObject.FindGameObjectWithTag( "GameManager" ).GetComponent<GameManager>();
+        }
+        return gameManager;
+    }
 };
 public enum BlockType
 {

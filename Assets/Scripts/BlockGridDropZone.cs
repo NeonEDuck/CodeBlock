@@ -9,21 +9,16 @@ public class BlockGridDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandl
     private RectTransform rect;
     public GameManager gameManager = null;
     public BlockGridInfo blockGridInfo = null;
-    void Start()
-    {
-    }
 
     void Awake() {
-        if ( gameManager == null ) {
-            if ( GameObject.FindGameObjectWithTag( "GameManager" ) == null ) {
-                Debug.LogError( "No GameManager Found" );
-            }
-            else {
-                gameManager = GameObject.FindGameObjectWithTag( "GameManager" ).GetComponent<GameManager>();
-                gameManager.blockGrids.Add( transform );
-            }
+        gameManager = GameUtility.getGameManager();
+        if ( gameManager != null ) {
+            gameManager.blockGrids.Add( transform );
         }
         rect = GetComponent<RectTransform>();
+    }
+
+    void Start() {
 
         if ( transform.parent.name.StartsWith( "GameBoard" ) ) {
             blockGridInfo.priority = 0;
@@ -31,6 +26,7 @@ public class BlockGridDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandl
         }
 
         Resize();
+
     }
 
     public void InfoReset() {
