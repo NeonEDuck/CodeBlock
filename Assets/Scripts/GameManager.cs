@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
     public GameObject forBlockPrefab;
     public GameObject ifBlockPrefab;
     public GameObject startBlockPrefab;
+    public GameObject spawnerPrefab;
     public List<Transform> blockGrids = new List<Transform>();
     public List<Transform> blockGridsUnderPointer = new List<Transform>();
     public bool isDraging = false;
@@ -51,5 +52,28 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
+    }
+
+    public GameObject getBlockPrefab( BlockType blockType ) {
+
+        GameObject blockPrefab = null;
+        switch ( blockType ) {
+            case BlockType.setBlock:
+                blockPrefab = setBlockPrefab;
+                break;
+            case BlockType.defineBlock:
+                blockPrefab = defineBlockPrefab;
+                break;
+            case BlockType.forBlock:
+                blockPrefab = forBlockPrefab;
+                break;
+            case BlockType.ifBlock:
+                blockPrefab = ifBlockPrefab;
+                break;
+            case BlockType.startBlock:
+                blockPrefab = startBlockPrefab;
+                break;
+        }
+        return blockPrefab;
     }
 }

@@ -11,34 +11,23 @@ public class BlockSpawner : MonoBehaviour
     private Transform blockGrid;
 
     void Awake() {
-
         gameManager = GameUtility.getGameManager();
         if ( gameManager != null ) {
             gameManager.blockGrids.Add( transform );
         }
+    }
 
-        switch ( blockType ) {
-            case BlockType.setBlock:
-                blockPrefab = gameManager.setBlockPrefab;
-                break;
-            case BlockType.defineBlock:
-                blockPrefab = gameManager.defineBlockPrefab;
-                break;
-            case BlockType.forBlock:
-                blockPrefab = gameManager.forBlockPrefab;
-                break;
-            case BlockType.ifBlock:
-                blockPrefab = gameManager.ifBlockPrefab;
-                break;
-            case BlockType.startBlock:
-                blockPrefab = gameManager.startBlockPrefab;
-                break;
-        }
+    void Start() {
+        blockPrefab = gameManager.getBlockPrefab( blockType );
 
         if ( transform.childCount != 0 ) {
             blockGrid = transform.GetChild( 0 );
         }
 
+        Vector2 size = blockPrefab.GetComponent<RectTransform>().sizeDelta;
+        GetComponent<RectTransform>().sizeDelta = size;
+        blockGrid.GetComponent<RectTransform>().sizeDelta = size;
+        blockGrid.position = blockGrid.position + new Vector3( 0, size.y / 2, 0 );
     }
 
     void Update()

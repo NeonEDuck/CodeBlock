@@ -163,6 +163,14 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
                     break;
             }
 
+            if ( placeHolderParent.parent.name.StartsWith( "Beam" ) ) {
+                if ( target.GetChild(0).GetComponent<BlockInfo>().connectRule[0] == false || target.GetChild( target.childCount - 1 ).GetComponent<BlockInfo>().connectRule[1] == false ) {
+                    accessAllow = false;
+                    goto jump_out;
+                }
+            }
+
+
             accessAllow = true;
             // Moving the placeHolder to the desired location
             if ( gameManager.whichStack == -1 ) {
