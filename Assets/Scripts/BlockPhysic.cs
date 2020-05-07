@@ -10,6 +10,7 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     public CanvasGroup canvasGroup = null;
     public BlockInfo blockInfo = null;
     public GameManager gameManager = null;
+    public Material highLight = null;
     [HideInInspector]
     public List<Transform> placeHolderParents = new List<Transform>();            // Where placeHolder is going to be
     private Transform placeHolderParent = null;
@@ -108,6 +109,18 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     }
 
     public void OnDrag( PointerEventData eventData ) {
+
+
+        if ( gameManager.wannaTrash ) {
+            foreach (Image i in target.GetComponentsInChildren<Image>()) {
+                i.material = highLight;
+            }
+        }
+        else {
+            foreach ( Image i in target.GetComponentsInChildren<Image>() ) {
+                i.material = null;
+            }
+        }
 
         // It's holding BlockGrid, move it up half of height ( BlockGrid's pivot point is on the top )
         target.position = eventData.position + pointerOffset + new Vector2(0f, rect.sizeDelta.y / 2);
@@ -269,6 +282,7 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         }
         else {
             placeHolder.transform.SetParent( placeHolderParent );
+            placeHolder.transform.localScale = Vector3.one;
             placeHolder.transform.SetSiblingIndex( gameManager.whichStack );
         }
         if ( ( gameManager.blockGridsUnderPointer.Count == 0 && placeHolderParent != null ) || ( gameManager.preSelectedBlockGrids != placeHolderParent ) ) {

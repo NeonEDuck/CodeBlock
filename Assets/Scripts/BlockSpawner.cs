@@ -35,6 +35,7 @@ public class BlockSpawner : MonoBehaviour
         if ( blockGrid.childCount == 0 && !gameManager.isDraging ) {
             Transform block = Instantiate( blockPrefab ).transform;
             block.SetParent( blockGrid );
+            block.localScale = Vector3.one;
             foreach ( CanvasGroup cg in block.GetComponentsInChildren<CanvasGroup>() ) {
                 cg.blocksRaycasts = false;
             }

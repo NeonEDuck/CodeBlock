@@ -11,6 +11,21 @@ public class BlockInfo : MonoBehaviour
     public List<Transform> inputFields;
     public bool[] connectRule = { true, true };
 
+    void Start() {
+        switch ( blockType ) {
+            case BlockType.forBlock:
+                transform.GetChild( 0 ).GetChild( 0 ).GetComponent<Image>().alphaHitTestMinimumThreshold = 0.5f;
+                transform.GetChild( 1 ).GetChild( 0 ).GetChild( 0 ).GetComponent<Image>().alphaHitTestMinimumThreshold = 0.5f;
+                transform.GetChild( 2 ).GetChild( 0 ).GetComponent<Image>().alphaHitTestMinimumThreshold = 0.5f;
+                break;
+            case BlockType.placeHolder:
+                break;
+            default:
+                transform.GetChild( 0 ).GetComponent<Image>().alphaHitTestMinimumThreshold = 0.5f;
+                break;
+        }
+    }
+
     //public string getBlockCodeString()
     //{
     //    string outputCode = "";
