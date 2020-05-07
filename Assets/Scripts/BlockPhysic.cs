@@ -292,24 +292,23 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         {
             height += GameUtility.BLOCK_HEIGHT - GameUtility.CONNECTOR_HEIGHT;
         }
+        if ( !gameManager.wannaTrash ) {
+            if ( placeHolderParent != null && accessAllow ) {
+                // Transfer all block to the new BlockGrid
+                for ( int i = 0; i < childList.Count; i++ ) {
+                    Transform child = childList[i];
+                    child.SetParent( placeHolderParent );
+                    child.SetSiblingIndex( placeHolder.transform.GetSiblingIndex() + i );
+                }
+                BlockRaycastWithChildGrid( placeHolderParent, true );
 
-        if ( placeHolderParent != null && accessAllow)
-        {
-            // Transfer all block to the new BlockGrid
-            for (int i = 0; i < childList.Count; i++)
-            {
-                Transform child = childList[i];
-                child.SetParent(placeHolderParent);
-                child.SetSiblingIndex(placeHolder.transform.GetSiblingIndex() + i);
+                // Destroy the BlockGrid you were holding
+                Destroy( target.gameObject );
             }
-            BlockRaycastWithChildGrid( placeHolderParent, true );
-
-            // Destroy the BlockGrid you were holding
-            Destroy(target.gameObject);
-        }
-        else {
-            BlockRaycastWithChildGrid( target, true );
-            placeHolderParent = transform.parent;
+            else {
+                BlockRaycastWithChildGrid( target, true );
+                placeHolderParent = transform.parent;
+            }
         }
 
         // Destroy PlaceHolder
@@ -342,6 +341,10 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         }
 
         gameManager.ResetAll();
+
+        if ( gameManager.wannaTrash ) {
+            Destroy( target.gameObject );
+        }
 
         // Reset value
         holding = false;

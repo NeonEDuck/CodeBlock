@@ -1,9 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
-public class BlockLibrary : MonoBehaviour
-{
+public class BlockLibrary : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler {
     public GameManager gameManager;
     public Transform content;
     public List<BlockType> blockList;
@@ -26,5 +26,16 @@ public class BlockLibrary : MonoBehaviour
         height += ( blockList.Count + 1 ) * 24f;
 
         content.GetComponent<RectTransform>().sizeDelta = new Vector2( content.GetComponent<RectTransform>().sizeDelta.x, height );
+    }
+
+    public void OnPointerEnter( PointerEventData eventData ) {
+
+        gameManager.wannaTrash = true;
+
+    }
+    public void OnPointerExit( PointerEventData eventData ) {
+
+        gameManager.wannaTrash = false;
+
     }
 }

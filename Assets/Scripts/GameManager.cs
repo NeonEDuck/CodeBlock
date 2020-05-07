@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
     public List<Transform> blockGrids = new List<Transform>();
     public List<Transform> blockGridsUnderPointer = new List<Transform>();
     public bool isDraging = false;
+    public bool wannaTrash = false;
     public Transform gameBoard = null;
     public int whichStack = 0;
     public Transform preSelectedBlockGrids = null;
