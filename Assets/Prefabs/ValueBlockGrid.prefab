@@ -127,5 +127,30 @@ PrefabInstance:
       propertyPath: m_Name
       value: ValueBlockGrid
       objectReference: {fileID: 0}
+    - target: {fileID: 8818156353693794625, guid: 8c736d09eebc78045b680163778a9504,
+        type: 3}
+      propertyPath: m_Type
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8818156353693794625, guid: 8c736d09eebc78045b680163778a9504,
+        type: 3}
+      propertyPath: m_FillCenter
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8818156353693794625, guid: 8c736d09eebc78045b680163778a9504,
+        type: 3}
+      propertyPath: m_FillAmount
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8818156353693794625, guid: 8c736d09eebc78045b680163778a9504,
+        type: 3}
+      propertyPath: m_UseSpriteMesh
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8818156353693794625, guid: 8c736d09eebc78045b680163778a9504,
+        type: 3}
+      propertyPath: m_PreserveAspect
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8c736d09eebc78045b680163778a9504, type: 3}

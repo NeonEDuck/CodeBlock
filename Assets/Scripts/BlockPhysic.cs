@@ -10,7 +10,6 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     public CanvasGroup canvasGroup = null;
     public BlockInfo blockInfo = null;
     public GameManager gameManager = null;
-    public Material highLight = null;
     [HideInInspector]
     public List<Transform> placeHolderParents = new List<Transform>();            // Where placeHolder is going to be
     private Transform placeHolderParent = null;
@@ -30,7 +29,7 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     public void OnPointerDown( PointerEventData eventData ) {
         onHoldTimer = 0.0f;
         holding = true;
-        pointerOffset = new Vector2(transform.position.x, transform.position.y) - eventData.position;
+        pointerOffset = new Vector2( transform.position.x, transform.position.y ) - eventData.position;
     }
 
     public void OnBeginDrag( PointerEventData eventData ) {
@@ -110,20 +109,8 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
     public void OnDrag( PointerEventData eventData ) {
 
-
-        if ( gameManager.wannaTrash ) {
-            foreach (Image i in target.GetComponentsInChildren<Image>()) {
-                i.material = highLight;
-            }
-        }
-        else {
-            foreach ( Image i in target.GetComponentsInChildren<Image>() ) {
-                i.material = null;
-            }
-        }
-
         // It's holding BlockGrid, move it up half of height ( BlockGrid's pivot point is on the top )
-        target.position = eventData.position + pointerOffset + new Vector2(0f, rect.sizeDelta.y / 2);
+        target.position = eventData.position + pointerOffset + new Vector2(0f, rect.sizeDelta.y * 0.75f / 2);
 
         //Debug.DrawLine(eventData.position, eventData.position + new Vector2(0, (GameUtility.BLOCK_HEIGHT - GameUtility.CONNECTOR_HEIGHT) / 2) , Color.red);
         

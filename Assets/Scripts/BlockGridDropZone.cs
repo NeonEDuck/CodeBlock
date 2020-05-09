@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.Versioning;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -51,11 +52,14 @@ public class BlockGridDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandl
             BlockGridDropZone nextBlockGridDropZone = null;
 
             switch ( child.GetComponent<BlockInfo>().blockType ) {
+                case BlockType.ifBlock:
                 case BlockType.forBlock:
-                    nextBlockGrid = child.GetChild( 1 ).GetChild( 1 );
-                    nextBlockGridDropZone = nextBlockGrid.GetComponent<BlockGridDropZone>();
-                    nextBlockGridDropZone.blockGridInfo.priority = blockGridInfo.priority + 1;
-                    nextBlockGridDropZone.PriorityGiving();
+                    for (int j = 1; j < child.childCount; j+=2 ) {
+                        nextBlockGrid = child.GetChild( j ).GetChild( 1 );
+                        nextBlockGridDropZone = nextBlockGrid.GetComponent<BlockGridDropZone>();
+                        nextBlockGridDropZone.blockGridInfo.priority = blockGridInfo.priority + 1;
+                        nextBlockGridDropZone.PriorityGiving();
+                    }
                     break;
                 case BlockType.setBlock:
                     nextBlockGrid = child.GetComponent<BlockInfo>().inputFields[0].GetComponent<ValueBlockSwap>().valueBlockGrid;

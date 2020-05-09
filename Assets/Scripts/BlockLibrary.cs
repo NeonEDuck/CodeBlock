@@ -20,6 +20,7 @@ public class BlockLibrary : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         foreach ( BlockType block in blockList ) {
             Transform spawner = Instantiate( gameManager.spawnerPrefab ).transform;
             spawner.SetParent( content );
+            spawner.localScale = Vector3.one;
             spawner.GetComponent<BlockSpawner>().blockType = block;
             height += gameManager.getBlockPrefab( block ).GetComponent<RectTransform>().sizeDelta.y;
         }
@@ -32,10 +33,15 @@ public class BlockLibrary : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
 
         gameManager.wannaTrash = true;
 
+        if ( !gameManager.isDraging ) {
+            gameManager.showTrashIcon = false;
+        }
+
     }
     public void OnPointerExit( PointerEventData eventData ) {
 
         gameManager.wannaTrash = false;
+        gameManager.showTrashIcon = true;
 
     }
 }

@@ -10,10 +10,10 @@ public class ValueBlockSwap : MonoBehaviour
 
     private void Update() {
         if ( gameManager.isDraging || valueBlockGrid.childCount > 0 ) {
-            inputField.SetSiblingIndex( 0 );
+            inputField.SetSiblingIndex( 1 );
         }
         else {
-            valueBlockGrid.SetSiblingIndex( 0 );
+            valueBlockGrid.SetSiblingIndex( 1 );
         }
     }
 
