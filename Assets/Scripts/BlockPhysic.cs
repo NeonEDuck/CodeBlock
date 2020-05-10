@@ -103,6 +103,7 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
             }
             gameManager.blockGridsUnderPointer.Remove( transform.parent );
         }
+        gameManager.blockGridsUnderPointer.Remove( oldParent );
 
         gameManager.ResetAll();
     }
@@ -225,7 +226,7 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
             else  {
                 if ( gameManager.whichStack != 0 ) {
                     Transform phpc = placeHolderParent.GetChild( gameManager.whichStack - 1 );
-                    if ( eventData.position.y > phpc.position.y + GameUtility.CONNECTOR_HEIGHT / 2  ) {
+                    if ( eventData.position.y > phpc.position.y + ( phpc.GetComponent<RectTransform>().sizeDelta.y / 2 - GameUtility.BLOCK_HEIGHT / 2 ) * 0.75f ) {
                         if ( blockInfo.connectRule[1] == true && phpc.GetComponent<BlockInfo>().connectRule[0] == true ) {
                             gameManager.whichStack--;
                             Debug.Log( "Up" );
@@ -236,7 +237,7 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
                 if ( gameManager.whichStack < placeHolderParent.childCount - 1 ) {
                     Transform phpc = placeHolderParent.GetChild( gameManager.whichStack + 1 );
                     RectTransform phpcRect = phpc.GetComponent<RectTransform>();
-                    if ( eventData.position.y < phpc.position.y - GameUtility.CONNECTOR_HEIGHT / 2  ) {
+                    if ( eventData.position.y < phpc.position.y - ( phpc.GetComponent<RectTransform>().sizeDelta.y / 2 - GameUtility.BLOCK_HEIGHT / 2 ) * 0.75f  ) {
                         if ( blockInfo.connectRule[0] == true && phpc.GetComponent<BlockInfo>().connectRule[1] == true ) {
                             gameManager.whichStack++;
                             Debug.Log( "Down" );
@@ -276,6 +277,7 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
             placeHolderParent.GetComponent<BlockGridDropZone>().Resize();
         }
         if ( gameManager.blockGridsUnderPointer.Count > 0 ) {
+            if ( gameManager.preSelectedBlockGrids != null ) gameManager.preSelectedBlockGrids.GetComponent<BlockGridDropZone>().Resize();
             gameManager.preSelectedBlockGrids = placeHolderParent;
         }
     }

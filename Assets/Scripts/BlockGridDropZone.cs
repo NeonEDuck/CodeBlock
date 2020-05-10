@@ -66,8 +66,18 @@ public class BlockGridDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandl
                     nextBlockGridDropZone = nextBlockGrid.GetComponent<BlockGridDropZone>();
                     nextBlockGridDropZone.blockGridInfo.priority = blockGridInfo.priority + 1;
                     nextBlockGridDropZone.PriorityGiving();
-                    break;
 
+                    nextBlockGrid = child.GetComponent<BlockInfo>().inputFields[1].GetComponent<ValueBlockSwap>().valueBlockGrid;
+                    nextBlockGridDropZone = nextBlockGrid.GetComponent<BlockGridDropZone>();
+                    nextBlockGridDropZone.blockGridInfo.priority = blockGridInfo.priority + 1;
+                    nextBlockGridDropZone.PriorityGiving();
+                    break;
+                case BlockType.defineBlock:
+                    nextBlockGrid = child.GetComponent<BlockInfo>().inputFields[1].GetComponent<ValueBlockSwap>().valueBlockGrid;
+                    nextBlockGridDropZone = nextBlockGrid.GetComponent<BlockGridDropZone>();
+                    nextBlockGridDropZone.blockGridInfo.priority = blockGridInfo.priority + 1;
+                    nextBlockGridDropZone.PriorityGiving();
+                    break;
             }
         }
     }
@@ -127,7 +137,7 @@ public class BlockGridDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandl
                 }
 
                 if ( extend ) {
-                    if ( width == 0f ) width = GameUtility.BLOCK_WIDTH;
+                    //if ( width == 0f ) width = GameUtility.BLOCK_WIDTH;
                     if ( height == 0f ) height += GameUtility.CONNECTOR_HEIGHT;
                     height += GameUtility.BLOCK_HEIGHT - GameUtility.CONNECTOR_HEIGHT;
                 }

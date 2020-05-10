@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
     public GameObject forBlockPrefab;
     public GameObject ifBlockPrefab;
     public GameObject startBlockPrefab;
+    public GameObject valueBlockPrefab;
     public GameObject spawnerPrefab;
     public List<Transform> blockGrids = new List<Transform>();
     public List<Transform> blockGridsUnderPointer = new List<Transform>();
@@ -42,7 +43,12 @@ public class GameManager : MonoBehaviour
     }
 
     public void BlockBlockRaycast( bool enable ) {
+        List<Transform> removeList = new List<Transform>();
         foreach ( Transform bg in blockGrids ) {
+            if ( bg == null ) {
+                removeList.Add( bg );
+                continue;
+            }
             for ( int i = 0; i < bg.childCount; i++ ) {
                 CanvasGroup cg = bg.GetChild( i ).GetComponent<CanvasGroup>();
                 if ( cg != null ) {
@@ -53,6 +59,9 @@ public class GameManager : MonoBehaviour
                     img.raycastTarget = enable;
                 }
             }
+        }
+        foreach ( Transform bg in removeList ) {
+            blockGrids.Remove( bg );
         }
     }
 
@@ -74,6 +83,9 @@ public class GameManager : MonoBehaviour
                 break;
             case BlockType.startBlock:
                 blockPrefab = startBlockPrefab;
+                break;
+            case BlockType.valueBlock:
+                blockPrefab = valueBlockPrefab;
                 break;
         }
         return blockPrefab;

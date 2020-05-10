@@ -9,11 +9,13 @@ public class ValueBlockSwap : MonoBehaviour
     public Transform inputField = null;
 
     private void Update() {
-        if ( gameManager.isDraging || valueBlockGrid.childCount > 0 ) {
-            inputField.SetSiblingIndex( 1 );
-        }
-        else {
-            valueBlockGrid.SetSiblingIndex( 1 );
+        if ( inputField != null ) {
+            if ( gameManager.isDraging || valueBlockGrid.childCount > 0 ) {
+                inputField.SetSiblingIndex( 1 );
+            }
+            else {
+                valueBlockGrid.SetSiblingIndex( 1 );
+            }
         }
     }
 

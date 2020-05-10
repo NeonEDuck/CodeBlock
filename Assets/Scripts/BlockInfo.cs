@@ -13,10 +13,14 @@ public class BlockInfo : MonoBehaviour
 
     void Start() {
         switch ( blockType ) {
+            case BlockType.ifBlock:
             case BlockType.forBlock:
-                transform.GetChild( 0 ).GetChild( 0 ).GetComponent<Image>().alphaHitTestMinimumThreshold = 0.5f;
-                transform.GetChild( 1 ).GetChild( 0 ).GetChild( 0 ).GetComponent<Image>().alphaHitTestMinimumThreshold = 0.5f;
-                transform.GetChild( 2 ).GetChild( 0 ).GetComponent<Image>().alphaHitTestMinimumThreshold = 0.5f;
+                for ( int i = 1; i < transform.childCount; i += 2 ) {
+                    transform.GetChild( i - 1 ).GetChild( 0 ).GetComponent<Image>().alphaHitTestMinimumThreshold = 0.5f;
+                    transform.GetChild( i ).GetChild( 0 ).GetChild( 0 ).GetComponent<Image>().alphaHitTestMinimumThreshold = 0.5f;
+                }
+
+                transform.GetChild( transform.childCount - 1 ).GetChild( 0 ).GetComponent<Image>().alphaHitTestMinimumThreshold = 0.5f;
                 break;
             case BlockType.placeHolder:
                 break;

@@ -54,11 +54,15 @@ MonoBehaviour:
   ifBlockPrefab: {fileID: 0}
   startBlockPrefab: {fileID: 9029138380841669539, guid: 6a79cfd07ad725c4cac42344f6c99090,
     type: 3}
+  valueBlockPrefab: {fileID: 729403028607370388, guid: 9d854628666544441a809e6db2809789,
+    type: 3}
   spawnerPrefab: {fileID: 262286372814367248, guid: d042f5051cd4a4b4699ffb95669a5435,
     type: 3}
   blockGrids: []
   blockGridsUnderPointer: []
   isDraging: 0
+  wannaTrash: 0
+  showTrashIcon: 1
   gameBoard: {fileID: 0}
   whichStack: 0
   preSelectedBlockGrids: {fileID: 0}
