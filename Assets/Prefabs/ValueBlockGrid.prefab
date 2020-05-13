@@ -127,6 +127,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: ValueBlockGrid
       objectReference: {fileID: 0}
+    - target: {fileID: 5208282125617268139, guid: 8c736d09eebc78045b680163778a9504,
+        type: 3}
+      propertyPath: m_ChildAlignment
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 8818156353693794625, guid: 8c736d09eebc78045b680163778a9504,
         type: 3}
       propertyPath: m_Type

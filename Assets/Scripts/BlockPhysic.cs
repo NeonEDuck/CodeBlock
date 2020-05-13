@@ -70,7 +70,8 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
             phc.SetParent(placeHolder.transform);
             phc.GetComponent<CanvasGroup>().blocksRaycasts = false;
         }
-        placeHolder.GetComponent<RectTransform>().sizeDelta = new Vector2( GameUtility.BLOCK_WIDTH, height );
+        //placeHolder.GetComponent<RectTransform>().sizeDelta = new Vector2( GameUtility.BLOCK_WIDTH, height );
+        SizeFitter.CheckForChanges( placeHolder.transform );
 
         // PlaceHolder's transparent effect && turn off raycast
         Color newColor = new Color( 1.0f, 1.0f, 1.0f, 0.2f );

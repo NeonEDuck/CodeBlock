@@ -6,4 +6,5 @@ public class BlockGridInfo : MonoBehaviour
 {
     public BlockGridType blockGridType = BlockGridType.Block;
     public int priority = 0;
+    public bool fromSpawner = false;
 }

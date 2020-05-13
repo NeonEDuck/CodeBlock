@@ -63,7 +63,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: a72081d116fa3d84394624470e8ae4ea, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 05b559e186f224a44b43e82274d2a4cf, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -132,7 +132,6 @@ MonoBehaviour:
   canvasGroup: {fileID: 9062704958607820539}
   blockInfo: {fileID: 8655384888283589237}
   gameManager: {fileID: 0}
-  highLight: {fileID: 2100000, guid: 4dd5e47114ba2344196201511477fefa, type: 2}
   placeHolderParents: []
 --- !u!114 &8655384888283589237
 MonoBehaviour:

@@ -8,7 +8,7 @@ public class BlockInfo : MonoBehaviour
 {
 
     public BlockType blockType = BlockType.setBlock;
-    public List<Transform> inputFields;
+    public List<Transform> refField;
     public bool[] connectRule = { true, true };
 
     void Start() {
@@ -37,28 +37,28 @@ public class BlockInfo : MonoBehaviour
     //    {
     //        case BlockType.setBlock:
 
-    //            if (inputFields.Count >= 2)
+    //            if (refField.Count >= 2)
     //            {
-    //                outputCode = "set " + inputFields[0].text + " = " + inputFields[1].text + ";";
+    //                outputCode = "set " + refField[0].text + " = " + refField[1].text + ";";
     //            }
 
     //            break;
 
     //        case BlockType.defineBlock:
-    //            if (inputFields.Count == 1)
+    //            if (refField.Count == 1)
     //            {
-    //                outputCode = "let " + inputFields[0].text + ";";
+    //                outputCode = "let " + refField[0].text + ";";
     //            }
-    //            else if (inputFields.Count >= 2)
+    //            else if (refField.Count >= 2)
     //            {
-    //                outputCode = "let " + inputFields[0].text + " = " + inputFields[1].text + ";";
+    //                outputCode = "let " + refField[0].text + " = " + refField[1].text + ";";
     //            }
     //            break;
 
     //        case BlockType.forBlock:
-    //            if (inputFields.Count >= 1)
+    //            if (refField.Count >= 1)
     //            {
-    //                outputCode = "for (int i = 0; i < " + inputFields[0].text + "; i++) {";
+    //                outputCode = "for (int i = 0; i < " + refField[0].text + "; i++) {";
     //            }
     //            break;
     //    }

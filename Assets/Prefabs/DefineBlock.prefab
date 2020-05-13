@@ -253,7 +253,7 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 2
-  m_textAlignment: 257
+  m_textAlignment: 513
   m_characterSpacing: 0
   m_wordSpacing: 0
   m_lineSpacing: 0
@@ -502,7 +502,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 7.179989, y: 12}
-  m_SizeDelta: {x: 61.83, y: 30}
+  m_SizeDelta: {x: 84, y: 44}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6390957263136065744
 CanvasRenderer:
@@ -530,7 +530,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10911, guid: 0000000000000000f000000000000000, type: 0}
+  m_Sprite: {fileID: 21300000, guid: dc98fd45d54b3524ca09894282399c0f, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -762,6 +762,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   blockInfo: {fileID: 1019544388541445058}
   blockSpawner: {fileID: 3974619825177019737}
+  pre_name: 
 --- !u!1 &9053287718719618271
 GameObject:
   m_ObjectHideFlags: 0
@@ -860,7 +861,7 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_textAlignment: 257
+  m_textAlignment: 513
   m_characterSpacing: 0
   m_wordSpacing: 0
   m_lineSpacing: 0
@@ -1043,6 +1044,11 @@ PrefabInstance:
         type: 3}
       propertyPath: trigger
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3748027779666685266, guid: d042f5051cd4a4b4699ffb95669a5435,
+        type: 3}
+      propertyPath: blockGridType
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d042f5051cd4a4b4699ffb95669a5435, type: 3}
@@ -1236,6 +1242,12 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1733049510526628119, guid: 45ca22c9206bacf449cf76bd3efc58ec,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: a72081d116fa3d84394624470e8ae4ea,
+        type: 3}
     - target: {fileID: 1733049511104675454, guid: 45ca22c9206bacf449cf76bd3efc58ec,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1294,12 +1306,12 @@ PrefabInstance:
     - target: {fileID: 1733049511104675454, guid: 45ca22c9206bacf449cf76bd3efc58ec,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 786
       objectReference: {fileID: 0}
     - target: {fileID: 1733049511104675454, guid: 45ca22c9206bacf449cf76bd3efc58ec,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: 611
       objectReference: {fileID: 0}
     - target: {fileID: 1733049511104675454, guid: 45ca22c9206bacf449cf76bd3efc58ec,
         type: 3}

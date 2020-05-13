@@ -62,18 +62,18 @@ public class BlockGridDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandl
                     }
                     break;
                 case BlockType.setBlock:
-                    nextBlockGrid = child.GetComponent<BlockInfo>().inputFields[0].GetComponent<ValueBlockSwap>().valueBlockGrid;
+                    nextBlockGrid = child.GetComponent<BlockInfo>().refField[0].GetComponent<ValueBlockSwap>().valueBlockGrid;
                     nextBlockGridDropZone = nextBlockGrid.GetComponent<BlockGridDropZone>();
                     nextBlockGridDropZone.blockGridInfo.priority = blockGridInfo.priority + 1;
                     nextBlockGridDropZone.PriorityGiving();
 
-                    nextBlockGrid = child.GetComponent<BlockInfo>().inputFields[1].GetComponent<ValueBlockSwap>().valueBlockGrid;
+                    nextBlockGrid = child.GetComponent<BlockInfo>().refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid;
                     nextBlockGridDropZone = nextBlockGrid.GetComponent<BlockGridDropZone>();
                     nextBlockGridDropZone.blockGridInfo.priority = blockGridInfo.priority + 1;
                     nextBlockGridDropZone.PriorityGiving();
                     break;
                 case BlockType.defineBlock:
-                    nextBlockGrid = child.GetComponent<BlockInfo>().inputFields[1].GetComponent<ValueBlockSwap>().valueBlockGrid;
+                    nextBlockGrid = child.GetComponent<BlockInfo>().refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid;
                     nextBlockGridDropZone = nextBlockGrid.GetComponent<BlockGridDropZone>();
                     nextBlockGridDropZone.blockGridInfo.priority = blockGridInfo.priority + 1;
                     nextBlockGridDropZone.PriorityGiving();
@@ -137,7 +137,7 @@ public class BlockGridDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandl
                 }
 
                 if ( extend ) {
-                    //if ( width == 0f ) width = GameUtility.BLOCK_WIDTH;
+                    if ( width == 0f ) width = GameUtility.BLOCK_WIDTH;
                     if ( height == 0f ) height += GameUtility.CONNECTOR_HEIGHT;
                     height += GameUtility.BLOCK_HEIGHT - GameUtility.CONNECTOR_HEIGHT;
                 }
@@ -156,8 +156,20 @@ public class BlockGridDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandl
                 break;
 
             case BlockGridType.Value:
-                //height = GameUtility.VALUE_HEIGHT;
-                //width = GameUtility.VALUE_WIDTH;
+                if ( transform.childCount > 0 ) {
+                    SizeFitter.CheckForChanges( transform );
+                    rect.sizeDelta = new Vector2( Mathf.Max( 0, rect.sizeDelta.x - 100 ), Mathf.Max( 0, rect.sizeDelta.y - 100 ) );
+                }
+                else {
+                    if ( transform.parent.name.StartsWith( "BlockSpawner" ) ) {
+                        height = GameUtility.VALUE_HEIGHT;
+                        width = 0;
+                    }
+                    else {
+                        //height = GameUtility.VALUE_HEIGHT;
+                        //width = GameUtility.VALUE_WIDTH;
+                    }
+                }
                 break;
         }
 

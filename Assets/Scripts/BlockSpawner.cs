@@ -54,11 +54,25 @@ public class BlockSpawner : MonoBehaviour
                     if ( block == null ) {
                         continue;
                     }
-                    TMP_Text text = block.GetComponent<BlockInfo>().inputFields[0].GetComponent<TMP_Text>();
-                    if ( text != null ) {
-                        text.text = args["value_name"];
+
+                    BlockSizeManage vbm = block.GetComponent<BlockSizeManage>();
+                    if ( vbm != null ) {
+                        vbm.ChangeText( args["value_name"] );
                     }
+
+                    //Transform inputField = block.GetComponent<BlockInfo>().refField[0];
+                    //if ( inputField != null ) {
+                    //    inputField.GetComponent<TMP_Text>().text = args["value_name"];
+                    //    inputField.GetComponent<TMP_Text>().text = args["value_name"];
+                    //}
                 }
+            }
+
+            if ( !args.ContainsKey( "value_name" ) || args["value_name"].Length == 0 ) {
+                blockGrid.GetComponent<RectTransform>().sizeDelta = Vector2.zero;
+            }
+            else {
+                blockGrid.GetComponent<BlockGridDropZone>().Resize();
             }
         }
         else {

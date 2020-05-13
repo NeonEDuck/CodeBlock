@@ -11,7 +11,7 @@ public class DefineBlockTrigger : MonoBehaviour {
 
     // Use this for initialization
     void Start() {
-        inputField = blockInfo.inputFields[0].GetComponent<TMP_InputField>();
+        inputField = blockInfo.refField[0].GetComponent<TMP_InputField>();
     }
 
     // Update is called once per frame
