@@ -133,6 +133,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: StartBlock
       objectReference: {fileID: 0}
+    - target: {fileID: 1733049511104675455, guid: 45ca22c9206bacf449cf76bd3efc58ec,
+        type: 3}
+      propertyPath: m_TagString
+      value: Start
+      objectReference: {fileID: 0}
     - target: {fileID: 8655384888283589237, guid: 45ca22c9206bacf449cf76bd3efc58ec,
         type: 3}
       propertyPath: blockType

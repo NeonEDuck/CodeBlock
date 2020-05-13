@@ -1306,12 +1306,12 @@ PrefabInstance:
     - target: {fileID: 1733049511104675454, guid: 45ca22c9206bacf449cf76bd3efc58ec,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 786
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1733049511104675454, guid: 45ca22c9206bacf449cf76bd3efc58ec,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 611
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1733049511104675454, guid: 45ca22c9206bacf449cf76bd3efc58ec,
         type: 3}
@@ -1360,6 +1360,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8655384888283589237, guid: 45ca22c9206bacf449cf76bd3efc58ec,
         type: 3}
+      propertyPath: refField.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8655384888283589237, guid: 45ca22c9206bacf449cf76bd3efc58ec,
+        type: 3}
       propertyPath: blockType
       value: 1
       objectReference: {fileID: 0}
@@ -1371,6 +1376,16 @@ PrefabInstance:
     - target: {fileID: 8655384888283589237, guid: 45ca22c9206bacf449cf76bd3efc58ec,
         type: 3}
       propertyPath: inputFields.Array.data[1]
+      value: 
+      objectReference: {fileID: 5064205638492886776}
+    - target: {fileID: 8655384888283589237, guid: 45ca22c9206bacf449cf76bd3efc58ec,
+        type: 3}
+      propertyPath: refField.Array.data[0]
+      value: 
+      objectReference: {fileID: 2801520191470986601}
+    - target: {fileID: 8655384888283589237, guid: 45ca22c9206bacf449cf76bd3efc58ec,
+        type: 3}
+      propertyPath: refField.Array.data[1]
       value: 
       objectReference: {fileID: 5064205638492886776}
     m_RemovedComponents: []

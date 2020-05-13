@@ -334,6 +334,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8655384888283589237, guid: 45ca22c9206bacf449cf76bd3efc58ec,
         type: 3}
+      propertyPath: refField.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8655384888283589237, guid: 45ca22c9206bacf449cf76bd3efc58ec,
+        type: 3}
       propertyPath: blockType
       value: 7
       objectReference: {fileID: 0}
@@ -350,6 +355,11 @@ PrefabInstance:
     - target: {fileID: 8655384888283589237, guid: 45ca22c9206bacf449cf76bd3efc58ec,
         type: 3}
       propertyPath: inputFields.Array.data[0]
+      value: 
+      objectReference: {fileID: 3012025701432032651}
+    - target: {fileID: 8655384888283589237, guid: 45ca22c9206bacf449cf76bd3efc58ec,
+        type: 3}
+      propertyPath: refField.Array.data[0]
       value: 
       objectReference: {fileID: 3012025701432032651}
     m_RemovedComponents: []

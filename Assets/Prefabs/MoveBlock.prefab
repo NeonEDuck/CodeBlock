@@ -536,7 +536,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   blockType: 10
-  inputFields: []
+  refField:
+  - {fileID: 9090497077952486939}
+  - {fileID: 8151636952565056591}
   connectRule: 0101
 --- !u!225 &9062704958607820539
 CanvasGroup:

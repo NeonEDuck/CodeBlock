@@ -37,6 +37,7 @@ public enum BlockType
     valueBlock,
     beam,
     placeHolder,
+    moveBlock,
     other
 }
 public enum BlockGridType {
