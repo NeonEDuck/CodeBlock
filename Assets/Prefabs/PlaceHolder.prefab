@@ -50,7 +50,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   blockType: 9
-  inputFields: []
+  refField: []
   connectRule: 0101
 --- !u!114 &908122706123551027
 MonoBehaviour:
@@ -70,7 +70,7 @@ MonoBehaviour:
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 1
-  m_Spacing: -24
+  m_Spacing: -19
   m_ChildForceExpandWidth: 0
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 0

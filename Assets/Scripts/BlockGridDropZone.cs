@@ -78,6 +78,12 @@ public class BlockGridDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandl
                     nextBlockGridDropZone.blockGridInfo.priority = blockGridInfo.priority + 1;
                     nextBlockGridDropZone.PriorityGiving();
                     break;
+                case BlockType.moveBlock:
+                    nextBlockGrid = child.GetComponent<BlockInfo>().refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid;
+                    nextBlockGridDropZone = nextBlockGrid.GetComponent<BlockGridDropZone>();
+                    nextBlockGridDropZone.blockGridInfo.priority = blockGridInfo.priority + 1;
+                    nextBlockGridDropZone.PriorityGiving();
+                    break;
             }
         }
     }
@@ -91,6 +97,7 @@ public class BlockGridDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandl
         float width = 0f;
         float height = 0f;
 
+        bool force = false;
         ////////
         for ( int i = 0; i < transform.childCount; i++ ) {
             Transform child = transform.GetChild( i );
@@ -157,8 +164,10 @@ public class BlockGridDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandl
 
             case BlockGridType.Value:
                 if ( transform.childCount > 0 ) {
-                    SizeFitter.CheckForChanges( transform );
-                    rect.sizeDelta = new Vector2( Mathf.Max( 0, rect.sizeDelta.x - 100 ), Mathf.Max( 0, rect.sizeDelta.y - 100 ) );
+                    //SizeFitter.CheckForChanges( transform );
+                    height = 0;
+                    width = 0;
+                    force = true;
                 }
                 else {
                     if ( transform.parent.name.StartsWith( "BlockSpawner" ) ) {
@@ -172,8 +181,12 @@ public class BlockGridDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandl
                 }
                 break;
         }
-
-        rect.sizeDelta = new Vector2( Mathf.Max( width, rect.sizeDelta.x ), Mathf.Max( height + additional, rect.sizeDelta.y ) );
+        if ( !force ) {
+            rect.sizeDelta = new Vector2( Mathf.Max( width, rect.sizeDelta.x ), Mathf.Max( height + additional, rect.sizeDelta.y ) );
+        }
+        else {
+            rect.sizeDelta = new Vector2( width, height );
+        }
     }
 
     public void OnPointerEnter(PointerEventData eventData) {

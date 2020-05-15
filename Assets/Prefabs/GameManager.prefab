@@ -56,13 +56,21 @@ MonoBehaviour:
     type: 3}
   valueBlockPrefab: {fileID: 729403028607370388, guid: 9d854628666544441a809e6db2809789,
     type: 3}
+  moveBlockPrefab: {fileID: 1733049511104675455, guid: f54e37c59993cf244acc516d859b1d88,
+    type: 3}
   spawnerPrefab: {fileID: 262286372814367248, guid: d042f5051cd4a4b4699ffb95669a5435,
     type: 3}
+  obstaclePrefab: {fileID: 7727740965559441880, guid: 8e8bfe550b6732b46a2b2b1641360569,
+    type: 3}
+  playerPrefab: {fileID: 9029156245598588805, guid: e80cca94682c9a84dba654a223fd2b7f,
+    type: 3}
+  gameBoard: {fileID: 0}
+  gameView: {fileID: 0}
+  gameEnv: 
   blockGrids: []
   blockGridsUnderPointer: []
   isDraging: 0
   wannaTrash: 0
   showTrashIcon: 1
-  gameBoard: {fileID: 0}
   whichStack: 0
   preSelectedBlockGrids: {fileID: 0}

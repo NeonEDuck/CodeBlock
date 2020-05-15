@@ -51,6 +51,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gameManager: {fileID: 0}
   blockType: 0
+  trigger: 1
 --- !u!1001 &262286373609808927
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -126,12 +127,12 @@ PrefabInstance:
     - target: {fileID: 5208282125617268136, guid: 8c736d09eebc78045b680163778a9504,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 84
+      value: 64
       objectReference: {fileID: 0}
     - target: {fileID: 5208282125617268136, guid: 8c736d09eebc78045b680163778a9504,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 84
+      value: 64
       objectReference: {fileID: 0}
     - target: {fileID: 5208282125617268136, guid: 8c736d09eebc78045b680163778a9504,
         type: 3}

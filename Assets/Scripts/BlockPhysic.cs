@@ -112,7 +112,7 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     public void OnDrag( PointerEventData eventData ) {
 
         // It's holding BlockGrid, move it up half of height ( BlockGrid's pivot point is on the top )
-        target.position = eventData.position + pointerOffset + new Vector2(0f, rect.sizeDelta.y * 0.75f / 2);
+        target.position = eventData.position + pointerOffset + new Vector2(0f, rect.sizeDelta.y / 2);
 
         //Debug.DrawLine(eventData.position, eventData.position + new Vector2(0, (GameUtility.BLOCK_HEIGHT - GameUtility.CONNECTOR_HEIGHT) / 2) , Color.red);
         
@@ -227,7 +227,7 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
             else  {
                 if ( gameManager.whichStack != 0 ) {
                     Transform phpc = placeHolderParent.GetChild( gameManager.whichStack - 1 );
-                    if ( eventData.position.y > phpc.position.y + ( phpc.GetComponent<RectTransform>().sizeDelta.y / 2 - GameUtility.BLOCK_HEIGHT / 2 ) * 0.75f ) {
+                    if ( eventData.position.y > phpc.position.y + ( phpc.GetComponent<RectTransform>().sizeDelta.y / 2 - GameUtility.BLOCK_HEIGHT / 2 ) ) {
                         if ( blockInfo.connectRule[1] == true && phpc.GetComponent<BlockInfo>().connectRule[0] == true ) {
                             gameManager.whichStack--;
                             Debug.Log( "Up" );
@@ -238,7 +238,7 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
                 if ( gameManager.whichStack < placeHolderParent.childCount - 1 ) {
                     Transform phpc = placeHolderParent.GetChild( gameManager.whichStack + 1 );
                     RectTransform phpcRect = phpc.GetComponent<RectTransform>();
-                    if ( eventData.position.y < phpc.position.y - ( phpc.GetComponent<RectTransform>().sizeDelta.y / 2 - GameUtility.BLOCK_HEIGHT / 2 ) * 0.75f  ) {
+                    if ( eventData.position.y < phpc.position.y - ( phpc.GetComponent<RectTransform>().sizeDelta.y / 2 - GameUtility.BLOCK_HEIGHT / 2 )  ) {
                         if ( blockInfo.connectRule[0] == true && phpc.GetComponent<BlockInfo>().connectRule[1] == true ) {
                             gameManager.whichStack++;
                             Debug.Log( "Down" );

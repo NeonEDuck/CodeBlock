@@ -32,7 +32,7 @@ public class BlockSpawner : MonoBehaviour
         GetComponent<RectTransform>().sizeDelta = size;
         blockGrid.GetComponent<RectTransform>().sizeDelta = size;
         Debug.Log( size.y - blockGrid.position.y );
-        blockGrid.position = blockGrid.position + new Vector3( 0, size.y / 2 * 0.75f, 0 );
+        blockGrid.position = blockGrid.position + new Vector3( 0, size.y / 2, 0 );
     }
 
     void Update()

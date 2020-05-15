@@ -6,6 +6,7 @@ TagManager:
   tags:
   - BlockGrid
   - GameManager
+  - Start
   layers:
   - Default
   - TransparentFX

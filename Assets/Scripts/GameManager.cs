@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Networking.Match;
 using UnityEngine.UI;
 
-public class GameManager : MonoBehaviour
-{
+public class GameManager : MonoBehaviour {
+    [Header( "BlockPrefab" )]
     public GameObject blockGridPrefab;
     public GameObject setBlockPrefab;
     public GameObject defineBlockPrefab;
@@ -14,23 +16,83 @@ public class GameManager : MonoBehaviour
     public GameObject ifBlockPrefab;
     public GameObject startBlockPrefab;
     public GameObject valueBlockPrefab;
+    public GameObject moveBlockPrefab;
     public GameObject spawnerPrefab;
+    [Header( "MiniPrefab" )]
+    public GameObject obstaclePrefab;
+    public GameObject playerPrefab;
+
+    public Transform gameBoard = null;
+    public Transform gameView = null;
+    public short[] gameEnv;
+
+    [Header("Private")]
     public List<Transform> blockGrids = new List<Transform>();
     public List<Transform> blockGridsUnderPointer = new List<Transform>();
     public bool isDraging = false;
     public bool wannaTrash = false;
     public bool showTrashIcon = true;
-    public Transform gameBoard = null;
     public int whichStack = 0;
     public Transform preSelectedBlockGrids = null;
 
-    public void StartGame() {
-        Debug.Log( CreateCommand() );
+    public void ResetGameView() {
+        foreach ( Transform child in gameView.transform ) {
+            Destroy( child.gameObject );
+        }
+        Vector3 origin = gameView.position + new Vector3( 0, gameView.GetComponent<RectTransform>().sizeDelta.y, 0 );
+        if ( gameEnv != null ) {
+            for ( int i = 0; i < gameEnv.Length; i++ ) {
+                Transform spawn = null;
+                switch ( gameEnv[i] ) {
+                    case 0:
+                        break;
+                    case 1:
+                        spawn = Instantiate( obstaclePrefab, gameView ).transform;
+                        break;
+                    case 2:
+                        spawn = Instantiate( playerPrefab, gameView ).transform;
+                        break;
+                }
+                if ( spawn != null ) {
+                    spawn.position = origin + new Vector3( ( i % 7 + 0.5f ) * 50f, -( Mathf.Floor( i / 7 ) + 0.5f ) * 50f, 0f );
+                }
+            }
+        }
     }
 
-    public string CreateCommand( Transform target = null ) {
+    public void StartGame() {
+        ResetGameView();
+        List<Tuple<string, List<object>>> commands = CreateCommand();
+        
+        foreach ( Tuple<string, List<object>> command in commands ) {
+            switch ( command.Item1 ) {
+                case "start":
+                    Debug.Log( "start");
+                    break;
+                case "define":
+                    Debug.Log( "define " + command.Item2[0]);
+                    break;
+                case "set":
+                    Debug.Log( "set " + command.Item2[0] + " " + command.Item2[1] );
+                    break;
+                case "for":
+                    Debug.Log( "for " + command.Item2[0] + " " + command.Item2[1] );
+                    break;
+                case "if":
+                    Debug.Log( "if " + command.Item2[0] + " " + command.Item2[1] );
+                    break;
+                case "move":
+                    Debug.Log( "move " + command.Item2[0] + " " + command.Item2[1] );
+                    break;
+            }
+        }
+
+    }
+
+    public List<Tuple<string, List<object>>> CreateCommand( Transform target = null ) {
 
         string output = "";
+        List<Tuple<string, List<object>>> commands = new List<Tuple<string, List<object>>>();
 
         if ( target == null ) {
             GameObject[] list = GameObject.FindGameObjectsWithTag( "Start" );
@@ -44,39 +106,69 @@ public class GameManager : MonoBehaviour
         if ( target != null ) {
             for ( int i = 0; i < target.childCount; i++ ) {
                 BlockInfo blockInfo = target.GetChild(i).GetComponent<BlockInfo>();
-                Debug.Log( target.GetChild( i ).name );
+                string type = "";
+                List<object> infos = new List<object>();
                 switch ( blockInfo.blockType ) {
                     case BlockType.startBlock:
-                        output += "start\n";
+                        type = "start";
                         break;
                     case BlockType.defineBlock:
-                        output += "define " + blockInfo.refField[0].GetComponent<TMP_InputField>().text + "\n" ;
+                        type = "define";
+                        infos.Add( blockInfo.refField[0].GetComponent<TMP_InputField>().text );
+                        if ( blockInfo.refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid.childCount > 0 ) {
+                            infos.Add( blockInfo.refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid.GetChild( 0 ).GetChild( 1 ).GetComponent<TMP_Text>().text );
+                        }
+                        else {
+                            infos.Add( blockInfo.refField[1].GetComponent<ValueBlockSwap>().inputField.GetComponent<TMP_InputField>().text );
+                        }
                         break;
                     case BlockType.setBlock:
-
-                        output += "set " + blockInfo.refField[0].GetComponent<ValueBlockSwap>().valueBlockGrid.GetChild(0).GetChild(1).GetComponent<TMP_Text>().text + " = "
-                            + blockInfo.refField[1].GetComponent<ValueBlockSwap>().inputField.GetComponent<TMP_InputField>().text + "\n";
+                        type = "set";
+                        infos.Add( blockInfo.refField[0].GetComponent<ValueBlockSwap>().valueBlockGrid.GetChild( 0 ).GetChild( 1 ).GetComponent<TMP_Text>().text );
+                        if ( blockInfo.refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid.childCount > 0 ) {
+                            infos.Add( blockInfo.refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid.GetChild( 0 ).GetChild( 1 ).GetComponent<TMP_Text>().text );
+                        }
+                        else {
+                            infos.Add( blockInfo.refField[1].GetComponent<ValueBlockSwap>().inputField.GetComponent<TMP_InputField>().text );
+                        }
+                        //output += "set " +  + " = "
+                        //    + blockInfo.refField[1].GetComponent<ValueBlockSwap>().inputField.GetComponent<TMP_InputField>().text + "\n";
                         break;
                     case BlockType.forBlock:
-                        output += "for {\n";
-                        output += CreateCommand( blockInfo.refField[0] );
-                        output += "}\n";
+                        type = "for";
+                        infos.Add( CreateCommand( blockInfo.refField[0] ) );
+                        //output += "for {\n";
+                        //output += CreateCommand( blockInfo.refField[0] );
+                        //output += "}\n";
                         break;
                     case BlockType.ifBlock:
-                        output += "if {";
-                        output += CreateCommand( blockInfo.refField[0] );
-                        output += "} else {";
-                        output += CreateCommand( blockInfo.refField[1] );
-                        output += "}";
+                        type = "if";
+                        infos.Add( CreateCommand( blockInfo.refField[0] ) );
+                        infos.Add( CreateCommand( blockInfo.refField[1] ) );
+                        //output += "if {";
+                        //output += CreateCommand( blockInfo.refField[0] );
+                        //output += "} else {";
+                        //output += CreateCommand( blockInfo.refField[1] );
+                        //output += "}";
                         break;
                     case BlockType.moveBlock:
+                        type = "move";
+                        infos.Add( blockInfo.refField[0].GetComponent<TMP_Dropdown>().value );
+                        if ( blockInfo.refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid.childCount > 0 ) {
+                            infos.Add( blockInfo.refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid.GetChild( 0 ).GetChild( 1 ).GetComponent<TMP_Text>().text );
+                        }
+                        else {
+                            infos.Add( blockInfo.refField[1].GetComponent<ValueBlockSwap>().inputField.GetComponent<TMP_InputField>().text );
+                        }
                         //output += "move " + blockInfo.refField[0].GetComponent<TMP_Dropdown>().value + " " + blockInfo.refField[1].GetComponent<TMP_InputField>().text + "\n";
                         break;
                 }
+
+                commands.Add( new Tuple<string, List<object>>( type, infos ) );
             }
         }
 
-        return output;
+        return commands;
     }
 
     public void BlockGridBlockRaycast( bool enable ) {
@@ -142,6 +234,9 @@ public class GameManager : MonoBehaviour
                 break;
             case BlockType.valueBlock:
                 blockPrefab = valueBlockPrefab;
+                break;
+            case BlockType.moveBlock:
+                blockPrefab = moveBlockPrefab;
                 break;
         }
         return blockPrefab;
