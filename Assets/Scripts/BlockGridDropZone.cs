@@ -78,12 +78,12 @@ public class BlockGridDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandl
                     nextBlockGridDropZone.blockGridInfo.priority = blockGridInfo.priority + 1;
                     nextBlockGridDropZone.PriorityGiving();
                     break;
-                case BlockType.moveBlock:
-                    nextBlockGrid = child.GetComponent<BlockInfo>().refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid;
-                    nextBlockGridDropZone = nextBlockGrid.GetComponent<BlockGridDropZone>();
-                    nextBlockGridDropZone.blockGridInfo.priority = blockGridInfo.priority + 1;
-                    nextBlockGridDropZone.PriorityGiving();
-                    break;
+                //case BlockType.moveBlock:
+                //    nextBlockGrid = child.GetComponent<BlockInfo>().refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid;
+                //    nextBlockGridDropZone = nextBlockGrid.GetComponent<BlockGridDropZone>();
+                //    nextBlockGridDropZone.blockGridInfo.priority = blockGridInfo.priority + 1;
+                //    nextBlockGridDropZone.PriorityGiving();
+                //    break;
             }
         }
     }

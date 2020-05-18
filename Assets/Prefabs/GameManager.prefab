@@ -64,9 +64,13 @@ MonoBehaviour:
     type: 3}
   playerPrefab: {fileID: 3549163637569941331, guid: c87ddc4756fb50b4c99bc5123ef0107c,
     type: 3}
+  boxPrefab: {fileID: 3991038437378572142, guid: a182352dec8b2e84bbc2bd81a86e612f,
+    type: 3}
   gameBoard: {fileID: 0}
   gameView: {fileID: 0}
   gameEnv: 
+  matHighLight: {fileID: 2100000, guid: 4dd5e47114ba2344196201511477fefa, type: 2}
+  matRedHighLight: {fileID: 2100000, guid: b208a1414c44d8d49b7c9113a148b390, type: 2}
   blockGrids: []
   blockGridsUnderPointer: []
   player: {fileID: 0}
