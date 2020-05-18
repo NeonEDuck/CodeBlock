@@ -6,10 +6,10 @@
 }
 
 body {
-  background: #FFFFFF;
 	font-family: 'Abel', sans-serif;
 	font-size: 18px;
 	color: #5B5B5B;
+	background-color: #85CCE7;
 }
 
 .h1,h2,h3{
@@ -28,8 +28,8 @@ a {
   display: grid;
   height: 100vh;
   width: 100vw;
-  grid-template-columns: 200px 110px 370px 370px 370px 110px 200px;
-  grid-template-rows: 95px 350px 500px 400px 100px;
+  grid-template-columns: 330px 110px 370px 370px 370px 110px 330px;
+  grid-template-rows: 93px 350px 500px 400px 100px;
   column-gap: 10px;
   row-gap: 10px;
   grid-template-areas: 
@@ -37,8 +37,8 @@ a {
   "non non content content content no no"
   "non non col1 col2 col3 no no"
   "non non page page page no no"
-  "non non footer footer footer no no";
-  background-image:url(../images/ground.jpg);
+  "footer footer footer footer footer footer footer";
+  background-image:url(../images/img01.jpg);
 }
 
 .content{
@@ -64,7 +64,6 @@ a {
 }
 
 .nav-tabs{
-  background-image: url(../images/Light.jpg);
 	list-style:none;
   height:80px;
   grid-area: nav;
@@ -107,13 +106,13 @@ a {
 }
 
 .column1{
-  background-color:#FFF5EA;
+  background-color:#FFE8B8;
   grid-area: col1;
   border-radius: 10px;
 }
 
 .column2{
-  background-color:#FFF5EA;
+  background-color:#FFE8B8;
   grid-area: col2;
   border-radius: 10px;
 }
@@ -121,7 +120,7 @@ a {
 .column3{
   grid-area: col3;
   border-radius: 10px;
-  background-color:#FFF5EA;
+  background-color:#FFE8B8;
   font-family: Microsoft JhengHei;
 }
 
@@ -144,12 +143,14 @@ a {
 
 .page{
   grid-area: page;
+  background-image: url(../images/simp.jpg);
+  border-radius: 10px;
 }
 
 #page {
 	margin: 0 auto;
 	padding: 30px 0px;
-	background: #FFFFFF;
+	
 }
 
 .post .entry {
@@ -188,5 +189,4 @@ a {
 .footer{
   background: url(../images/img01.jpg);
   grid-area: footer;
-  border-radius: 10px;
 }
