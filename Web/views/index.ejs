@@ -1,87 +1,84 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <style>
-      img{
-        border-radius:10px;
-      }
-    </style>
+
+<head>
     <title><%= title %></title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
-  </head>
-  <body>
+</head>
+
+<body>
     <div class="container">
-      <div class="logo">
-        <h1><a href="index.ejs"><span style="color: black;">Code</span><span style="color: black;">Block</span></a></h1>
-      </div>
-        <div class="nav-tabs">
-        <div id="menu">
-          <ul>
+        <div class="logo">
+            <a href="index.ejs"><img src="/images/Logo.svg"></a>
+        </div>
+        <ul class="nav-tabs">
             <li class="current_page_item"><a href="#">首頁</a></li>
             <li><a href="#">介紹</a></li>
             <li><a href="#">進入遊戲</a></li>
             <li><a href="#">關於我們</a></li>
             <li><a href="#">帳號</a></li>
-          </ul>
-        </div>
-        </div>
+        </ul>
 
         <div class="content">
-          <img src="/images/ocean.jpg" width="1130" height="350">
 
-          <div class="column-container">
-                
-            <div class="column">
-              <h2>自製關卡</h2>
-              <img src="images/img06.jpg" width="300" height="150" alt="" />
-              <p>此功能可讓同學自行設計關，擁有極高的自由度，可以讓玩家嘗試各式各樣的邏輯組合排列，既能幫助邏輯思考，也因為會記錄通關時間和使用所使用之物件數量，能用於和同學之間的競賽，以達到良好競爭的風氣。 </p>
-              <a href="#">更多</a>
-            </div>
-            <div class="column">
-              <h2>前言</h2>
-              <img src="images/img07.jpg" width="300" height="150" alt="" />
-              <p>在108年的十二年國教新課綱，國小階段的初階程式設計課程，並沒有被規劃在固定的學習時數；
-                所以，重視升學考試科目的學生以及家長，開始求助學校體制外的補習班業者，進行學習兒童程式設計課程。
-                因此，本組將進行規畫運用Unity開發一款CodeBlock積木遊戲，
-                將遊戲和程式設計的知識內容進行結合，讓學生透過玩遊戲學程式的方式，
-                引起學生對於程式設計的興趣，並提升學生的學習動機、邏輯思維、問題解決、以及創新思考能力，
-                幫助學生能夠輕鬆了解如何運用運算思維來解決遊戲情境中的問題，未來也能夠順利銜接進階程式設計課程。
-                </p>
-              <a href="#">更多</a>
-            </div>
-            <div class="column">
-              <h2>技術平台</h2>
-              <img src="images/img08.jpg" width="300" height="150" alt="" />
-              <p>由於Codeblock積木遊戲，是需要以2D進行遊戲開發，
-                因此，選擇Unity作為跨平台APP的技術開發。
-                而且，Unity 較為專業和穩定，而且處理效率高，還可以將一次的編碼，
-                再作多個平台使用(例如：Web、PC、Mac、Android、iOS)，提供人性化的操作介面，
-                和網路多人連線的功能，以及縮短開發的時間與減少成本；
-                也就是說，即使運用不同的行動載具，也能輕鬆的開啟CodeBlock積木遊戲進行學習。</p>
-              <a href="#">更多</a>
-            </div>
-          </div>
-        </div>
-        
 
-        <div class="page">
-          <div class="post">
-            <h2 class="title"><a href="#">歡迎來到COdeBlock</a></h2>
-            <div class="entry">
-              <p>這裡是<strong>CodeBlock</strong>希望大家都玩得開心</p>
-              <p class="links"><a href="#" class="more">更多</a><a href="#" title="b0x" class="comments">回應</a></p>
+            <img src="/images/ocean.jpg" width="100%" height="350">
+
+
+            <div class="column-container">
+
+                <div class="column">
+                    <h2>自製關卡</h2>
+                    <img src="images/img06.jpg" alt="" />
+                    <p>此功能可讓同學自行設計關，擁有極高的自由度，可以讓玩家嘗試各式各樣的邏輯組合排列，既能幫助邏輯思考，也因為會記錄通關時間和使用所使用之物件數量，能用於和同學之間的競賽，以達到良好競爭的風氣。
+                    </p>
+                    <a href="#">更多</a>
+                </div>
+
+                <div class="column">
+                    <h2>前言</h2>
+                    <img src="images/img07.jpg" alt="" />
+                    <p>在108年的十二年國教新課綱，國小階段的初階程式設計課程，並沒有被規劃在固定的學習時數；
+                        所以，重視升學考試科目的學生以及家長，開始求助學校體制外的補習班業者，進行學習兒童程式設計課程。
+                        因此，本組將進行規畫運用Unity開發一款CodeBlock積木遊戲，
+                        將遊戲和程式設計的知識內容進行結合，讓學生透過玩遊戲學程式的方式，
+                        引起學生對於程式設計的興趣，並提升學生的學習動機、邏輯思維、問題解決、以及創新思考能力，
+                        幫助學生能夠輕鬆了解如何運用運算思維來解決遊戲情境中的問題，未來也能夠順利銜接進階程式設計課程。
+                    </p>
+                    <a href="#">更多</a>
+                </div>
+
+                <div class="column">
+                    <h2>技術平台</h2>
+                    <img src="images/img08.jpg" alt="" />
+                    <p>由於Codeblock積木遊戲，是需要以2D進行遊戲開發，
+                        因此，選擇Unity作為跨平台APP的技術開發。
+                        而且，Unity 較為專業和穩定，而且處理效率高，還可以將一次的編碼，
+                        再作多個平台使用(例如：Web、PC、Mac、Android、iOS)，提供人性化的操作介面，
+                        和網路多人連線的功能，以及縮短開發的時間與減少成本；
+                        也就是說，即使運用不同的行動載具，也能輕鬆的開啟CodeBlock積木遊戲進行學習。</p>
+                    <a href="#">更多</a>
+                </div>
             </div>
+
         </div>
 
-      </div>
 
-      
+        <div class="post">
+            <h2 class="title"><a href="#">歡迎來到CodeBlock</a></h2>
+            <p>這裡是<strong>CodeBlock</strong>希望大家都玩得開心</p>
+            <a href="#" class="button">更多</a>
+            <a href="#" class="button">回應</a>
+        </div>
 
-      <footer class="footer">
-        <font color="white"> © UNTITLED. ALL RIGHTS RESERVED. IMAGES BY FOTOGRPH. DESIGN BY TEMPLATED.</font>
-      </footer>
 
-  </div>
-  
-  </body>
+
+        <footer class="footer">
+            <font color="white"> © UNTITLED. ALL RIGHTS RESERVED. IMAGES BY FOTOGRPH. DESIGN BY TEMPLATED.</font>
+        </footer>
+
+    </div>
+
+</body>
+
 </html>
