@@ -53,12 +53,15 @@ a {
   width: 100%;
   -ms-grid-columns: 15em minmax(0, 1fr) 15em;
       grid-template-columns: 15em minmax(0, 1fr) 15em;
-  -ms-grid-rows: 93px auto auto 100px;
-      grid-template-rows: 93px auto auto 100px;
+  -ms-grid-rows: 6em auto auto 6em;
+      grid-template-rows: 6em auto auto 6em;
   -webkit-column-gap: 10px;
           column-gap: 10px;
   row-gap: 10px;
-      grid-template-areas: "logo nav no" "non content no" "non post no" "footer footer footer";
+      grid-template-areas: "logo nav no"
+ "non content no"
+ "non post no"
+ "footer footer footer";
   background-image: url(../images/img01.jpg);
 }
 
@@ -66,6 +69,41 @@ a {
   -ms-grid-row: 2;
   -ms-grid-column: 2;
   grid-area: content;
+  min-height: calc( 100vh - 6em - 6em);
+}
+
+.content .bookmark {
+  float: right;
+  font-size: 36px;
+  text-align: center;
+  border: 6px solid #FF7600;
+  border-radius: 5px 5px 20px 5px;
+  background-color: #FFB576;
+  position: absolute;
+  top: -10px;
+  left: 910px;
+  z-index: 1;
+  -webkit-transition: width 1s;
+  transition: width 1s;
+}
+
+.content .bookmark a {
+  color: #FFFFFF;
+  background: none;
+  -webkit-transition: background 0.25s ease-in-out,
+ color 0.25s ease-in-out;
+  transition: background 0.25s ease-in-out,
+ color 0.25s ease-in-out;
+ border-radius:0px;
+ height: 100%;
+}
+
+.content .bookmark a:hover {
+  text-decoration: none;
+  color: #FFFFFF;
+  background: #FF7600;
+  border-radius: 0px;
+  height: 100%;
 }
 
 .nav-tabs {
@@ -87,8 +125,10 @@ a {
   border-radius: 0.5em;
   color: #000000;
   background: none;
-  -webkit-transition: background 0.25s ease-in-out, color 0.25s ease-in-out;
-  transition: background 0.25s ease-in-out, color 0.25s ease-in-out;
+  -webkit-transition: background 0.25s ease-in-out,
+ color 0.25s ease-in-out;
+  transition: background 0.25s ease-in-out,
+ color 0.25s ease-in-out;
 }
 
 .nav-tabs a:hover, .nav-tabs .current_page_item a {
