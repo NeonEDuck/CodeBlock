@@ -104,12 +104,13 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
             }
             gameManager.blockGridsUnderPointer.Remove( transform.parent );
         }
-        gameManager.blockGridsUnderPointer.Remove( oldParent );
+        gameManager.blockGridsUnderPointer.Clear();
 
         gameManager.ResetAll();
     }
 
     public void OnDrag( PointerEventData eventData ) {
+
 
         // It's holding BlockGrid, move it up half of height ( BlockGrid's pivot point is on the top )
         target.position = eventData.position + pointerOffset + new Vector2(0f, rect.sizeDelta.y / 2);
@@ -121,11 +122,11 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         // placeHolderParent will be null if the cursor is not pointing to any BlockGrid
         if ( gameManager.blockGridsUnderPointer.Count != 0 ) {
 
-            int _p = 0;
+            int _p;
             int biggestPriority = -1;
 
             foreach ( Transform bg in gameManager.blockGridsUnderPointer ) {
-                if ( bg.GetComponent<BlockGridInfo>().priority > biggestPriority) {
+                if ( !bg.transform.IsChildOf( transform.parent ) && bg.GetComponent<BlockGridInfo>().priority > biggestPriority) {
                     _p = bg.GetComponent<BlockGridInfo>().priority;
                     placeHolderParent = bg;
                     biggestPriority = _p;
@@ -149,17 +150,20 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
             switch ( phpbt ) {
                 case BlockGridType.Block:
-                    if ( blockInfo.blockType == BlockType.valueBlock ) {
+                    Debug.Log( "Block" );
+                    if ( blockInfo.blockType == BlockType.valueBlock || blockInfo.blockType == BlockType.logicBlock ) {
                         goto jump_out;
                     }
                     break;
                 case BlockGridType.Value:
+                    Debug.Log( "Value" );
                     if ( blockInfo.blockType != BlockType.valueBlock ) {
                         goto jump_out;
                     }
                     break;
                 case BlockGridType.Logic:
-                    if ( blockInfo.blockType != BlockType.valueBlock ) {
+                    Debug.Log( "Logic" );
+                    if ( blockInfo.blockType != BlockType.logicBlock ) {
                         goto jump_out;
                     }
                     break;
@@ -181,9 +185,10 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
                     if ( phpc == placeHolder.transform ) continue;
                     // Desired location: where cursor is pointing > Block's center without connector (Block's center + connector's height/2)
                     if ( eventData.position.y > phpc.position.y + GameUtility.CONNECTOR_HEIGHT / 2 ) {
-
-                        if ( ( blockInfo.connectRule[0] == false && i > 0 ) || ( phpc.GetComponent<BlockInfo>().connectRule[0] == false ) ||
-                            ( blockInfo.connectRule[1] == false) || ( i > 0 && placeHolderParent.GetChild( i - 1 ).GetComponent<BlockInfo>().connectRule[1] == false ) ) {
+                        if ( ( blockInfo.connectRule[0] == false && i > 0 ) || 
+                            ( i < placeHolderParent.childCount && phpc.GetComponent<BlockInfo>().connectRule[0] == false ) ||
+                            ( blockInfo.connectRule[1] == false) || 
+                            ( i > 0 && placeHolderParent.GetChild( i - 1 ).GetComponent<BlockInfo>().connectRule[1] == false ) ) {
                             accessAllow = false;
                             break;
                         }
@@ -210,7 +215,9 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
                         if ( phplcbi.connectRule[0] == false ) {
                             accessAllow = false;
                         }
-                        gameManager.whichStack = placeHolderParent.childCount - 1;
+                        else {
+                            gameManager.whichStack = placeHolderParent.childCount - 1;
+                        }
                     }
                     if ( blockInfo.connectRule[0] == false ) {
                         accessAllow = false;
@@ -221,7 +228,7 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
                         gameManager.whichStack = -1;
                     }
                 }
-                connectRuleSkip:;
+            connectRuleSkip:;
 
             }
             else  {
@@ -237,7 +244,6 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
                 }
                 if ( gameManager.whichStack < placeHolderParent.childCount - 1 ) {
                     Transform phpc = placeHolderParent.GetChild( gameManager.whichStack + 1 );
-                    RectTransform phpcRect = phpc.GetComponent<RectTransform>();
                     if ( eventData.position.y < phpc.position.y - ( phpc.GetComponent<RectTransform>().sizeDelta.y / 2 - GameUtility.BLOCK_HEIGHT / 2 )  ) {
                         if ( blockInfo.connectRule[0] == true && phpc.GetComponent<BlockInfo>().connectRule[1] == true ) {
                             gameManager.whichStack++;
@@ -262,8 +268,7 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
             additional = false;
         }
 
-        jump_out:
-
+    jump_out:
         if (!accessAllow)
         {
             placeHolder.transform.SetParent( gameManager.gameBoard );

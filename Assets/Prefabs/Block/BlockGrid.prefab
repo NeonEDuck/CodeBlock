@@ -55,6 +55,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gameManager: {fileID: 0}
   blockGridInfo: {fileID: 4008343827892144461}
+  canvas: {fileID: 1657299636794140223}
 --- !u!114 &4008343827892144461
 MonoBehaviour:
   m_ObjectHideFlags: 0

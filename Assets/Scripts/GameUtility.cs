@@ -38,6 +38,7 @@ public enum BlockType
     beam,
     placeHolder,
     moveBlock,
+    logicBlock,
     other
 }
 public enum BlockGridType {

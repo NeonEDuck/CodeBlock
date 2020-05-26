@@ -10,6 +10,7 @@ public class BlockGridDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandl
     private RectTransform rect;
     public GameManager gameManager = null;
     public BlockGridInfo blockGridInfo = null;
+    public CanvasGroup canvas = null;
 
     void Awake() {
         gameManager = GameUtility.getGameManager();
@@ -17,6 +18,17 @@ public class BlockGridDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandl
             gameManager.blockGrids.Add( transform );
         }
         rect = GetComponent<RectTransform>();
+    }
+
+    private void Update() {
+        if ( transform.childCount == 0 && blockGridInfo.priority > 0 ) {
+            if ( gameManager.isDraging ) {
+                canvas.blocksRaycasts = true;
+            }
+            else {
+                canvas.blocksRaycasts = false;
+            }
+        } 
     }
 
     void Start() {
@@ -48,35 +60,22 @@ public class BlockGridDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandl
             Transform child = transform.GetChild( i );
 
             //Debug.Log( child.GetComponent<BlockInfo>().blockType );
-            Transform nextBlockGrid = null;
-            BlockGridDropZone nextBlockGridDropZone = null;
 
             switch ( child.GetComponent<BlockInfo>().blockType ) {
                 case BlockType.ifBlock:
                 case BlockType.forBlock:
+                    Debug.Log( child.GetComponent<BlockInfo>().refField.Count - 1 );
+                    ToTheNextPriority( child.GetComponent<BlockInfo>().refField[child.GetComponent<BlockInfo>().refField.Count-1].GetComponent<ValueBlockSwap>().valueBlockGrid );
                     for (int j = 1; j < child.childCount; j+=2 ) {
-                        nextBlockGrid = child.GetChild( j ).GetChild( 1 );
-                        nextBlockGridDropZone = nextBlockGrid.GetComponent<BlockGridDropZone>();
-                        nextBlockGridDropZone.blockGridInfo.priority = blockGridInfo.priority + 1;
-                        nextBlockGridDropZone.PriorityGiving();
+                        ToTheNextPriority( child.GetChild( j ).GetChild( 1 ) );
                     }
                     break;
                 case BlockType.setBlock:
-                    nextBlockGrid = child.GetComponent<BlockInfo>().refField[0].GetComponent<ValueBlockSwap>().valueBlockGrid;
-                    nextBlockGridDropZone = nextBlockGrid.GetComponent<BlockGridDropZone>();
-                    nextBlockGridDropZone.blockGridInfo.priority = blockGridInfo.priority + 1;
-                    nextBlockGridDropZone.PriorityGiving();
-
-                    nextBlockGrid = child.GetComponent<BlockInfo>().refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid;
-                    nextBlockGridDropZone = nextBlockGrid.GetComponent<BlockGridDropZone>();
-                    nextBlockGridDropZone.blockGridInfo.priority = blockGridInfo.priority + 1;
-                    nextBlockGridDropZone.PriorityGiving();
+                    ToTheNextPriority( child.GetComponent<BlockInfo>().refField[0].GetComponent<ValueBlockSwap>().valueBlockGrid );
+                    ToTheNextPriority( child.GetComponent<BlockInfo>().refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid );
                     break;
                 case BlockType.defineBlock:
-                    nextBlockGrid = child.GetComponent<BlockInfo>().refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid;
-                    nextBlockGridDropZone = nextBlockGrid.GetComponent<BlockGridDropZone>();
-                    nextBlockGridDropZone.blockGridInfo.priority = blockGridInfo.priority + 1;
-                    nextBlockGridDropZone.PriorityGiving();
+                    ToTheNextPriority( child.GetComponent<BlockInfo>().refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid );
                     break;
                 //case BlockType.moveBlock:
                 //    nextBlockGrid = child.GetComponent<BlockInfo>().refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid;
@@ -84,8 +83,18 @@ public class BlockGridDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandl
                 //    nextBlockGridDropZone.blockGridInfo.priority = blockGridInfo.priority + 1;
                 //    nextBlockGridDropZone.PriorityGiving();
                 //    break;
+                case BlockType.logicBlock:
+                    ToTheNextPriority( child.GetComponent<BlockInfo>().refField[0].GetComponent<ValueBlockSwap>().valueBlockGrid );
+                    ToTheNextPriority( child.GetComponent<BlockInfo>().refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid );
+                    break;
             }
         }
+    }
+
+    private void ToTheNextPriority( Transform nextBlockGrid ) {
+        BlockGridDropZone bgdz = nextBlockGrid.GetComponent<BlockGridDropZone>();
+        bgdz.blockGridInfo.priority = blockGridInfo.priority + 1;
+        bgdz.PriorityGiving();
     }
 
     private void OnDestroy() {
