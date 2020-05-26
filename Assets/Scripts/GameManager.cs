@@ -26,7 +26,7 @@ public class GameManager : MonoBehaviour {
     [Header( "MiniPrefab" )]
     public Transform gameBoard = null;
     public Transform gameView = null;
-    public short[] gameEnv; 
+    public string gameEnv; 
     [HideInInspector] 
     public MiniGameObject[,] gameEnv2d = new MiniGameObject[7,6];
 
@@ -46,6 +46,30 @@ public class GameManager : MonoBehaviour {
     public Transform preSelectedBlockGrids = null;
     private List<Dictionary<string, object>> gameVariableLists = new List<Dictionary<string, object>>();
 
+    public BlockLibrary blockLibrary = null;
+    public VariablesStorage variables = null;
+
+    public void Awake() {
+        if ( GameObject.FindGameObjectWithTag( "VariablesStorage" ) != null ) {
+            variables = GameObject.FindGameObjectWithTag( "VariablesStorage" ).GetComponent<VariablesStorage>();
+        }
+        if ( blockLibrary == null && GameObject.FindGameObjectWithTag( "BlockLibrary" ) != null ) {
+            blockLibrary = GameObject.FindGameObjectWithTag( "BlockLibrary" ).GetComponent<BlockLibrary>();
+        }
+
+        if ( variables != null && blockLibrary != null ) {
+            var jsonO = MiniJSON.Json.Deserialize( variables.levelJson ) as Dictionary< string, object >;
+
+            gameEnv = jsonO["gameEnv"] as string;
+            gameEnv = gameEnv.Replace( "\n", "" );
+
+            foreach ( KeyValuePair<string, object> kvp in jsonO["blocksList"] as Dictionary<string, object> ) {
+                Debug.Log( kvp.Key + ":" + kvp.Value );
+            }
+
+        }
+        ResetGameView();
+    }
 
     public void ResetGameView() {
         player = null;
@@ -58,18 +82,22 @@ public class GameManager : MonoBehaviour {
             for ( int i = 0; i < gameEnv.Length; i++ ) {
                 Transform spawn = null;
                 switch ( gameEnv[i] ) {
-                    case 0:
+                    case '0':
+                    case 'x':
                         break;
-                    case 1:
+                    case '1':
+                    case 'o':
                         spawn = Instantiate( obstaclePrefab, gameView ).transform;
                         break;
-                    case 2:
+                    case '2':
+                    case 'p':
                         if ( player == null ) {
                             spawn = Instantiate( playerPrefab, gameView ).transform;
                             player = spawn;
                         }
                         break;
-                    case 3:
+                    case '3':
+                    case 'b':
                         spawn = Instantiate( boxPrefab, gameView ).transform;
                         break;
                 }

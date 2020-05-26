@@ -15,6 +15,7 @@ public class LevelInfoPanel : MonoBehaviour {
     public string levelName = "";
     public string levelDesc = "";
     public string levelCreator = "";
+    public string levelJson = "";
 
     public bool pullOutState = false;
     private float pullAnimationStart = -1f;
@@ -53,10 +54,11 @@ public class LevelInfoPanel : MonoBehaviour {
         levelInfoPanelManager.AddOrRemovePanel( ( add ) ? levelId : -1 );
     }
 
-    public void SetInfo( (string, string, string) info ) {
+    public void SetInfo( (string, string, string, string) info ) {
         levelName = info.Item1;
         levelDesc = info.Item2;
         levelCreator = info.Item3;
+        levelJson = info.Item4;
         DisplayInfo();
     }
     public void DisplayInfo() {
@@ -67,6 +69,7 @@ public class LevelInfoPanel : MonoBehaviour {
 
     public void EnterLevel() {
         GameObject.FindGameObjectWithTag("VariablesStorage").GetComponent<VariablesStorage>().levelId = levelId;
+        GameObject.FindGameObjectWithTag( "VariablesStorage" ).GetComponent<VariablesStorage>().levelJson = levelJson;
         SceneManager.LoadScene( "SampleScene" );
     }
 }

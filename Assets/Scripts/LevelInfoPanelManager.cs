@@ -9,11 +9,11 @@ public class LevelInfoPanelManager : MonoBehaviour {
     public LevelInfoPanel gameInfoPanelPrefab = null;
     public Transform parentCanvas = null;
 
-    public Dictionary<int, (string, string, string)> levelsInfo = new Dictionary<int, (string, string, string)>();
+    public Dictionary<int, (string, string, string, string)> levelsInfo = new Dictionary<int, (string, string, string, string)>();
 
     void Start() {
-        levelsInfo.Add( 1, ( "First Level", "Lorem ipsum dolor sit amet, orci erat morbi interdum erat, nibh wisi erat. Sed nulla urna, at vel, vitae aliquam imperdiet placerat scelerisque.", "Creator1") );
-        levelsInfo.Add( 2, ( "Second Level", "Quis nullam massa eleifend egestas donec massa, velit dui accumsan, augue vivamus.", "Creator2") );
+        levelsInfo.Add( 1, ( "First Level", "Lorem ipsum dolor sit amet, orci erat morbi interdum erat, nibh wisi erat. Sed nulla urna, at vel, vitae aliquam imperdiet placerat scelerisque.", "Creator1", "{\"blocksList\":{\"StartBlock\":1, \"SetBlock\":1}, \"gameEnv\":\"001001010010001000100013120000000001000100\"}") );
+        levelsInfo.Add( 2, ( "Second Level", "Quis nullam massa eleifend egestas donec massa, velit dui accumsan, augue vivamus.", "Creator2", "{\"blocksList\":{\"StartBlock\":1, \"SetBlock\":1}, \"gameEnv\":\"001001010010001000100013120000000001000100\"}") );
     }
 
     public void AddOrRemovePanel( int id ) {
