@@ -62,19 +62,19 @@ public class BlockGridDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandl
             //Debug.Log( child.GetComponent<BlockInfo>().blockType );
 
             switch ( child.GetComponent<BlockInfo>().blockType ) {
-                case BlockType.ifBlock:
-                case BlockType.forBlock:
+                case BlockType.IfBlock:
+                case BlockType.ForBlock:
                     Debug.Log( child.GetComponent<BlockInfo>().refField.Count - 1 );
                     ToTheNextPriority( child.GetComponent<BlockInfo>().refField[child.GetComponent<BlockInfo>().refField.Count-1].GetComponent<ValueBlockSwap>().valueBlockGrid );
                     for (int j = 1; j < child.childCount; j+=2 ) {
                         ToTheNextPriority( child.GetChild( j ).GetChild( 1 ) );
                     }
                     break;
-                case BlockType.setBlock:
+                case BlockType.SetBlock:
                     ToTheNextPriority( child.GetComponent<BlockInfo>().refField[0].GetComponent<ValueBlockSwap>().valueBlockGrid );
                     ToTheNextPriority( child.GetComponent<BlockInfo>().refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid );
                     break;
-                case BlockType.defineBlock:
+                case BlockType.DefineBlock:
                     ToTheNextPriority( child.GetComponent<BlockInfo>().refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid );
                     break;
                 //case BlockType.moveBlock:
@@ -83,7 +83,7 @@ public class BlockGridDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandl
                 //    nextBlockGridDropZone.blockGridInfo.priority = blockGridInfo.priority + 1;
                 //    nextBlockGridDropZone.PriorityGiving();
                 //    break;
-                case BlockType.logicBlock:
+                case BlockType.LogicBlock:
                     ToTheNextPriority( child.GetComponent<BlockInfo>().refField[0].GetComponent<ValueBlockSwap>().valueBlockGrid );
                     ToTheNextPriority( child.GetComponent<BlockInfo>().refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid );
                     break;
@@ -111,7 +111,7 @@ public class BlockGridDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandl
         for ( int i = 0; i < transform.childCount; i++ ) {
             Transform child = transform.GetChild( i );
             switch ( child.GetComponent<BlockInfo>().blockType ) {
-                case BlockType.forBlock:
+                case BlockType.ForBlock:
                     child.GetChild( 1 ).GetChild( 1 ).GetComponent<BlockGridDropZone>().Resize();
                     break;
             }

@@ -63,10 +63,13 @@ public class GameManager : MonoBehaviour {
             gameEnv = jsonO["gameEnv"] as string;
             gameEnv = gameEnv.Replace( "\n", "" );
 
-            foreach ( KeyValuePair<string, object> kvp in jsonO["blocksList"] as Dictionary<string, object> ) {
-                Debug.Log( kvp.Key + ":" + kvp.Value );
-            }
+            Dictionary<int, (BlockType, int)> dict = new Dictionary<int, (BlockType, int)>();
 
+            foreach ( KeyValuePair<string, object> kvp in jsonO["blocksList"] as Dictionary<string, object> ) {
+                //dict[dict.Count] = ( GameUtility.StringToBlockType( kvp.Key.ToString() ), (int)kvp.Value );
+                dict[dict.Count] = ( GameUtility.StringToBlockType( kvp.Key.ToString()), int.Parse( kvp.Value.ToString() ) );
+            }
+            blockLibrary.blockList = dict;
         }
         ResetGameView();
     }
@@ -258,11 +261,11 @@ public class GameManager : MonoBehaviour {
                 string type = "";
                 List<object> infos = new List<object>();
                 switch ( blockInfo.blockType ) {
-                    case BlockType.startBlock:
+                    case BlockType.StartBlock:
                         type = "start";
                         break;
 
-                    case BlockType.defineBlock:
+                    case BlockType.DefineBlock:
                         type = "define";
                         if ( blockInfo.refField[0].GetComponent<TMP_InputField>().text == "" ) {
                             infos.Add( null );
@@ -279,7 +282,7 @@ public class GameManager : MonoBehaviour {
                         }
                         break;
 
-                    case BlockType.setBlock:
+                    case BlockType.SetBlock:
                         type = "set";
                         if ( blockInfo.refField[0].GetComponent<ValueBlockSwap>().valueBlockGrid.childCount == 0 ) {
                             infos.Add( null );
@@ -296,18 +299,18 @@ public class GameManager : MonoBehaviour {
                         }
                         break;
 
-                    case BlockType.forBlock:
+                    case BlockType.ForBlock:
                         type = "for";
                         infos.Add( CreateCommand( blockInfo.refField[0] ) );
                         break;
 
-                    case BlockType.ifBlock:
+                    case BlockType.IfBlock:
                         type = "if";
                         infos.Add( CreateCommand( blockInfo.refField[0] ) );
                         infos.Add( CreateCommand( blockInfo.refField[1] ) );
                         break;
 
-                    case BlockType.moveBlock:
+                    case BlockType.MoveBlock:
                         type = "move";
                         infos.Add( blockInfo.refField[0].GetComponent<TMP_Dropdown>().value );
                         break;
@@ -366,25 +369,25 @@ public class GameManager : MonoBehaviour {
 
         GameObject blockPrefab = null;
         switch ( blockType ) {
-            case BlockType.setBlock:
+            case BlockType.SetBlock:
                 blockPrefab = setBlockPrefab;
                 break;
-            case BlockType.defineBlock:
+            case BlockType.DefineBlock:
                 blockPrefab = defineBlockPrefab;
                 break;
-            case BlockType.forBlock:
+            case BlockType.ForBlock:
                 blockPrefab = forBlockPrefab;
                 break;
-            case BlockType.ifBlock:
+            case BlockType.IfBlock:
                 blockPrefab = ifBlockPrefab;
                 break;
-            case BlockType.startBlock:
+            case BlockType.StartBlock:
                 blockPrefab = startBlockPrefab;
                 break;
-            case BlockType.valueBlock:
+            case BlockType.ValueBlock:
                 blockPrefab = valueBlockPrefab;
                 break;
-            case BlockType.moveBlock:
+            case BlockType.MoveBlock:
                 blockPrefab = moveBlockPrefab;
                 break;
         }

@@ -7,11 +7,14 @@ using UnityEngine;
 public class BlockSpawner : MonoBehaviour
 {
     public GameManager gameManager;
-    public BlockType blockType = BlockType.setBlock;
+    public BlockType blockType = BlockType.SetBlock;
     public bool trigger = true;
+    public int maxCount = 0;
+    private int cnt = 0;
     private Dictionary<string, string> args = new Dictionary<string, string>();
     private GameObject blockPrefab;
     private Transform blockGrid;
+    private TMP_Text count;
     private List<Transform> blocks = new List<Transform>();
 
     void Awake() {
@@ -22,10 +25,17 @@ public class BlockSpawner : MonoBehaviour
     }
 
     void Start() {
+        cnt = maxCount;
         blockPrefab = gameManager.getBlockPrefab( blockType );
 
         if ( transform.childCount != 0 ) {
             blockGrid = transform.GetChild( 0 );
+            count = transform.GetChild( 1 ).GetComponent<TMP_Text>();
+        }
+        Debug.Log( maxCount );
+
+        if ( maxCount == 0 ) {
+            transform.GetChild( 1 ).gameObject.SetActive( false );
         }
 
         Vector2 size = blockPrefab.GetComponent<RectTransform>().sizeDelta;
@@ -37,8 +47,10 @@ public class BlockSpawner : MonoBehaviour
 
     void Update()
     {
+        blocks.RemoveAll( item => item == null );
+        cnt = maxCount - blocks.Count;
         if ( trigger ) {
-            if ( blockGrid.childCount == 0 && !gameManager.isDraging ) {
+            if ( ( maxCount == 0 || cnt > 0 ) && blockGrid.childCount == 0 && !gameManager.isDraging ) {
                 Transform block = Instantiate( blockPrefab ).transform;
                 blocks.Add( block );
                 block.SetParent( blockGrid );
@@ -80,6 +92,7 @@ public class BlockSpawner : MonoBehaviour
                 Destroy( blockGrid.GetChild( 0 ).gameObject );
             }
         }
+        count.text = ( cnt + ( ( blockGrid.childCount == 0 )? 0:1 ) ).ToString();
     }
 
     public void ModifyArgs( string key, string value ) {

@@ -151,19 +151,19 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
             switch ( phpbt ) {
                 case BlockGridType.Block:
                     Debug.Log( "Block" );
-                    if ( blockInfo.blockType == BlockType.valueBlock || blockInfo.blockType == BlockType.logicBlock ) {
+                    if ( blockInfo.blockType == BlockType.ValueBlock || blockInfo.blockType == BlockType.LogicBlock ) {
                         goto jump_out;
                     }
                     break;
                 case BlockGridType.Value:
                     Debug.Log( "Value" );
-                    if ( blockInfo.blockType != BlockType.valueBlock ) {
+                    if ( blockInfo.blockType != BlockType.ValueBlock ) {
                         goto jump_out;
                     }
                     break;
                 case BlockGridType.Logic:
                     Debug.Log( "Logic" );
-                    if ( blockInfo.blockType != BlockType.logicBlock ) {
+                    if ( blockInfo.blockType != BlockType.LogicBlock ) {
                         goto jump_out;
                     }
                     break;

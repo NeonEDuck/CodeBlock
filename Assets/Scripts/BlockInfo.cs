@@ -7,14 +7,14 @@ using UnityEngine.UI;
 public class BlockInfo : MonoBehaviour
 {
 
-    public BlockType blockType = BlockType.setBlock;
+    public BlockType blockType = BlockType.SetBlock;
     public List<Transform> refField;
     public bool[] connectRule = { true, true };
 
     void Start() {
         switch ( blockType ) {
-            case BlockType.ifBlock:
-            case BlockType.forBlock:
+            case BlockType.IfBlock:
+            case BlockType.ForBlock:
                 for ( int i = 1; i < transform.childCount; i += 2 ) {
                     transform.GetChild( i - 1 ).GetChild( 0 ).GetComponent<Image>().alphaHitTestMinimumThreshold = 0.5f;
                     transform.GetChild( i ).GetChild( 0 ).GetChild( 0 ).GetComponent<Image>().alphaHitTestMinimumThreshold = 0.5f;
@@ -22,7 +22,7 @@ public class BlockInfo : MonoBehaviour
 
                 transform.GetChild( transform.childCount - 1 ).GetChild( 0 ).GetComponent<Image>().alphaHitTestMinimumThreshold = 0.5f;
                 break;
-            case BlockType.placeHolder:
+            case BlockType.PlaceHolder:
                 break;
             default:
                 transform.GetChild( 0 ).GetComponent<Image>().alphaHitTestMinimumThreshold = 0.5f;

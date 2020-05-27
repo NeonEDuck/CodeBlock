@@ -24,22 +24,31 @@ public static class GameUtility
         }
         return gameManager;
     }
+
+    static public BlockType StringToBlockType( string s ) {
+        BlockType blockType = BlockType.Other;
+        if ( Enum.TryParse( s, out BlockType bt ) ) {
+            blockType = bt;
+        }
+        //BlockType item = (BlockType)Enum.Parse( typeof( BlockType ), s, false );
+        return blockType;
+    }
 };
 public enum BlockType
 {
-    setBlock,
-    defineBlock,
-    forBlock,
-    ifBlock,
-    endForBlock,
-    endIfBlock,
-    startBlock,
-    valueBlock,
-    beam,
-    placeHolder,
-    moveBlock,
-    logicBlock,
-    other
+    SetBlock,
+    DefineBlock,
+    ForBlock,
+    IfBlock,
+    EndForBlock,
+    EndIfBlock,
+    StartBlock,
+    ValueBlock,
+    Beam,
+    PlaceHolder,
+    MoveBlock,
+    LogicBlock,
+    Other
 }
 public enum BlockGridType {
     Block,

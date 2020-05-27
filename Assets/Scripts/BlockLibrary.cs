@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 public class BlockLibrary : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler {
     public GameManager gameManager;
     public Transform content;
-    public List<BlockType> blockList;
+    public Dictionary<int, (BlockType, int)> blockList;
 
     void Awake() {
         if ( gameManager == null ) {
@@ -17,12 +17,13 @@ public class BlockLibrary : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     void Start() {
 
         float height = 0f;
-        foreach ( BlockType block in blockList ) {
+        foreach ( KeyValuePair<int, (BlockType, int)> block in blockList ) {
             Transform spawner = Instantiate( gameManager.spawnerPrefab ).transform;
             spawner.SetParent( content );
             spawner.localScale = Vector3.one;
-            spawner.GetComponent<BlockSpawner>().blockType = block;
-            height += gameManager.getBlockPrefab( block ).GetComponent<RectTransform>().sizeDelta.y;
+            spawner.GetComponent<BlockSpawner>().blockType = block.Value.Item1;
+            spawner.GetComponent<BlockSpawner>().maxCount = block.Value.Item2;
+            height += gameManager.getBlockPrefab( block.Value.Item1 ).GetComponent<RectTransform>().sizeDelta.y;
         }
         height += ( blockList.Count + 1 ) * 24f;
 
