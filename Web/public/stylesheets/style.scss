@@ -1,3 +1,6 @@
+$header-height: 6em;
+$footer-height: 6em;
+
 * {
     margin: 0px;
     padding: 0px;
@@ -43,7 +46,7 @@ a {
     display: grid;
     width: 100%;
     grid-template-columns: 15em minmax(0, 1fr) 15em;
-    grid-template-rows: 93px auto auto 100px;
+    grid-template-rows: $header-height auto auto $footer-height;
     column-gap: 10px;
     row-gap: 10px;
     grid-template-areas: 
@@ -56,8 +59,43 @@ a {
   
 .content{
     grid-area: content;
+    min-height: calc( 100vh - #{$header-height} - #{$footer-height} );
+
+
+    .bookmark{
+        float: right;
+        font-size: 32px;
+        text-align: center;
+        border: 6px solid #FF7600;
+        border-radius: 5px 5px 20px 5px;
+        background-color: #FFB576;
+        position:absolute;
+        top:-15px;
+        left:910px;
+        z-index: 1;
+        transition:width 1s;
+        width: 100%;
+        height: 100%;
+
+        li{
+            border-radius: 0.5em;
+            color: #ffffff;
+            background: none;
+            transition: background 0.25s ease-in-out,
+            color 0.25s ease-in-out;
+            border-radius: 5px 5px 20px 5px;
+        }
+        li:hover{
+            text-decoration: none;
+            color: #FFFFFF;
+            background: #FF7600;
+            border-radius: 5px 5px 20px 5px;
+        }
+    }
 }
-  
+
+
+
 .nav-tabs {
     list-style:none;
     padding:0;
@@ -71,7 +109,7 @@ a {
         color: #000000;
         background: none;
         transition: background 0.25s ease-in-out,
-                    color 0.25s ease-in-out;
+        color 0.25s ease-in-out;
     }
 
     a:hover, .current_page_item a {
