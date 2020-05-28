@@ -11,14 +11,26 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var gameRouter = require('./routes/game');
-var loginRouter = require('./routes/login');
+var user_login_form = require('./routes/user_login_form');
 var user_register_form = require('./routes/user_register_form');
 var user_register = require('./routes/user_register');
 var user_register_sucess = require('./routes/user_register_sucess');
 var user_register_fail = require('./routes/user_register_fail');
 var user_register_fail_error = require('./routes/user_register_fail_error');
 
+
+var login_fail = require('./routes/login_fail');
+var user_login = require('./routes/user_login');
+var user_logout = require('./routes/user_logout');
+var user_show = require('./routes/user_show');
+
 var app = express();
+//--------------------------------------------------------------------
+// 增加引用express-session
+//--------------------------------------------------------------------
+var session = require('express-session');
+app.use(session({secret: 'asd', cookie: { maxAge: 60000 }}));
+//--------------------------------------------------------------------
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -35,12 +47,17 @@ app.use(express.static(path.join(__dirname, 'public')));
 //-----------------------------------------
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/login', loginRouter);
+app.use('/user_login_form', user_login_form);
 app.use('/user_register_form', user_register_form);
 app.use('/user_register', user_register);
 app.use('/user_register_sucess', user_register_sucess);
 app.use('/user_register_fail', user_register_fail);
 app.use('/user_register_fail_error', user_register_fail_error);
+
+app.use('/user/login_fail', login_fail);
+app.use('/user/login', user_login);
+app.use('/user/logout', user_logout);
+app.use('/user/show', user_show);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
