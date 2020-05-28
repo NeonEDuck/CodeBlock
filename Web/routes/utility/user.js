@@ -39,5 +39,24 @@ var id_check = async function(player_name){
     return result;
 }
 
+var login = async function(player_name, password){   
+    var result;
+
+    //取得員工資料
+    await sql('SELECT * FROM player WHERE player_name=$1 and password=$2', [player_name, password])
+        .then((data) => {
+            if(data.rows.length > 0){
+                result = data.rows[0];
+            }else{
+                result = null;
+            } 
+        }, (error) => {
+            result = null;
+        });
+    
+    //回傳物件
+    return result;
+}
+
 //匯出
-module.exports = {register,id_check};
+module.exports = {register,id_check,login};
