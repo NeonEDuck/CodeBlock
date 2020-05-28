@@ -1,0 +1,82 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &8601110048307600535
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8601110048307600536}
+  - component: {fileID: 8601110048307600537}
+  m_Layer: 0
+  m_Name: GameManager
+  m_TagString: GameManager
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8601110048307600536
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8601110048307600535}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8601110048307600537
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8601110048307600535}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 147015beec23b9f4e973ae26d2e24553, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  blockGridPrefab: {fileID: 5208282125617268137, guid: 8c736d09eebc78045b680163778a9504,
+    type: 3}
+  setBlockPrefab: {fileID: 4021561308965321757, guid: afee32b93da527c46aaee73f34dc5e74,
+    type: 3}
+  defineBlockPrefab: {fileID: 7941319297712973768, guid: e06aea7798c88974599cdc79ae9ea63e,
+    type: 3}
+  forBlockPrefab: {fileID: 4807262259430838607, guid: 592cfc506e16b32409cbf7d1addc7351,
+    type: 3}
+  ifBlockPrefab: {fileID: 0}
+  startBlockPrefab: {fileID: 9029138380841669539, guid: 6a79cfd07ad725c4cac42344f6c99090,
+    type: 3}
+  valueBlockPrefab: {fileID: 729403028607370388, guid: 9d854628666544441a809e6db2809789,
+    type: 3}
+  moveBlockPrefab: {fileID: 1733049511104675455, guid: f54e37c59993cf244acc516d859b1d88,
+    type: 3}
+  spawnerPrefab: {fileID: 262286372814367248, guid: d042f5051cd4a4b4699ffb95669a5435,
+    type: 3}
+  obstaclePrefab: {fileID: 3376909157183936004, guid: bdc1108417042f24db874b970dcbf758,
+    type: 3}
+  playerPrefab: {fileID: 3549163637569941331, guid: c87ddc4756fb50b4c99bc5123ef0107c,
+    type: 3}
+  boxPrefab: {fileID: 3991038437378572142, guid: a182352dec8b2e84bbc2bd81a86e612f,
+    type: 3}
+  gameBoard: {fileID: 0}
+  gameView: {fileID: 0}
+  gameEnv: 
+  matHighLight: {fileID: 2100000, guid: 4dd5e47114ba2344196201511477fefa, type: 2}
+  matRedHighLight: {fileID: 2100000, guid: b208a1414c44d8d49b7c9113a148b390, type: 2}
+  blockGrids: []
+  blockGridsUnderPointer: []
+  player: {fileID: 0}
+  isDraging: 0
+  wannaTrash: 0
+  showTrashIcon: 1
+  gameStarted: 0
+  whichStack: 0
+  preSelectedBlockGrids: {fileID: 0}
