@@ -10,7 +10,6 @@ var logger = require('morgan');
 //------------------------------------------------------------
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-var gameRouter = require('./routes/game');
 var user_login_form = require('./routes/user_login_form');
 var user_register_form = require('./routes/user_register_form');
 var user_register = require('./routes/user_register');
@@ -23,6 +22,10 @@ var login_fail = require('./routes/login_fail');
 var user_login = require('./routes/user_login');
 var user_logout = require('./routes/user_logout');
 var user_show = require('./routes/user_show');
+
+
+var gameRouter = require('./routes/game');
+var sqlRouter = require('./routes/sql');
 
 var app = express();
 //--------------------------------------------------------------------
@@ -58,6 +61,10 @@ app.use('/user/login_fail', login_fail);
 app.use('/user/login', user_login);
 app.use('/user/logout', user_logout);
 app.use('/user/show', user_show);
+
+app.use('/game', gameRouter);
+app.use('/sql', sqlRouter);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

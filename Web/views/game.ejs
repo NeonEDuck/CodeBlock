@@ -8,9 +8,6 @@
     <link rel="stylesheet" href="/unity/TemplateData/style.css">
     <script src="/unity/TemplateData/UnityProgress.js"></script>
     <script src="/unity/Build/UnityLoader.js"></script>
-    <script>
-        var unityInstance = UnityLoader.instantiate("unityContainer", "/unity/Build/Web.json", {onProgress: UnityProgress});
-    </script>
 </head>
 
 <body>
@@ -42,8 +39,12 @@
         <footer class="footer">
             <font color="white"> © UNTITLED. ALL RIGHTS RESERVED. IMAGES BY FOTOGRPH. DESIGN BY TEMPLATED.</font>
         </footer>
-
+        <p id='json' hidden><%= json %></p>
     </div>
+
+    <script src="/vendor/jquery/jquery.min.js"></script>
+
+    <script type="text/javascript" src="/js/unityClient.js"></script>
 
 </body>
 
