@@ -28,15 +28,15 @@ public class NetworkManager : MonoBehaviour {
 
     }
 
-    public void SendData( string jsonstring ) {
-        jsonstring = Random.Range( 1, 1000 ).ToString();
-        Debug.Log( variablesStorage.hostname + "/sql?json=" + jsonstring );
-        StartCoroutine( GetRequest( variablesStorage.hostname + "/sql?json=" + jsonstring ) );
-    }
+    //public void SendData( string jsonstring ) {
+    //    jsonstring = Random.Range( 1, 1000 ).ToString();
+    //}
 
-    IEnumerator GetRequest( string uri ) {
-        Debug.Log( uri );
-        using ( UnityWebRequest webRequest = UnityWebRequest.Get( uri ) ) {
+   public IEnumerator GetRequest( string stmt, System.Action<string> callback = null ) {
+        WWWForm form = new WWWForm();
+        form.AddField( "stmt", stmt );
+
+        using ( UnityWebRequest webRequest = UnityWebRequest.Post( variablesStorage.hostname + "/sql", form ) ) {
             // Request and wait for the desired page.
             yield return webRequest.SendWebRequest();
 
@@ -45,8 +45,8 @@ public class NetworkManager : MonoBehaviour {
             }
             else {
                 Debug.Log( ":Received: " + webRequest.downloadHandler.text );
+                callback( webRequest.downloadHandler.text );
             }
-
         }
     }
 
