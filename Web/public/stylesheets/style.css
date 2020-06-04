@@ -62,7 +62,7 @@ a {
  "non content no"
  "non post no"
  "footer footer footer";
-  background-image: url(../images/img01.jpg);
+  background-image: url(../images/BackGround.png);
 }
 
 .content {
@@ -111,6 +111,13 @@ a {
   background: #FF7600;
   border-radius: 0px;
   height: 100%;
+}
+
+.intro{
+    grid-area: content;
+    background-image: url(../images/simp.jpg);
+    border-radius: 10px;
+    padding: 2em;
 }
 
 .nav-tabs {
@@ -181,7 +188,7 @@ a {
 }
 
 .column {
-  background-color: #FFE8B8;
+  background-color: #F9C87A;
   border-radius: 10px;
   padding: 1rem;
   position: relative;
