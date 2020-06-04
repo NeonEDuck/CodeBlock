@@ -51,7 +51,8 @@ MonoBehaviour:
     type: 3}
   forBlockPrefab: {fileID: 4807262259430838607, guid: 592cfc506e16b32409cbf7d1addc7351,
     type: 3}
-  ifBlockPrefab: {fileID: 0}
+  ifBlockPrefab: {fileID: 4807262259430838607, guid: 8c2ea8a8f96283641b76fbc04ee3739c,
+    type: 3}
   startBlockPrefab: {fileID: 9029138380841669539, guid: 6a79cfd07ad725c4cac42344f6c99090,
     type: 3}
   valueBlockPrefab: {fileID: 729403028607370388, guid: 9d854628666544441a809e6db2809789,
@@ -80,3 +81,5 @@ MonoBehaviour:
   gameStarted: 0
   whichStack: 0
   preSelectedBlockGrids: {fileID: 0}
+  blockLibrary: {fileID: 0}
+  variables: {fileID: 0}
