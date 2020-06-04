@@ -10,7 +10,6 @@ var logger = require('morgan');
 //------------------------------------------------------------
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-var gameRouter = require('./routes/game');
 var intro = require('./routes/intro');
 var user_login_form = require('./routes/user_login_form');
 var user_register_form = require('./routes/user_register_form');

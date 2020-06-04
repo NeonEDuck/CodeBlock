@@ -5,6 +5,7 @@ using UnityEngine.Networking;
 
 public class NetworkManager : MonoBehaviour {
     public VariablesStorage variablesStorage = null;
+    public LevelInfoPanelManager levelInfoPanelManager = null;
 
     void Start() {
         Application.ExternalCall( "UnityStartup" );
@@ -19,6 +20,7 @@ public class NetworkManager : MonoBehaviour {
         }
         Debug.Log( variablesStorage.userId );
         Debug.Log( variablesStorage.hostname );
+        levelInfoPanelManager.ReloadLevels();
     }
 
 
