@@ -32,6 +32,7 @@ public class GameManager : MonoBehaviour {
     [Header( "Other" )]
     public Material matHighLight = null;
     public Material matRedHighLight = null;
+    public Transform canvas = null;
 
     [Header("Private")]
     public List<Transform> blockGrids = new List<Transform>();
@@ -43,6 +44,7 @@ public class GameManager : MonoBehaviour {
     public bool gameStarted = false;
     public int whichStack = 0;
     public Transform preSelectedBlockGrids = null;
+    public Transform targetBlock = null; // What cursor is holding
     private List<Dictionary<string, object>> gameVariableLists = new List<Dictionary<string, object>>();
 
     public BlockLibrary blockLibrary = null;
@@ -67,6 +69,21 @@ public class GameManager : MonoBehaviour {
             foreach ( KeyValuePair<string, object> kvp in jsonO["blocksList"] as Dictionary<string, object> ) {
                 //dict[dict.Count] = ( GameUtility.StringToBlockType( kvp.Key.ToString() ), (int)kvp.Value );
                 dict[dict.Count] = ( GameUtility.StringToBlockType( kvp.Key.ToString()), int.Parse( kvp.Value.ToString() ) );
+            }
+            blockLibrary.blockList = dict;
+        }
+        else {
+
+            var jsonO = MiniJSON.Json.Deserialize( "{\"blocksList\":{\"StartBlock\":1, \"DefineBlock\":1, \"SetBlock\":1}, \"gameEnv\":\"001001010010001000100013120000000001000100\"}" ) as Dictionary<string, object>;
+
+            gameEnv = jsonO["gameEnv"] as string;
+            gameEnv = gameEnv.Replace( "\n", "" );
+
+            Dictionary<int, (BlockType, int)> dict = new Dictionary<int, (BlockType, int)>();
+
+            foreach ( KeyValuePair<string, object> kvp in jsonO["blocksList"] as Dictionary<string, object> ) {
+                //dict[dict.Count] = ( GameUtility.StringToBlockType( kvp.Key.ToString() ), (int)kvp.Value );
+                dict[dict.Count] = (GameUtility.StringToBlockType( kvp.Key.ToString() ), int.Parse( kvp.Value.ToString() ));
             }
             blockLibrary.blockList = dict;
         }

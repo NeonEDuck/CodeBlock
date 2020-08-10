@@ -17,7 +17,7 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     private RectTransform rect;                     // Current Block size
     private Vector2 pointerOffset;                  // From center of the block to cursor
     private float onHoldTimer = 0.0f;               // How much time did player start holding
-    private Transform target;                       // What cursor is holding
+    //private Transform target;                       // What cursor is holding
     private bool holding = false;                   // Check if player is holding
     private List<Transform> childList;              // List of what player is holding
     private GameObject placeHolder;                 // To prefill the gap for holding Block
@@ -84,11 +84,14 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
             cg.blocksRaycasts = false;
             cg.interactable = false;
         }
+        foreach ( BlockGridInfo phbi in placeHolder.GetComponentsInChildren<BlockGridInfo>() ) {
+            phbi.priority = -1;
+        }
 
         // Turning blocksRaycasts off to not disturb OnDrop Event
         gameManager.BlockBlockRaycast( false );
-        target = newParent;
-        BlockRaycastWithChildGrid(target, false);
+        gameManager.targetBlock = newParent;
+        BlockRaycastWithChildGrid( gameManager.targetBlock, false);
 
         foreach ( BlockGridDropZone cbg in GetComponentsInChildren<BlockGridDropZone>() ) {
             gameManager.blockGridsUnderPointer.Remove( cbg.transform );
@@ -110,10 +113,11 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     }
 
     public void OnDrag( PointerEventData eventData ) {
+        BlockRaycastWithChildGrid( gameManager.targetBlock, false );
 
 
         // It's holding BlockGrid, move it up half of height ( BlockGrid's pivot point is on the top )
-        target.position = eventData.position + pointerOffset + new Vector2(0f, rect.sizeDelta.y / 2);
+        gameManager.targetBlock.position = eventData.position + pointerOffset + new Vector2(0f, rect.sizeDelta.y / 2);
 
         //Debug.DrawLine(eventData.position, eventData.position + new Vector2(0, (GameUtility.BLOCK_HEIGHT - GameUtility.CONNECTOR_HEIGHT) / 2) , Color.red);
         
@@ -137,6 +141,11 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
                 //Debug.Log( gameManager.preSelectedBlockGrids );
                 gameManager.whichStack = -1;
                 additional = false;
+            }
+            if ( placeHolderParent == null ) {
+                gameManager.preSelectedBlockGrids = null;
+                additional = false;
+                goto jump_out;
             }
 
             //int priority = 0;
@@ -170,7 +179,7 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
             }
 
             if ( placeHolderParent.parent.name.StartsWith( "Beam" ) ) {
-                if ( target.GetChild(0).GetComponent<BlockInfo>().connectRule[0] == false || target.GetChild( target.childCount - 1 ).GetComponent<BlockInfo>().connectRule[1] == false ) {
+                if ( gameManager.targetBlock.GetChild(0).GetComponent<BlockInfo>().connectRule[0] == false || gameManager.targetBlock.GetChild( gameManager.targetBlock.childCount - 1 ).GetComponent<BlockInfo>().connectRule[1] == false ) {
                     accessAllow = false;
                     goto jump_out;
                 }
@@ -295,12 +304,14 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         // Turn blocksRaycasts back on
         gameManager.BlockBlockRaycast( true );
 
-        // Calculate how's the height of the gridBlock should be
-        float height = 0f;
-        for (int i = 0; i < childList.Count; i++)
-        {
-            height += GameUtility.BLOCK_HEIGHT - GameUtility.CONNECTOR_HEIGHT;
-        }
+        //// Calculate how's the height of the gridBlock should be
+        //float height = 0f;
+        //for (int i = 0; i < childList.Count; i++)
+        //{
+        //    height += GameUtility.BLOCK_HEIGHT - GameUtility.CONNECTOR_HEIGHT;
+        //}
+
+        // Move all Blocks to d.BlockGrid
         if ( !gameManager.wannaTrash ) {
             if ( placeHolderParent != null && accessAllow ) {
                 // Transfer all block to the new BlockGrid
@@ -312,10 +323,10 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
                 BlockRaycastWithChildGrid( placeHolderParent, true );
 
                 // Destroy the BlockGrid you were holding
-                Destroy( target.gameObject );
+                Destroy( gameManager.targetBlock.gameObject );
             }
             else {
-                BlockRaycastWithChildGrid( target, true );
+                BlockRaycastWithChildGrid( gameManager.targetBlock, true );
                 placeHolderParent = transform.parent;
             }
         }
@@ -335,6 +346,7 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         //placeHolderParent.position = new Vector2(placeHolderParent.position.x, placeHolderParent.position.y + height);
 
         // Resize the previous BlockGrid
+        // Destroy o.BlockGrid if no child
         if (oldParent != null)
         {
             if ( oldParent.GetComponent<BlockGridInfo>().blockGridType == BlockGridType.Block && oldParent.parent == gameManager.gameBoard ) {
@@ -351,14 +363,15 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
         gameManager.ResetAll();
 
-        if ( gameManager.wannaTrash ) {
-            Destroy( target.gameObject );
+        if ( gameManager.wannaTrash || !gameManager.targetBlock.GetComponent<BlockGridDropZone>().isInside ) {
+            Destroy( gameManager.targetBlock.gameObject );
         }
 
         // Reset value
         holding = false;
         childList = null;
         placeHolderParent = null;
+        gameManager.targetBlock = null;
     }
 
     void Start()

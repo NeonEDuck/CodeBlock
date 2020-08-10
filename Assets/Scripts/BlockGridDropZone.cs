@@ -11,6 +11,7 @@ public class BlockGridDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandl
     public GameManager gameManager = null;
     public BlockGridInfo blockGridInfo = null;
     public CanvasGroup canvas = null;
+    public bool isInside = true;
 
     void Awake() {
         gameManager = GameUtility.getGameManager();
@@ -21,14 +22,33 @@ public class BlockGridDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandl
     }
 
     private void Update() {
+
         if ( transform.childCount == 0 && blockGridInfo.priority > 0 ) {
-            if ( gameManager.isDraging ) {
+            if ( gameManager.isDraging && !transform.IsChildOf( gameManager.targetBlock ) ) {
                 canvas.blocksRaycasts = true;
             }
             else {
                 canvas.blocksRaycasts = false;
             }
-        } 
+        }
+        if ( blockGridInfo.priority == 0 ) {
+            isInside = false;
+
+            // corners of item in world space
+            Vector3[] corners = new Vector3[4];
+            rect.GetWorldCorners( corners );
+            Vector3 localSpacePoint;
+
+            for ( int i = 0; i < 4; i++ ) {
+                // Backtransform to parent space
+                localSpacePoint = gameManager.canvas.GetComponent<RectTransform>().InverseTransformPoint( corners[i] );
+
+                // If parent (canvas) does not contain checked items any point
+                if ( gameManager.canvas.GetComponent<RectTransform>().rect.Contains( localSpacePoint ) ) {
+                    isInside = true;
+                }
+            }
+        }
     }
 
     void Start() {

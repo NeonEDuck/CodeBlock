@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class BlockLibrary : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler {
+public class BlockLibrary : MonoBehaviour {
     public GameManager gameManager;
     public Transform content;
     public Dictionary<int, (BlockType, int)> blockList;
@@ -28,21 +28,5 @@ public class BlockLibrary : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         height += ( blockList.Count + 1 ) * 24f;
 
         content.GetComponent<RectTransform>().sizeDelta = new Vector2( content.GetComponent<RectTransform>().sizeDelta.x, height );
-    }
-
-    public void OnPointerEnter( PointerEventData eventData ) {
-
-        gameManager.wannaTrash = true;
-
-        if ( !gameManager.isDraging ) {
-            gameManager.showTrashIcon = false;
-        }
-
-    }
-    public void OnPointerExit( PointerEventData eventData ) {
-
-        gameManager.wannaTrash = false;
-        gameManager.showTrashIcon = true;
-
     }
 }

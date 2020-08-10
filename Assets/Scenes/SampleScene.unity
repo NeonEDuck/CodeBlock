@@ -98,7 +98,7 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 0
+  m_UseShadowmask: 1
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -1103,6 +1103,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1084215187}
+  - component: {fileID: 1084215190}
   - component: {fileID: 1084215189}
   - component: {fileID: 1084215188}
   m_Layer: 5
@@ -1167,6 +1168,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1084215186}
   m_CullTransparentMesh: 0
+--- !u!114 &1084215190
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1084215186}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20fb03f468488f143a006ddfe77b9e37, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gameManager: {fileID: 0}
 --- !u!1 &1130305117
 GameObject:
   m_ObjectHideFlags: 0
@@ -1943,6 +1957,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1677501763}
   - component: {fileID: 1677501765}
+  - component: {fileID: 1677501766}
   - component: {fileID: 1677501764}
   m_Layer: 5
   m_Name: ToolBar
@@ -2008,6 +2023,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1677501762}
   m_CullTransparentMesh: 0
+--- !u!114 &1677501766
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1677501762}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20fb03f468488f143a006ddfe77b9e37, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gameManager: {fileID: 0}
 --- !u!1 &1742405965
 GameObject:
   m_ObjectHideFlags: 0
@@ -2764,7 +2792,7 @@ PrefabInstance:
     - target: {fileID: 2931399647744935686, guid: 226410bca8e470e489b9a6d671bb0f9c,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.00005453585
+      value: -0.000009534491
       objectReference: {fileID: 0}
     - target: {fileID: 2931399647891317312, guid: 226410bca8e470e489b9a6d671bb0f9c,
         type: 3}
@@ -3070,7 +3098,7 @@ PrefabInstance:
     - target: {fileID: 8601110048307600537, guid: 1bfa2a0894884d14ba80e6c116d2042f,
         type: 3}
       propertyPath: gameEnv.Array.size
-      value: 42
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8601110048307600537, guid: 1bfa2a0894884d14ba80e6c116d2042f,
         type: 3}
@@ -3272,5 +3300,10 @@ PrefabInstance:
       propertyPath: blockLibrary
       value: 
       objectReference: {fileID: 2931399647459991254}
+    - target: {fileID: 8601110048307600537, guid: 1bfa2a0894884d14ba80e6c116d2042f,
+        type: 3}
+      propertyPath: canvas
+      value: 
+      objectReference: {fileID: 765573988}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1bfa2a0894884d14ba80e6c116d2042f, type: 3}
