@@ -15,11 +15,11 @@ public class BlockGridDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandl
     public bool isInside = true;
     private Rect canvasRect;
 
+    public static List<Transform> blockGrids = new List<Transform>();
+
     void Awake() {
         gameManager = GameUtility.getGameManager();
-        if ( gameManager != null ) {
-            gameManager.blockGrids.Add( transform );
-        }
+        blockGrids.Add( transform );
         rect = GetComponent<RectTransform>();
     }
 
@@ -125,7 +125,7 @@ public class BlockGridDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandl
     }
 
     private void OnDestroy() {
-        gameManager.blockGrids.Remove( transform );
+        blockGrids.Remove( transform );
     }
 
     public void Resize( float additional = 0f ) {

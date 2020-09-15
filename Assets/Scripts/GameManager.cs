@@ -37,7 +37,7 @@ public class GameManager : MonoBehaviour {
     public RectTransform outsideRect = null;
 
     [Header("Private")]
-    public List<Transform> blockGrids = new List<Transform>();
+    //public List<Transform> blockGrids = new List<Transform>();
     public List<Transform> blockGridsUnderPointer = new List<Transform>();
     public Transform player;
     public bool isDraging = false;
@@ -350,7 +350,7 @@ public class GameManager : MonoBehaviour {
     }
 
     public void BlockGridBlockRaycast( bool enable ) {
-        foreach ( Transform bg in blockGrids ) {
+        foreach ( Transform bg in BlockGridDropZone.blockGrids ) {
             if ( bg != null ) {
                 bg.GetComponent<CanvasGroup>().blocksRaycasts = enable;
             }
@@ -358,7 +358,7 @@ public class GameManager : MonoBehaviour {
     }
 
     public void ResetAll() {
-        foreach ( Transform bg in blockGrids ) {
+        foreach ( Transform bg in BlockGridDropZone.blockGrids ) {
             if ( bg != null && bg.parent.name.StartsWith( "GameBoard" ) ) {
                 BlockGridDropZone bgdz = bg.GetComponent<BlockGridDropZone>();
                 if ( bgdz != null ) {
@@ -370,7 +370,7 @@ public class GameManager : MonoBehaviour {
 
     public void BlockBlockRaycast( bool enable ) {
         List<Transform> removeList = new List<Transform>();
-        foreach ( Transform bg in blockGrids ) {
+        foreach ( Transform bg in BlockGridDropZone.blockGrids ) {
             if ( bg == null ) {
                 removeList.Add( bg );
                 continue;
@@ -387,7 +387,7 @@ public class GameManager : MonoBehaviour {
             }
         }
         foreach ( Transform bg in removeList ) {
-            blockGrids.Remove( bg );
+            BlockGridDropZone.blockGrids.Remove( bg );
         }
     }
 
