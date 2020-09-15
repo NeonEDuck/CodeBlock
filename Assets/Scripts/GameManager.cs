@@ -33,6 +33,8 @@ public class GameManager : MonoBehaviour {
     public Material matHighLight = null;
     public Material matRedHighLight = null;
     public Transform canvas = null;
+    public Transform toolBar = null;
+    public RectTransform outsideRect = null;
 
     [Header("Private")]
     public List<Transform> blockGrids = new List<Transform>();
@@ -74,7 +76,15 @@ public class GameManager : MonoBehaviour {
         }
         else {
 
-            var jsonO = MiniJSON.Json.Deserialize( "{\"blocksList\":{\"StartBlock\":1, \"DefineBlock\":1, \"SetBlock\":1}, \"gameEnv\":\"001001010010001000100013120000000001000100\"}" ) as Dictionary<string, object>;
+            var jsonO = MiniJSON.Json.Deserialize( "{" +
+                "\"blocksList\":{" +
+                    "\"StartBlock\":1, " +
+                    "\"DefineBlock\":1, " +
+                    "\"SetBlock\":1," +
+                    "\"ForBlock\":1," +
+                "}, " +
+                "\"gameEnv\":\"001001010010001000100013120000000001000100\"" +
+                "}" ) as Dictionary<string, object>;
 
             gameEnv = jsonO["gameEnv"] as string;
             gameEnv = gameEnv.Replace( "\n", "" );

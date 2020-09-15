@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.Versioning;
+using System.Security.Cryptography;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -12,6 +13,7 @@ public class BlockGridDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandl
     public BlockGridInfo blockGridInfo = null;
     public CanvasGroup canvas = null;
     public bool isInside = true;
+    private Rect canvasRect;
 
     void Awake() {
         gameManager = GameUtility.getGameManager();
@@ -31,23 +33,28 @@ public class BlockGridDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandl
                 canvas.blocksRaycasts = false;
             }
         }
-        if ( blockGridInfo.priority == 0 ) {
+        if ( blockGridInfo.priority == 0 && transform.childCount > 0 ) {
             isInside = false;
 
+            RectTransform[] check = { transform.GetChild(0).GetComponent<RectTransform>(), transform.GetChild( transform.childCount - 1 ).GetComponent<RectTransform>() };
+
             // corners of item in world space
-            Vector3[] corners = new Vector3[4];
-            rect.GetWorldCorners( corners );
             Vector3 localSpacePoint;
 
-            for ( int i = 0; i < 4; i++ ) {
-                // Backtransform to parent space
-                localSpacePoint = gameManager.canvas.GetComponent<RectTransform>().InverseTransformPoint( corners[i] );
+            for ( int j = 0; j < 2; j++ ) {
+                Vector3[] corners = new Vector3[4];
+                check[j].GetWorldCorners( corners );
+                for ( int i = 0; i < 4; i++ ) {
+                    // Backtransform to parent space
+                    localSpacePoint = gameManager.canvas.GetComponent<RectTransform>().InverseTransformPoint( corners[i] );
 
-                // If parent (canvas) does not contain checked items any point
-                if ( gameManager.canvas.GetComponent<RectTransform>().rect.Contains( localSpacePoint ) ) {
-                    isInside = true;
+                    // If parent (canvas) does not contain checked items any point
+                    if ( gameManager.outsideRect.rect.Contains( localSpacePoint ) ) {
+                        isInside = true;
+                    }
                 }
             }
+
         }
     }
 
