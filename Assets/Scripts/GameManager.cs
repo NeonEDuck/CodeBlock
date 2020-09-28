@@ -53,6 +53,14 @@ public class GameManager : MonoBehaviour {
     public VariablesStorage variables = null;
 
     public void Awake() {
+
+#if UNITY_EDITOR
+        if ( GameObject.FindGameObjectWithTag( "VariablesStorage" ) == null ) {
+            SceneManager.LoadScene( "GameListScene" );
+        }
+#endif
+
+
         if ( GameObject.FindGameObjectWithTag( "VariablesStorage" ) != null ) {
             variables = GameObject.FindGameObjectWithTag( "VariablesStorage" ).GetComponent<VariablesStorage>();
         }

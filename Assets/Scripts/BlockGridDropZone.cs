@@ -49,7 +49,7 @@ public class BlockGridDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandl
                     localSpacePoint = gameManager.canvas.GetComponent<RectTransform>().InverseTransformPoint( corners[i] );
 
                     // If parent (canvas) does not contain checked items any point
-                    if ( gameManager.outsideRect.rect.Contains( localSpacePoint ) ) {
+                    if ( gameManager.gameBoard.GetComponent<RectTransform>().rect.Contains( localSpacePoint ) ) {
                         isInside = true;
                     }
                 }

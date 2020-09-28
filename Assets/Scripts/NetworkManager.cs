@@ -8,7 +8,10 @@ public class NetworkManager : MonoBehaviour {
     public LevelInfoPanelManager levelInfoPanelManager = null;
 
     void Start() {
+
+#if !UNITY_EDITOR
         Application.ExternalCall( "UnityStartup" );
+#endif
     }
 
     public void SetVariables( string json ) {
@@ -34,7 +37,7 @@ public class NetworkManager : MonoBehaviour {
     //    jsonstring = Random.Range( 1, 1000 ).ToString();
     //}
 
-   public IEnumerator GetRequest( string stmt, System.Action<string> callback = null ) {
+    public IEnumerator GetRequest( string stmt, System.Action<string> callback = null ) {
         WWWForm form = new WWWForm();
         form.AddField( "stmt", stmt );
 

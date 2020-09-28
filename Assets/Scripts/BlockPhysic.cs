@@ -281,7 +281,7 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         if (!accessAllow)
         {
             placeHolder.transform.SetParent( gameManager.gameBoard );
-            placeHolder.transform.position = new Vector3(0f, -100f - placeHolder.transform.childCount * (GameUtility.BLOCK_HEIGHT + GameUtility.CONNECTOR_HEIGHT));
+            placeHolder.transform.position = new Vector3(-300f, -300f - placeHolder.transform.childCount * (GameUtility.BLOCK_HEIGHT + GameUtility.CONNECTOR_HEIGHT));
         }
         else {
             placeHolder.transform.SetParent( placeHolderParent );

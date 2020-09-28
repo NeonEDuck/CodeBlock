@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class BlockLibrary : MonoBehaviour {
     public GameManager gameManager;
@@ -28,5 +29,6 @@ public class BlockLibrary : MonoBehaviour {
         height += ( blockList.Count + 1 ) * 24f;
 
         content.GetComponent<RectTransform>().sizeDelta = new Vector2( content.GetComponent<RectTransform>().sizeDelta.x, height );
+        GetComponent<ScrollRect>().verticalScrollbar.value = 1f;
     }
 }
