@@ -52,22 +52,27 @@ public class MiniGameObject : MonoBehaviour {
         Vector2Int newPosInEnv = posInEnv + delta;
         Debug.Log( newPosInEnv );
         if ( newPosInEnv.x >= 0 && newPosInEnv.x <= 6 && newPosInEnv.y >= 0 && newPosInEnv.y <= 5 ) {
-            if ( gameManager.gameEnv2d[newPosInEnv.x, newPosInEnv.y] == null ) {
+
+            bool allow = false;
+
+            if ( gameManager.gameEnv2d[newPosInEnv.x, newPosInEnv.y] == null || gameManager.gameEnv2d[newPosInEnv.x, newPosInEnv.y].objectType == 4 ) {
+                allow = true;
+            }
+            else if ( gameManager.gameEnv2d[newPosInEnv.x, newPosInEnv.y].objectType == 3 ) {
+                if ( gameManager.gameEnv2d[newPosInEnv.x, newPosInEnv.y].Move(id) ) {
+                    allow = true;
+                }
+                Debug.Log( "BOX" );
+            }
+
+
+
+            if ( allow ) {
                 gameManager.gameEnv2d[newPosInEnv.x, newPosInEnv.y] = this;
                 gameManager.gameEnv2d[posInEnv.x, posInEnv.y] = null;
                 posInEnv = newPosInEnv;
                 newPos = transform.position + new Vector3( delta.x * 50.0f, delta.y * -50.0f, 0 );
                 moveAnimationType = 0;
-            }
-            else if ( gameManager.gameEnv2d[newPosInEnv.x, newPosInEnv.y].objectType == 3 ) {
-                if ( gameManager.gameEnv2d[newPosInEnv.x, newPosInEnv.y].Move(id) ) {
-                    gameManager.gameEnv2d[newPosInEnv.x, newPosInEnv.y] = this;
-                    gameManager.gameEnv2d[posInEnv.x, posInEnv.y] = null;
-                    posInEnv = newPosInEnv;
-                    newPos = transform.position + new Vector3( delta.x * 50.0f, delta.y * -50.0f, 0 );
-                    moveAnimationType = 0;
-                }
-                Debug.Log( "BOX" );
             }
         }
 

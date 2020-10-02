@@ -67,12 +67,18 @@ MonoBehaviour:
     type: 3}
   boxPrefab: {fileID: 3991038437378572142, guid: a182352dec8b2e84bbc2bd81a86e612f,
     type: 3}
+  flagPrefab: {fileID: 3991038437378572142, guid: 8396e887b0849ec4cbd345c622be2429,
+    type: 3}
   gameBoard: {fileID: 0}
   gameView: {fileID: 0}
   gameEnv: 
   matHighLight: {fileID: 2100000, guid: 4dd5e47114ba2344196201511477fefa, type: 2}
   matRedHighLight: {fileID: 2100000, guid: b208a1414c44d8d49b7c9113a148b390, type: 2}
-  blockGrids: []
+  canvas: {fileID: 0}
+  toolBar: {fileID: 0}
+  outsideRect: {fileID: 0}
+  nonReactablePanel: {fileID: 0}
+  debugBack: 1
   blockGridsUnderPointer: []
   player: {fileID: 0}
   isDraging: 0
@@ -81,5 +87,6 @@ MonoBehaviour:
   gameStarted: 0
   whichStack: 0
   preSelectedBlockGrids: {fileID: 0}
+  targetBlock: {fileID: 0}
   blockLibrary: {fileID: 0}
   variables: {fileID: 0}

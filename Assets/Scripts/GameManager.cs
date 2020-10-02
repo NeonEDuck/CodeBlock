@@ -21,6 +21,7 @@ public class GameManager : MonoBehaviour {
     public GameObject obstaclePrefab;
     public GameObject playerPrefab;
     public GameObject boxPrefab;
+    public GameObject flagPrefab;
 
     [Header( "MiniPrefab" )]
     public Transform gameBoard = null;
@@ -35,6 +36,8 @@ public class GameManager : MonoBehaviour {
     public Transform canvas = null;
     public Transform toolBar = null;
     public RectTransform outsideRect = null;
+    public Transform nonReactablePanel = null;
+    public bool debugBack = true;
 
     [Header("Private")]
     //public List<Transform> blockGrids = new List<Transform>();
@@ -48,6 +51,7 @@ public class GameManager : MonoBehaviour {
     public Transform preSelectedBlockGrids = null;
     public Transform targetBlock = null; // What cursor is holding
     private List<Dictionary<string, object>> gameVariableLists = new List<Dictionary<string, object>>();
+    private Coroutine gameCoroutine = null;
 
     public BlockLibrary blockLibrary = null;
     public VariablesStorage variables = null;
@@ -55,7 +59,7 @@ public class GameManager : MonoBehaviour {
     public void Awake() {
 
 #if UNITY_EDITOR
-        if ( GameObject.FindGameObjectWithTag( "VariablesStorage" ) == null ) {
+        if ( debugBack && GameObject.FindGameObjectWithTag( "VariablesStorage" ) == null ) {
             SceneManager.LoadScene( "GameListScene" );
         }
 #endif
@@ -137,6 +141,10 @@ public class GameManager : MonoBehaviour {
                     case 'b':
                         spawn = Instantiate( boxPrefab, gameView ).transform;
                         break;
+                    case '4':
+                    case 'f':
+                        spawn = Instantiate( flagPrefab, gameView ).transform;
+                        break;
                 }
                 if ( spawn != null ) {
                     int x = i % 7;
@@ -151,44 +159,29 @@ public class GameManager : MonoBehaviour {
     }
 
     public void StartGame() {
-        if ( !gameStarted ) {
-            gameStarted = true;
+        if ( gameCoroutine == null ) {
             ResetGameView();
             List<Tuple<string, Transform, List<object>>> commands = CreateCommand();
             gameVariableLists.Clear();
             Debug.Log( "before enter" );
-            StartCoroutine( ExecuteCommand( commands ) );
-
-            //foreach ( Tuple<string, Transform, List<object>> command in commands ) {
-            //    switch ( command.Item1 ) {
-            //        case "start":
-            //            Debug.Log( "start" );
-            //            break;
-            //        case "define":
-            //            Debug.Log( "define " + command.Item3[0] );
-            //            break;
-            //        case "set":
-            //            Debug.Log( "set " + command.Item3[0] + " " + command.Item3[1] );
-            //            break;
-            //        case "for":
-            //            Debug.Log( "for " + command.Item3[0] + " " + command.Item3[1] );
-            //            break;
-            //        case "if":
-            //            Debug.Log( "if " + command.Item3[0] + " " + command.Item3[1] );
-            //            break;
-            //        case "move":
-            //            Debug.Log( "move " + command.Item3[0] + " " + command.Item3[1] );
-            //            break;
-            //    }
-            //}
-
-
-            gameStarted = false;
+            nonReactablePanel.gameObject.SetActive( true );
+            gameCoroutine = StartCoroutine( ExecuteCommand( commands ) );
         }
+        else {
+            StopCoroutine( gameCoroutine );
+            StopGame();
+        }
+    }
+
+    public void StopGame() {
+        nonReactablePanel.gameObject.SetActive( false );
+        gameCoroutine = null;
+        gameStarted = false;
     }
 
     public IEnumerator ExecuteCommand( List<Tuple<string, Transform, List<object>>> commands ) {
         Debug.Log( "enter" );
+        gameStarted = true;
         gameVariableLists.Add( new Dictionary<string, object>() );
         int local = gameVariableLists.Count - 1;
         string variableName = "";
@@ -272,8 +265,13 @@ public class GameManager : MonoBehaviour {
                 img.material = null;
             }
 
-            if ( breakTrigger ) yield break;
+            if ( breakTrigger ) {
+                StopGame();
+                yield break;
+            }
         }
+
+        StopGame();
     }
 
     public List<Tuple<string, Transform, List<object>>> CreateCommand( Transform target = null ) {
