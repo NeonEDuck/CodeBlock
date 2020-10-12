@@ -53,6 +53,8 @@ MonoBehaviour:
     type: 3}
   ifBlockPrefab: {fileID: 4807262259430838607, guid: 8c2ea8a8f96283641b76fbc04ee3739c,
     type: 3}
+  repeatBlockPrefab: {fileID: 4807262259430838607, guid: 806a1cd415fc09a42aa7ffc7bd01af2f,
+    type: 3}
   startBlockPrefab: {fileID: 9029138380841669539, guid: 6a79cfd07ad725c4cac42344f6c99090,
     type: 3}
   valueBlockPrefab: {fileID: 729403028607370388, guid: 9d854628666544441a809e6db2809789,
@@ -72,8 +74,8 @@ MonoBehaviour:
   gameBoard: {fileID: 0}
   gameView: {fileID: 0}
   gameEnv: 
-  matHighLight: {fileID: 2100000, guid: 4dd5e47114ba2344196201511477fefa, type: 2}
-  matRedHighLight: {fileID: 2100000, guid: b208a1414c44d8d49b7c9113a148b390, type: 2}
+  matHighLight: {fileID: 2100000, guid: ae1b40b0e0ad91b429a3a01d915b8370, type: 2}
+  matRedHighLight: {fileID: 2100000, guid: 940a89433d2639a4ca9479d12f1ceb3e, type: 2}
   canvas: {fileID: 0}
   toolBar: {fileID: 0}
   outsideRect: {fileID: 0}

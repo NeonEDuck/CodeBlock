@@ -5,6 +5,9 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEditor.Animations;
+using UnityEditor;
+using System.Linq;
 
 public class GameManager : MonoBehaviour {
     [Header( "BlockPrefab" )]
@@ -13,6 +16,7 @@ public class GameManager : MonoBehaviour {
     public GameObject defineBlockPrefab;
     public GameObject forBlockPrefab;
     public GameObject ifBlockPrefab;
+    public GameObject repeatBlockPrefab;
     public GameObject startBlockPrefab;
     public GameObject valueBlockPrefab;
     public GameObject moveBlockPrefab;
@@ -28,7 +32,7 @@ public class GameManager : MonoBehaviour {
     public Transform gameView = null;
     public string gameEnv; 
     [HideInInspector] 
-    public MiniGameObject[,] gameEnv2d = new MiniGameObject[7,6];
+    public List<MiniGameObject>[,] gameEnv2d = new List<MiniGameObject>[7,6];
 
     [Header( "Other" )]
     public Material matHighLight = null;
@@ -37,6 +41,7 @@ public class GameManager : MonoBehaviour {
     public Transform toolBar = null;
     public RectTransform outsideRect = null;
     public Transform nonReactablePanel = null;
+    public Transform winPanel = null;
     public bool debugBack = true;
 
     [Header("Private")]
@@ -114,7 +119,12 @@ public class GameManager : MonoBehaviour {
 
     public void ResetGameView() {
         player = null;
-        gameEnv2d = new MiniGameObject[7, 6];
+        gameEnv2d = new List<MiniGameObject>[7, 6];
+        for ( int i = 0; i < 7; i++ ) {
+            for ( int j = 0; j < 6; j++ ) {
+                gameEnv2d[i, j] = new List<MiniGameObject>();
+            }
+        }
         foreach ( Transform child in gameView.transform ) {
             Destroy( child.gameObject );
         }
@@ -149,9 +159,10 @@ public class GameManager : MonoBehaviour {
                 if ( spawn != null ) {
                     int x = i % 7;
                     int y = (int)Mathf.Floor( i / 7 );
-                    gameEnv2d[x, y] = spawn.GetComponent<MiniGameObject>();
-                    gameEnv2d[x, y].posInEnv = new Vector2Int( x, y );
-                    gameEnv2d[x, y].gameManager = this;
+                    MiniGameObject s = spawn.GetComponent<MiniGameObject>();
+                    s.posInEnv = new Vector2Int( x, y );
+                    s.gameManager = this;
+                    gameEnv2d[x, y].Add( s );
                     spawn.position = origin + new Vector3( ( x + 0.5f ) * 50f, -( y + 0.5f ) * 50f, 0f );
                 }
             }
@@ -159,13 +170,14 @@ public class GameManager : MonoBehaviour {
     }
 
     public void StartGame() {
+        winPanel.gameObject.SetActive( false );
         if ( gameCoroutine == null ) {
             ResetGameView();
             List<Tuple<string, Transform, List<object>>> commands = CreateCommand();
             gameVariableLists.Clear();
             Debug.Log( "before enter" );
             nonReactablePanel.gameObject.SetActive( true );
-            gameCoroutine = StartCoroutine( ExecuteCommand( commands ) );
+            gameCoroutine = StartCoroutine( ExecuteCommand( commands, false ) );
         }
         else {
             StopCoroutine( gameCoroutine );
@@ -173,25 +185,34 @@ public class GameManager : MonoBehaviour {
         }
     }
 
-    public void StopGame() {
+    public void StopGame( bool win = false ) {
         nonReactablePanel.gameObject.SetActive( false );
+        if ( win ) {
+            winPanel.gameObject.SetActive( true );
+        }
         gameCoroutine = null;
         gameStarted = false;
     }
 
-    public IEnumerator ExecuteCommand( List<Tuple<string, Transform, List<object>>> commands ) {
+    private int findVariableInLists( string variableName, int layer ) {
+        for ( int i = layer; i >= 0; i-- ) {
+            if ( gameVariableLists[i].ContainsKey( variableName ) ) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public IEnumerator ExecuteCommand( List<Tuple<string, Transform, List<object>>> commands, bool child = true ) {
         Debug.Log( "enter" );
         gameStarted = true;
         gameVariableLists.Add( new Dictionary<string, object>() );
         int local = gameVariableLists.Count - 1;
-        string variableName = "";
-        object value = null;
-        double num;
         bool breakTrigger = false;
 
         WaitForSeconds wait = new WaitForSeconds( 0.75f );
         foreach ( Tuple<string, Transform, List<object>> command in commands ) {
-            if ( command.Item3.Count == 2 && command.Item3[0] == null && command.Item3[1].GetType() == typeof( string ) ) {
+            if ( command.Item3.Count >= 2 && command.Item3[0] == null && command.Item3[1].GetType() == typeof( string ) ) {
                 foreach ( Image img in command.Item2.GetComponentsInChildren<Image>() ) {
                     img.material = matRedHighLight;
                 }
@@ -203,52 +224,190 @@ public class GameManager : MonoBehaviour {
                     img.material = matHighLight;
                 }
 
+                string variableName = "";
+                string value = "";
+                int layer;
+                double num;
+
                 switch ( command.Item1 ) {
                     case "start":
                         // do nothing
                         break;
                     case "define":
                         variableName = command.Item3[0].ToString();
+                        value = command.Item3[1].ToString();
+
+                        if ( value.StartsWith( "&" ) ) {
+                            value = value.Substring( 1 );
+                            if ( ( layer = findVariableInLists( value, local ) ) != -1 ) {
+                                value = gameVariableLists[layer][value].ToString();
+                            }
+                            else {
+                                foreach ( Image img in command.Item2.GetComponentsInChildren<Image>() ) {
+                                    img.material = matRedHighLight;
+                                }
+                                Debug.LogWarning( "variable \"" + value + "\" doesn't exsit!" );
+                                breakTrigger = true;
+                                break;
+                            }
+                        }
+
                         if ( !gameVariableLists[local].ContainsKey( variableName ) ) {
-                            gameVariableLists[local].Add( variableName, 0 );
+                            if ( double.TryParse( value, out num ) ) {
+                                gameVariableLists[local].Add( variableName, num );
+                            }
+                            else {
+                                gameVariableLists[local].Add( variableName, value );
+                            }
                         }
                         else {
-                            gameVariableLists[local][variableName] = 0;
+                            if ( double.TryParse( value, out num ) ) {
+                                gameVariableLists[local][variableName] = num;
+                            }
+                            else {
+                                gameVariableLists[local][variableName] = value;
+                            }
                         }
                         break;
                     case "set":
 
                         variableName = command.Item3[0].ToString();
-                        value = command.Item3[1];
 
-                        for ( int i = local; i >= 0; i-- ) {
-                            if ( !gameVariableLists[i].ContainsKey( variableName ) ) {
-                                continue;
+                        value = command.Item3[1].ToString();
+
+                        if ( value.StartsWith( "&" ) ) {
+                            value = value.Substring( 1 );
+                            if ( ( layer = findVariableInLists( value, local ) ) != -1 ) {
+                                value = gameVariableLists[layer][value].ToString();
                             }
                             else {
-                                if ( value.GetType() == typeof( string ) ) {
-                                    if ( double.TryParse( value.ToString(), out num ) ) {
-                                        gameVariableLists[i][variableName] = num;
-                                    }
-                                    else {
-                                        gameVariableLists[i][variableName] = value;
-                                    }
-                                    Debug.Log( "variable \"" + variableName + "\" exsit!" );
+                                foreach ( Image img in command.Item2.GetComponentsInChildren<Image>() ) {
+                                    img.material = matRedHighLight;
                                 }
-                                else {
-                                    Debug.Log( "Something went wrong!" );
-                                }
+                                Debug.LogWarning( "variable \"" + value + "\" doesn't exsit!" );
+                                breakTrigger = true;
                                 break;
                             }
                         }
 
+                        if (( layer = findVariableInLists( variableName, local ) ) != -1 ) {
+                            if ( double.TryParse( value, out num ) ) {
+                                gameVariableLists[layer][variableName] = num;
+                            }
+                            else {
+                                gameVariableLists[layer][variableName] = value;
+                            }
+                            Debug.Log( "variable \"" + variableName + "\" exsit!" );
+                        }
+                        else {
+                            foreach ( Image img in command.Item2.GetComponentsInChildren<Image>() ) {
+                                img.material = matRedHighLight;
+                            }
+                            Debug.LogWarning( "variable \"" + variableName + "\" doesn't exsit!" );
+                            breakTrigger = true;
+                            break;
+                        }
+
                         break;
                     case "for":
-                        StartCoroutine( ExecuteCommand( (List<Tuple<string, Transform, List<object>>>)command.Item3[0] ) );
+                        yield return StartCoroutine( ExecuteCommand( (List<Tuple<string, Transform, List<object>>>)command.Item3[0] ) );
                         break;
                     case "if":
-                        StartCoroutine( ExecuteCommand( (List<Tuple<string, Transform, List<object>>>)command.Item3[0] ) );
-                        StartCoroutine( ExecuteCommand( (List<Tuple<string, Transform, List<object>>>)command.Item3[1] ) );
+
+                        value = command.Item3[0].ToString();
+
+                        if ( value.StartsWith( "&" ) ) {
+                            value = value.Substring( 1 );
+                            if ( ( layer = findVariableInLists( value, local ) ) != -1 ) {
+                                value = gameVariableLists[layer][value].ToString();
+                            }
+                            else {
+                                foreach ( Image img in command.Item2.GetComponentsInChildren<Image>() ) {
+                                    img.material = matRedHighLight;
+                                }
+                                Debug.LogWarning( "variable \"" + value + "\" doesn't exsit!" );
+                                breakTrigger = true;
+                                break;
+                            }
+                        }
+                        string value2 = command.Item3[1].ToString();
+
+                        if ( value2.StartsWith( "&" ) ) {
+                            value2 = value2.Substring( 1 );
+                            if ( ( layer = findVariableInLists( value2, local ) ) != -1 ) {
+                                value2 = gameVariableLists[layer][value2].ToString();
+                            }
+                            else {
+                                foreach ( Image img in command.Item2.GetComponentsInChildren<Image>() ) {
+                                    img.material = matRedHighLight;
+                                }
+                                Debug.LogWarning( "variable \"" + value2 + "\" doesn't exsit!" );
+                                breakTrigger = true;
+                                break;
+                            }
+                        }
+
+                        bool enter = false;
+
+                        if ( command.Item3[2].ToString() == "==" ) {
+                            enter = value == value2;
+                        }
+                        else if ( command.Item3[2].ToString() == "!=" ) {
+                            enter = value != value2;
+                        }
+                        else {
+
+                            if ( double.TryParse( value, out num ) && double.TryParse( value2, out double num2 ) ) {
+                                if ( command.Item3[2].ToString() == ">" ) {
+                                    enter = num > num2;
+                                }
+                                else if ( command.Item3[2].ToString() == "<" ) {
+                                    enter = num < num2;
+                                }
+                                else if ( command.Item3[2].ToString() == ">=" ) {
+                                    enter = num >= num2;
+                                }
+                                else if ( command.Item3[2].ToString() == "<=" ) {
+                                    enter = num <= num2;
+                                }
+                            }
+                        }
+
+                        if ( enter ) {
+                            yield return StartCoroutine( ExecuteCommand( (List<Tuple<string, Transform, List<object>>>)command.Item3[3] ) );
+                        }
+                        else {
+                            yield return StartCoroutine( ExecuteCommand( (List<Tuple<string, Transform, List<object>>>)command.Item3[4] ) );
+                        }
+
+                        //Transform t = (Transform)command.Item3[2];
+                        //StartCoroutine( ExecuteCommand( (List<Tuple<string, Transform, List<object>>>)command.Item3[0] ) );
+                        //StartCoroutine( ExecuteCommand( (List<Tuple<string, Transform, List<object>>>)command.Item3[1] ) );
+                        break;
+                    case "repeat":
+                        int time = 0;
+                        if ( command.Item3[0].GetType() == typeof( int ) ) {
+                            time = (int)command.Item3[0];
+                        }
+                        else {
+                            variableName = command.Item3[0].ToString();
+
+                            Debug.Log( variableName );
+
+                            if ( ( layer = findVariableInLists( variableName, local ) ) != -1 ) {
+                                time = (int)(double)gameVariableLists[layer][variableName];
+                                Debug.Log( time );
+                            }
+                            else {
+                                Debug.LogWarning( "variable \"" + variableName + "\" doesn't exsit!" );
+                            }
+                        }
+
+                        for ( int i = 0; i < time; i++ ) {
+                            yield return StartCoroutine( ExecuteCommand( (List<Tuple<string, Transform, List<object>>>)command.Item3[1] ) );
+                        }
+
+                        //StartCoroutine( ExecuteCommand( (List<Tuple<string, Transform, List<object>>>)command.Item3[0] ) );
                         break;
                     case "move":
                         if ( double.TryParse( command.Item3[0].ToString(), out num ) ) {
@@ -271,7 +430,11 @@ public class GameManager : MonoBehaviour {
             }
         }
 
-        StopGame();
+
+
+        if ( !child ) {
+            StopGame( player.GetComponent<MiniGameObject>().IsOnFlag() );
+        }
     }
 
     public List<Tuple<string, Transform, List<object>>> CreateCommand( Transform target = null ) {
@@ -306,7 +469,7 @@ public class GameManager : MonoBehaviour {
                         else {
                             infos.Add( blockInfo.refField[0].GetComponent<TMP_InputField>().text );
                             if ( blockInfo.refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid.childCount > 0 ) {
-                                infos.Add( blockInfo.refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid.GetChild( 0 ).GetChild( 1 ).GetComponent<TMP_Text>().text );
+                                infos.Add( "&" + blockInfo.refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid.GetChild( 0 ).GetChild( 1 ).GetComponent<TMP_Text>().text );
                             }
                             else {
                                 infos.Add( blockInfo.refField[1].GetComponent<ValueBlockSwap>().inputField.GetComponent<TMP_InputField>().text );
@@ -323,7 +486,7 @@ public class GameManager : MonoBehaviour {
                         else {
                             infos.Add( blockInfo.refField[0].GetComponent<ValueBlockSwap>().valueBlockGrid.GetChild( 0 ).GetChild( 1 ).GetComponent<TMP_Text>().text );
                             if ( blockInfo.refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid.childCount > 0 ) {
-                                infos.Add( blockInfo.refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid.GetChild( 0 ).GetChild( 1 ).GetComponent<TMP_Text>().text );
+                                infos.Add( "&" + blockInfo.refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid.GetChild( 0 ).GetChild( 1 ).GetComponent<TMP_Text>().text );
                             }
                             else {
                                 infos.Add( blockInfo.refField[1].GetComponent<ValueBlockSwap>().inputField.GetComponent<TMP_InputField>().text );
@@ -338,6 +501,29 @@ public class GameManager : MonoBehaviour {
 
                     case BlockType.IfBlock:
                         type = "if";
+                        if ( blockInfo.refField[2].GetComponent<ValueBlockSwap>().valueBlockGrid.childCount == 0 ) {
+                            infos.Add( null );
+                            infos.Add( "You need to have a login!" );
+                            break;
+                        }
+
+                        for (int j = 1; j < 3; j++ ) {
+                            Transform vc = blockInfo.refField[2].GetComponent<ValueBlockSwap>().valueBlockGrid.GetChild( 0 ).GetChild( j );
+                            if ( vc.GetComponent<ValueBlockSwap>().valueBlockGrid.childCount > 0 ) {
+                                infos.Add( "&" + vc.GetComponent<ValueBlockSwap>().valueBlockGrid.GetChild( 0 ).GetChild( 1 ).GetComponent<TMP_Text>().text );
+                                //Debug.Log( vc.GetComponent<ValueBlockSwap>().valueBlockGrid.GetChild( 0 ).GetChild( 1 ).GetComponent<TMP_Text>().text );
+                            }
+                            else {
+                                infos.Add( vc.GetComponent<ValueBlockSwap>().inputField.GetComponent<TMP_InputField>().text );
+                                //Debug.Log( vc.GetComponent<ValueBlockSwap>().inputField.GetComponent<TMP_InputField>().text );
+                            }
+                        }
+
+                        TMP_Dropdown dp = blockInfo.refField[2].GetComponent<ValueBlockSwap>().valueBlockGrid.GetChild( 0 ).GetChild( 3 ).GetComponent<TMP_Dropdown>();
+                        infos.Add( dp.options[dp.value].text );
+                        //Debug.Log( dp.options[dp.value].text );
+
+
                         infos.Add( CreateCommand( blockInfo.refField[0] ) );
                         infos.Add( CreateCommand( blockInfo.refField[1] ) );
                         break;
@@ -345,6 +531,36 @@ public class GameManager : MonoBehaviour {
                     case BlockType.MoveBlock:
                         type = "move";
                         infos.Add( blockInfo.refField[0].GetComponent<TMP_Dropdown>().value );
+                        break;
+
+                    case BlockType.RepeatBlock:
+                        type = "repeat";
+                        //infos.Add( CreateCommand( blockInfo.refField[0] ) );
+
+                        if ( blockInfo.refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid.childCount > 0 ) {
+                            infos.Add( blockInfo.refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid.GetChild( 0 ).GetChild( 1 ).GetComponent<TMP_Text>().text );
+                        }
+                        else {
+                            int num = 0;
+                            if ( int.TryParse( blockInfo.refField[1].GetComponent<ValueBlockSwap>().inputField.GetComponent<TMP_InputField>().text, out num ) ) {
+                                infos.Add( num );
+                            }
+                            else {
+                                infos.Add( null );
+                                infos.Add( "Repeat Block need a number in order to function!" );
+                            }
+                        }
+                        infos.Add( CreateCommand( blockInfo.refField[0] ) );
+
+                        //if ( blockInfo.refField[0].GetComponent<ValueBlockSwap>().valueBlockGrid.childCount == 0 ) {
+                        //    infos.Add( null );
+                        //    infos.Add( "You need to have a variable to set to!" );
+                        //}
+                        //else {
+                        //    infos.Add( blockInfo.refField[0].GetComponent<ValueBlockSwap>().valueBlockGrid.GetChild( 0 ).GetChild( 1 ).GetComponent<TMP_Text>().text );
+                            
+                        //}
+                        //infos.Add( blockInfo.refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid.GetChild( 0 ).GetChild( 1 ).GetComponent<TMP_Text>().text );
                         break;
                 }
 
@@ -421,6 +637,9 @@ public class GameManager : MonoBehaviour {
                 break;
             case BlockType.MoveBlock:
                 blockPrefab = moveBlockPrefab;
+                break;
+            case BlockType.RepeatBlock:
+                blockPrefab = repeatBlockPrefab;
                 break;
         }
         return blockPrefab;

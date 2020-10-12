@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using System.Collections.Generic;
 
 public class MiniGameObject : MonoBehaviour {
 
@@ -55,21 +56,30 @@ public class MiniGameObject : MonoBehaviour {
 
             bool allow = false;
 
-            if ( gameManager.gameEnv2d[newPosInEnv.x, newPosInEnv.y] == null || gameManager.gameEnv2d[newPosInEnv.x, newPosInEnv.y].objectType == 4 ) {
+            if ( gameManager.gameEnv2d[newPosInEnv.x, newPosInEnv.y].Count == 0 ) {
                 allow = true;
             }
-            else if ( gameManager.gameEnv2d[newPosInEnv.x, newPosInEnv.y].objectType == 3 ) {
-                if ( gameManager.gameEnv2d[newPosInEnv.x, newPosInEnv.y].Move(id) ) {
-                    allow = true;
+            else {
+                List<int> r;
+                if ( ( r = containObject( newPosInEnv.x, newPosInEnv.y, 3 ) ).Count > 0 ) {
+                    foreach ( int i in r ) {
+                        if ( gameManager.gameEnv2d[newPosInEnv.x, newPosInEnv.y][i].Move( id ) ) {
+                            allow = true;
+                        }
+                    }
+                    Debug.Log( "BOX" );
                 }
-                Debug.Log( "BOX" );
+                else if ( ( r = containObject( newPosInEnv.x, newPosInEnv.y, 4 ) ).Count > 0 ) {
+                    allow = true;
+                    Debug.Log( "FLAG" );
+                }
             }
 
 
 
             if ( allow ) {
-                gameManager.gameEnv2d[newPosInEnv.x, newPosInEnv.y] = this;
-                gameManager.gameEnv2d[posInEnv.x, posInEnv.y] = null;
+                gameManager.gameEnv2d[newPosInEnv.x, newPosInEnv.y].Add( this );
+                gameManager.gameEnv2d[posInEnv.x, posInEnv.y].Remove( this );
                 posInEnv = newPosInEnv;
                 newPos = transform.position + new Vector3( delta.x * 50.0f, delta.y * -50.0f, 0 );
                 moveAnimationType = 0;
@@ -86,5 +96,19 @@ public class MiniGameObject : MonoBehaviour {
         moveAnimationStart = Time.time;
 
         return canMove;
+    }
+    public List<int> containObject( int x, int y, int objectType ) {
+        List<int> results = new List<int>();
+        int i = 0;
+        foreach ( MiniGameObject mgo in gameManager.gameEnv2d[x, y] ) {
+            if ( mgo.objectType == objectType ) {
+                results.Add( i );
+            }
+            i++;
+        }
+        return results;
+    }
+    public bool IsOnFlag() {
+        return containObject( posInEnv.x, posInEnv.y, 4 ).Count > 0;
     }
 }

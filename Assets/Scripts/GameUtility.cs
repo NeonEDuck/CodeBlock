@@ -48,6 +48,7 @@ public enum BlockType
     PlaceHolder,
     MoveBlock,
     LogicBlock,
+    RepeatBlock,
     Other
 }
 public enum BlockGridType {
