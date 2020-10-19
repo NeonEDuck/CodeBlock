@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.Versioning;
+using System.Security.Cryptography;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -11,24 +12,50 @@ public class BlockGridDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandl
     public GameManager gameManager = null;
     public BlockGridInfo blockGridInfo = null;
     public CanvasGroup canvas = null;
+    public bool isInside = true;
+    private Rect canvasRect;
+
+    public static List<Transform> blockGrids = new List<Transform>();
 
     void Awake() {
         gameManager = GameUtility.getGameManager();
-        if ( gameManager != null ) {
-            gameManager.blockGrids.Add( transform );
-        }
+        blockGrids.Add( transform );
         rect = GetComponent<RectTransform>();
     }
 
     private void Update() {
+
         if ( transform.childCount == 0 && blockGridInfo.priority > 0 ) {
-            if ( gameManager.isDraging ) {
+            if ( gameManager.isDraging && !transform.IsChildOf( gameManager.targetBlock ) ) {
                 canvas.blocksRaycasts = true;
             }
             else {
                 canvas.blocksRaycasts = false;
             }
-        } 
+        }
+        if ( blockGridInfo.priority == 0 && transform.childCount > 0 ) {
+            isInside = false;
+
+            RectTransform[] check = { transform.GetChild(0).GetComponent<RectTransform>(), transform.GetChild( transform.childCount - 1 ).GetComponent<RectTransform>() };
+
+            // corners of item in world space
+            Vector3 localSpacePoint;
+
+            for ( int j = 0; j < 2; j++ ) {
+                Vector3[] corners = new Vector3[4];
+                check[j].GetWorldCorners( corners );
+                for ( int i = 0; i < 4; i++ ) {
+                    // Backtransform to parent space
+                    localSpacePoint = gameManager.canvas.GetComponent<RectTransform>().InverseTransformPoint( corners[i] );
+
+                    // If parent (canvas) does not contain checked items any point
+                    if ( gameManager.gameBoard.GetComponent<RectTransform>().rect.Contains( localSpacePoint ) ) {
+                        isInside = true;
+                    }
+                }
+            }
+
+        }
     }
 
     void Start() {
@@ -64,6 +91,7 @@ public class BlockGridDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandl
             switch ( child.GetComponent<BlockInfo>().blockType ) {
                 case BlockType.IfBlock:
                 case BlockType.ForBlock:
+                case BlockType.RepeatBlock:
                     Debug.Log( child.GetComponent<BlockInfo>().refField.Count - 1 );
                     ToTheNextPriority( child.GetComponent<BlockInfo>().refField[child.GetComponent<BlockInfo>().refField.Count-1].GetComponent<ValueBlockSwap>().valueBlockGrid );
                     for (int j = 1; j < child.childCount; j+=2 ) {
@@ -77,12 +105,13 @@ public class BlockGridDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandl
                 case BlockType.DefineBlock:
                     ToTheNextPriority( child.GetComponent<BlockInfo>().refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid );
                     break;
-                //case BlockType.moveBlock:
-                //    nextBlockGrid = child.GetComponent<BlockInfo>().refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid;
-                //    nextBlockGridDropZone = nextBlockGrid.GetComponent<BlockGridDropZone>();
-                //    nextBlockGridDropZone.blockGridInfo.priority = blockGridInfo.priority + 1;
-                //    nextBlockGridDropZone.PriorityGiving();
-                //    break;
+                case BlockType.MoveBlock:
+                    ToTheNextPriority( child.GetComponent<BlockInfo>().refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid );
+                    //nextBlockGrid = child.GetComponent<BlockInfo>().refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid;
+                    //nextBlockGridDropZone = nextBlockGrid.GetComponent<BlockGridDropZone>();
+                    //nextBlockGridDropZone.blockGridInfo.priority = blockGridInfo.priority + 1;
+                    //nextBlockGridDropZone.PriorityGiving();
+                    break;
                 case BlockType.LogicBlock:
                     ToTheNextPriority( child.GetComponent<BlockInfo>().refField[0].GetComponent<ValueBlockSwap>().valueBlockGrid );
                     ToTheNextPriority( child.GetComponent<BlockInfo>().refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid );
@@ -98,7 +127,7 @@ public class BlockGridDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandl
     }
 
     private void OnDestroy() {
-        gameManager.blockGrids.Remove( transform );
+        blockGrids.Remove( transform );
     }
 
     public void Resize( float additional = 0f ) {
@@ -112,6 +141,8 @@ public class BlockGridDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandl
             Transform child = transform.GetChild( i );
             switch ( child.GetComponent<BlockInfo>().blockType ) {
                 case BlockType.ForBlock:
+                case BlockType.IfBlock:
+                case BlockType.RepeatBlock:
                     child.GetChild( 1 ).GetChild( 1 ).GetComponent<BlockGridDropZone>().Resize();
                     break;
             }

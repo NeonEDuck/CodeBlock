@@ -19,9 +19,7 @@ public class BlockSpawner : MonoBehaviour
 
     void Awake() {
         gameManager = GameUtility.getGameManager();
-        if ( gameManager != null ) {
-            gameManager.blockGrids.Add( transform );
-        }
+        BlockGridDropZone.blockGrids.Add( transform );
     }
 
     void Start() {

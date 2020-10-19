@@ -10,7 +10,7 @@ var logger = require('morgan');
 //------------------------------------------------------------
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-var gameRouter = require('./routes/game');
+var intro = require('./routes/intro');
 var user_login_form = require('./routes/user_login_form');
 var user_register_form = require('./routes/user_register_form');
 var user_register = require('./routes/user_register');
@@ -23,6 +23,10 @@ var login_fail = require('./routes/login_fail');
 var user_login = require('./routes/user_login');
 var user_logout = require('./routes/user_logout');
 var user_show = require('./routes/user_show');
+
+
+var gameRouter = require('./routes/game');
+var sqlRouter = require('./routes/sql');
 
 var app = express();
 //--------------------------------------------------------------------
@@ -46,7 +50,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 // 設定模組使用方式
 //-----------------------------------------
 app.use('/', indexRouter);
+app.use('/index', indexRouter);
 app.use('/users', usersRouter);
+app.use('/game',gameRouter);
+app.use('/intro',intro);
 app.use('/user_login_form', user_login_form);
 app.use('/user_register_form', user_register_form);
 app.use('/user_register', user_register);
@@ -54,10 +61,16 @@ app.use('/user_register_sucess', user_register_sucess);
 app.use('/user_register_fail', user_register_fail);
 app.use('/user_register_fail_error', user_register_fail_error);
 
+
+
 app.use('/user/login_fail', login_fail);
 app.use('/user/login', user_login);
 app.use('/user/logout', user_logout);
 app.use('/user/show', user_show);
+
+app.use('/game', gameRouter);
+app.use('/sql', sqlRouter);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

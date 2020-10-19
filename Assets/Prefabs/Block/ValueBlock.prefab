@@ -109,9 +109,9 @@ MonoBehaviour:
   m_fontSize: 22
   m_fontSizeBase: 22
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 16
+  m_fontSizeMax: 22
   m_fontStyle: 0
   m_textAlignment: 513
   m_characterSpacing: 0
@@ -217,6 +217,21 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: 0b29db965e6580f4399a4befb2757c55,
         type: 3}
+    - target: {fileID: 1733049510526628119, guid: 45ca22c9206bacf449cf76bd3efc58ec,
+        type: 3}
+      propertyPath: m_Color.r
+      value: 0.15966538
+      objectReference: {fileID: 0}
+    - target: {fileID: 1733049510526628119, guid: 45ca22c9206bacf449cf76bd3efc58ec,
+        type: 3}
+      propertyPath: m_Color.g
+      value: 0.5168064
+      objectReference: {fileID: 0}
+    - target: {fileID: 1733049510526628119, guid: 45ca22c9206bacf449cf76bd3efc58ec,
+        type: 3}
+      propertyPath: m_Color.b
+      value: 0.8679245
+      objectReference: {fileID: 0}
     - target: {fileID: 1733049511104675454, guid: 45ca22c9206bacf449cf76bd3efc58ec,
         type: 3}
       propertyPath: m_LocalPosition.x
