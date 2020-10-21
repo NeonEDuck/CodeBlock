@@ -8,7 +8,11 @@ const {Client} = require('pg');
 //-----------------------
 // 自己的資料庫連結位址
 //-----------------------
+console.log("DATABASEEEEEEEEEEEEEEEEEEEEE")
+console.log(process.env.DB_CONN)
 var pgConn = process.env.DB_CONN;
+
+
 
 process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
 
