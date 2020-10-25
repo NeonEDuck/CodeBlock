@@ -2,14 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class VariablesStorage : MonoBehaviour {
+public static class VariablesStorage {
 
-    public int levelId = 0;
-    public string levelJson = "";
-    public string userId = "";
-    public string hostname = "";
-
-    void Awake() {
-        DontDestroyOnLoad( gameObject );
-    }
+    public static int levelId = 0;
+    public static string levelJson = "";
+    public static string member_name = "";
+    public static string hostname = "";
+    public static string roomId = "";
+    public static bool roomOK = false;
 }

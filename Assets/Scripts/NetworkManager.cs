@@ -4,26 +4,26 @@ using UnityEngine;
 using UnityEngine.Networking;
 
 public class NetworkManager : MonoBehaviour {
-    public VariablesStorage variablesStorage = null;
     public LevelInfoPanelManager levelInfoPanelManager = null;
 
     void Start() {
 
 #if !UNITY_EDITOR
         Application.ExternalCall( "UnityStartup" );
+
+#else
+        SetVariables( "{\"hostname\":\"127.0.0.1\"}" );
 #endif
     }
 
     public void SetVariables( string json ) {
         var jsonO = MiniJSON.Json.Deserialize( json ) as Dictionary<string, object>;
-        variablesStorage.userId = jsonO["userId"] as string;
-        variablesStorage.hostname = jsonO["hostname"] as string;
-        if ( !variablesStorage.hostname.StartsWith("http:") ) {
-            variablesStorage.hostname = "http://" + variablesStorage.hostname;
+        VariablesStorage.hostname = jsonO["hostname"] as string;
+        if ( !VariablesStorage.hostname.StartsWith("http:") ) {
+            VariablesStorage.hostname = "http://" + VariablesStorage.hostname;
         }
-        Debug.Log( variablesStorage.userId );
-        Debug.Log( variablesStorage.hostname );
-        levelInfoPanelManager.ReloadLevels();
+        Debug.Log( VariablesStorage.hostname );
+        //levelInfoPanelManager.ReloadLevels();
     }
 
 
@@ -41,12 +41,12 @@ public class NetworkManager : MonoBehaviour {
         WWWForm form = new WWWForm();
         form.AddField( "stmt", stmt );
 
-        using ( UnityWebRequest webRequest = UnityWebRequest.Post( variablesStorage.hostname + "/sql", form ) ) {
+        using ( UnityWebRequest webRequest = UnityWebRequest.Post( VariablesStorage.hostname + "/sql", form ) ) {
             // Request and wait for the desired page.
             yield return webRequest.SendWebRequest();
 
             if ( webRequest.isNetworkError ) {
-                Debug.Log( ": Error: " + webRequest.error );
+                Debug.Log( ":Error: " + webRequest.error );
             }
             else {
                 Debug.Log( ":Received: " + webRequest.downloadHandler.text );

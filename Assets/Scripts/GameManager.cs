@@ -59,26 +59,22 @@ public class GameManager : MonoBehaviour {
     private Coroutine gameCoroutine = null;
 
     public BlockLibrary blockLibrary = null;
-    public VariablesStorage variables = null;
 
     public void Awake() {
 
 #if UNITY_EDITOR
-        if ( debugBack && GameObject.FindGameObjectWithTag( "VariablesStorage" ) == null ) {
+        if ( debugBack && VariablesStorage.levelJson == "" ) {
             SceneManager.LoadScene( "GameListScene" );
         }
 #endif
 
 
-        if ( GameObject.FindGameObjectWithTag( "VariablesStorage" ) != null ) {
-            variables = GameObject.FindGameObjectWithTag( "VariablesStorage" ).GetComponent<VariablesStorage>();
-        }
         if ( blockLibrary == null && GameObject.FindGameObjectWithTag( "BlockLibrary" ) != null ) {
             blockLibrary = GameObject.FindGameObjectWithTag( "BlockLibrary" ).GetComponent<BlockLibrary>();
         }
 
-        if ( variables != null && blockLibrary != null ) {
-            var jsonO = MiniJSON.Json.Deserialize( variables.levelJson ) as Dictionary< string, object >;
+        if ( blockLibrary != null ) {
+            var jsonO = MiniJSON.Json.Deserialize( VariablesStorage.levelJson ) as Dictionary< string, object >;
 
             gameEnv = jsonO["gameEnv"] as string;
             gameEnv = gameEnv.Replace( "\n", "" );

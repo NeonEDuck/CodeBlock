@@ -53,6 +53,7 @@ app.use('/', indexRouter);
 app.use('/index', indexRouter);
 app.use('/users', usersRouter);
 app.use('/game',gameRouter);
+app.use('/sql', sqlRouter);
 app.use('/intro',intro);
 app.use('/user_login_form', user_login_form);
 app.use('/user_register_form', user_register_form);
@@ -67,9 +68,6 @@ app.use('/user/login_fail', login_fail);
 app.use('/user/login', user_login);
 app.use('/user/logout', user_logout);
 app.use('/user/show', user_show);
-
-app.use('/game', gameRouter);
-app.use('/sql', sqlRouter);
 
 
 // catch 404 and forward to error handler
