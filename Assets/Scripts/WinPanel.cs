@@ -8,6 +8,7 @@ public class WinPanel : MonoBehaviour {
     public TMP_Text amount = null;
     public TMP_Text blocks = null;
     public Transform newScoreText = null;
+    public Button back = null;
     public Button upload = null;
 
     void OnDisable() {

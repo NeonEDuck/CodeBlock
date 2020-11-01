@@ -100,7 +100,7 @@ public class RoomManager : MonoBehaviour {
             "topics : " + topics;
 
 
-        stmt = "SELECT * FROM class_member WHERE member_name = '" + VariablesStorage.memberName + "';";
+        stmt = "SELECT * FROM class_member WHERE member_name = '" + VariablesStorage.memberName + "' AND class_id = '" + VariablesStorage.roomId + "';";
 
         yield return StartCoroutine( NetworkManager.GetRequest( stmt, returnValue => {
             jsonString = returnValue;

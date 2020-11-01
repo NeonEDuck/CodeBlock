@@ -49,10 +49,18 @@ public enum BlockType
     MoveBlock,
     LogicBlock,
     RepeatBlock,
+    TurnBlock,
     Other
 }
 public enum BlockGridType {
     Block,
     Value,
     Logic
+}
+
+public enum Direction {
+    UP,
+    RIGHT,
+    DOWN,
+    LEFT
 }

@@ -20,17 +20,22 @@ public class GameManager : MonoBehaviour {
     public GameObject startBlockPrefab;
     public GameObject valueBlockPrefab;
     public GameObject moveBlockPrefab;
+    public GameObject turnBlockPrefab;
     public GameObject spawnerPrefab;
     [Header( "MiniPrefab" )]
     public GameObject obstaclePrefab;
     public GameObject playerPrefab;
     public GameObject boxPrefab;
     public GameObject flagPrefab;
+    public GameObject holePrefab;
+    public GameObject buttonPrefab;
+    public GameObject doorPrefab;
 
     [Header( "MiniPrefab" )]
     public Transform gameBoard = null;
     public Transform gameView = null;
-    public string gameEnv; 
+    public string gameEnv;
+    public Direction dir;
     [HideInInspector] 
     public List<MiniGameObject>[,] gameEnv2d = new List<MiniGameObject>[7,6];
 
@@ -82,6 +87,17 @@ public class GameManager : MonoBehaviour {
 
             gameEnv = jsonO["gameEnv"] as string;
             gameEnv = gameEnv.Replace( "\n", "" );
+            dir = Direction.DOWN;
+
+            if ( jsonO.ContainsKey( "playerDir" ) ) {
+                dir = (Direction)(long)jsonO["playerDir"];
+
+                Debug.Log( (int)dir );
+                Debug.Log( (int)Direction.UP );
+                Debug.Log( (int)Direction.RIGHT );
+                Debug.Log( (int)Direction.DOWN );
+                Debug.Log( (int)Direction.LEFT );
+            }
 
             Dictionary<int, (BlockType, int)> dict = new Dictionary<int, (BlockType, int)>();
 
@@ -105,6 +121,7 @@ public class GameManager : MonoBehaviour {
 
             gameEnv = jsonO["gameEnv"] as string;
             gameEnv = gameEnv.Replace( "\n", "" );
+
 
             Dictionary<int, (BlockType, int)> dict = new Dictionary<int, (BlockType, int)>();
 
@@ -144,6 +161,7 @@ public class GameManager : MonoBehaviour {
                     case 'p':
                         if ( player == null ) {
                             spawn = Instantiate( playerPrefab, gameView ).transform;
+                            spawn.GetComponent<MiniGameObject>().direction = dir;
                             player = spawn;
                         }
                         break;
@@ -154,6 +172,20 @@ public class GameManager : MonoBehaviour {
                     case '4':
                     case 'f':
                         spawn = Instantiate( flagPrefab, gameView ).transform;
+                        break;
+                    case '5':
+                    case 'h':
+                        spawn = Instantiate( holePrefab, gameView ).transform;
+                        break;
+                    case '6':
+                    case 'j':
+                        spawn = Instantiate( buttonPrefab, gameView ).transform;
+                        GameVariable.buttons.Add( spawn.GetComponent<MiniGameObject>() );
+                        break;
+                    case '7':
+                    case 'd':
+                        spawn = Instantiate( doorPrefab, gameView ).transform;
+                        GameVariable.doors.Add( spawn.GetComponent<MiniGameObject>() );
                         break;
                 }
                 if ( spawn != null ) {
@@ -428,6 +460,13 @@ public class GameManager : MonoBehaviour {
                             playerMini.Move( (int)num );
                         }
                         break;
+                    case "turn":
+                        score_blocks += -50;
+                        if ( double.TryParse( command.Item3[0].ToString(), out num ) ) {
+                            MiniGameObject playerMini = player.GetComponent<MiniGameObject>();
+                            playerMini.Turn( (int)num );
+                        }
+                        break;
                 }
             }
 
@@ -566,6 +605,14 @@ public class GameManager : MonoBehaviour {
                         type = "move";
                         score_amount += 1;
                         score_blocks += -50;
+                        infos.Add( 1 );
+                        break;
+
+
+                    case BlockType.TurnBlock:
+                        type = "turn";
+                        score_amount += 1;
+                        score_blocks += -50;
                         infos.Add( blockInfo.refField[0].GetComponent<TMP_Dropdown>().value );
                         break;
 
@@ -611,8 +658,11 @@ public class GameManager : MonoBehaviour {
 
         return commands;
     }
+    public void StartUpload() {
+        StartCoroutine( Upload() );
+    }
 
-    public void Upload() {
+    public IEnumerator Upload() {
         string stmt = "UPDATE play_record SET " +
             "score_time = " +   ( ( VariablesStorage.levelTime == -1 || VariablesStorage.levelTime > score_time ) ? score_time : VariablesStorage.levelTime ).ToString() + "," +
             "score_amount = " + ( ( VariablesStorage.levelAmount == -1 || VariablesStorage.levelAmount > score_amount ) ? score_amount : VariablesStorage.levelAmount ).ToString() + "," +
@@ -620,9 +670,9 @@ public class GameManager : MonoBehaviour {
             "WHERE member_id = '" + VariablesStorage.memberId + "' AND course_id = '" + VariablesStorage.courseId + "';";
 
         if ( VariablesStorage.levelTime > score_time || VariablesStorage.levelAmount > score_amount || VariablesStorage.levelBlocks < score_blocks ) {
-            StartCoroutine( UploadScore( stmt ) );
+            yield return StartCoroutine( UploadScore( stmt ) );
+            winPanel.back.interactable = true;
         }
-
         
     }
 
@@ -737,6 +787,9 @@ public class GameManager : MonoBehaviour {
                 break;
             case BlockType.RepeatBlock:
                 blockPrefab = repeatBlockPrefab;
+                break;
+            case BlockType.TurnBlock:
+                blockPrefab = turnBlockPrefab;
                 break;
         }
         return blockPrefab;

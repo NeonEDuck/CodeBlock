@@ -48,7 +48,7 @@ public class LevelInfoPanelManager : MonoBehaviour {
         //stmt = "INSERT INTO course ( course_name, type_id, player_id, course_json ) VALUES ( 'test', 'T1000000', 'P1000000', '" + cjson + "' )";
         //stmt = "DELETE FROM course WHERE course_name = 'test'";
         // {"course_id":"C1000003","course_name":"test","type_id":"T1000000","hint":null,"player_id":"P1000000","course_json":null}
-        stmt = "SELECT * FROM course;";
+        stmt = "SELECT course.*, play_record.score_time, play_record.score_amount, play_record.score_blocks FROM course left outer join play_record on course.course_id = play_record.course_id where member_id = '" + VariablesStorage.memberId + "' or member_id is null order by course.course_id;";
         //stmt = "INSERT INTO course_type ( type_name ) VALUES ( 'type_test' )";
 
         yield return StartCoroutine( NetworkManager.GetRequest( stmt, returnValue => {
@@ -69,34 +69,48 @@ public class LevelInfoPanelManager : MonoBehaviour {
         else {
             Debug.Log( jsonString );
 
+            //List<object> jsonO2 = new List<object>();
+
+            //yield return StartCoroutine( NetworkManager.GetRequest( "SELECT * FROM play_record WHERE member_id = '" + VariablesStorage.memberId + "';", returnValue => {
+            //    if ( !( returnValue.Trim() == "[]" || returnValue.Trim() == "" ) ) {
+            //        Debug.LogWarning( "returnValue:" + returnValue );
+            //        jsonO2 = MiniJSON.Json.Deserialize( returnValue ) as List<object>;
+            //    }
+            //} ) );
+
+
+
+            //it = jsonO[0] as Dictionary<string, object>;
+
+            //foreach ( var k in it.Keys ) {
+            //    Debug.Log( k );
+            //}
+            //score_time = (int)(long)it["score_time"];
+            //score_amount = (int)(long)it["score_amount"];
+            //score_blocks = (int)(long)it["score_blocks"];
+
             var jsonO = MiniJSON.Json.Deserialize( jsonString ) as List<object>;
             int i = 1;
             foreach ( Dictionary<string, object> item in jsonO ) {
-                Dictionary<string, object> it = item as Dictionary<string, object>;
-                string course_id = it["course_id"] as string;
-                string course_name = it["course_name"] as string;
-                string description = it["description"] as string;
-                string course_json = it["course_json"] as string;
+                string course_id = item["course_id"] as string;
+                string course_name = item["course_name"] as string;
+                string description = item["description"] as string;
+                string course_json = item["course_json"] as string;
                 course_json = course_json.Replace( "\n", "" ).Replace( "\t", "" );
-                int score_time = -1;
-                int score_amount = -1;
-                int score_blocks = -1;
+                int score_time = ( item["score_time"] is null ) ? -1 : (int)(long)item["score_time"]; ;
+                int score_amount = ( item["score_amount"] is null ) ? -1 : (int)(long)item["score_amount"];
+                int score_blocks = ( item["score_blocks"] is null ) ? -1 : (int)(long)item["score_blocks"];
+
+
                 //Debug.LogWarning( "SELECT * FROM play_record WHERE member_id = '" + VariablesStorage.memberId + "' AND course_id = '" + course_id + "';" );
-                yield return StartCoroutine( NetworkManager.GetRequest( "SELECT * FROM play_record WHERE member_id = '" + VariablesStorage.memberId + "' AND course_id = '" + course_id + "';", returnValue => {
-                    if (!( returnValue.Trim() == "[]" || returnValue.Trim() == "" )) {
-                        Debug.LogWarning( "returnValue:" + returnValue );
-                        jsonO = MiniJSON.Json.Deserialize( returnValue ) as List<object>;
 
-                        it = jsonO[0] as Dictionary<string, object>;
-
-                        foreach ( var k in it.Keys ) {
-                            Debug.Log( k );
-                        }
-                        score_time = (int)(long)it["score_time"];
-                        score_amount = (int)(long)it["score_amount"];
-                        score_blocks = (int)(long)it["score_blocks"];
-                    }
-                }));
+                //foreach ( Dictionary<string, object> item2 in jsonO2 ) {
+                //    if ( item["course_id"] as string == course_id ) {
+                //        score_time = (int)(long)item2["score_time"];
+                //        score_amount = (int)(long)item2["score_amount"];
+                //        score_blocks = (int)(long)item2["score_blocks"];
+                //    }
+                //}
 
                 levelsInfo.Add( i, ( course_id, course_name, description, course_json, score_time, score_amount, score_blocks ) );
                 Transform btn = Instantiate( buttonPrefab, levelButtonHolder ).transform;

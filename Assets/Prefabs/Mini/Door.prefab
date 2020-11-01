@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1001 &5480643537537179862
+--- !u!1001 &5344934467725586667
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -9,42 +9,42 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1012637183383775621, guid: e80cca94682c9a84dba654a223fd2b7f,
         type: 3}
-      propertyPath: m_Type
-      value: 0
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: -2971768867513528349, guid: 181b8b249e5132f4ebd88092ab404eae,
+        type: 3}
+    - target: {fileID: 1450974851551736075, guid: e80cca94682c9a84dba654a223fd2b7f,
+        type: 3}
+      propertyPath: texture.Array.size
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 1450974851551736075, guid: e80cca94682c9a84dba654a223fd2b7f,
         type: 3}
       propertyPath: textures.Array.size
-      value: 4
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 1450974851551736075, guid: e80cca94682c9a84dba654a223fd2b7f,
         type: 3}
       propertyPath: objectType
-      value: 2
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 1450974851551736075, guid: e80cca94682c9a84dba654a223fd2b7f,
         type: 3}
       propertyPath: textures.Array.data[0]
       value: 
-      objectReference: {fileID: 6920059594391161883, guid: 181b8b249e5132f4ebd88092ab404eae,
+      objectReference: {fileID: -2971768867513528349, guid: 181b8b249e5132f4ebd88092ab404eae,
         type: 3}
     - target: {fileID: 1450974851551736075, guid: e80cca94682c9a84dba654a223fd2b7f,
         type: 3}
       propertyPath: textures.Array.data[1]
       value: 
-      objectReference: {fileID: -751624441270430234, guid: 181b8b249e5132f4ebd88092ab404eae,
+      objectReference: {fileID: 794602737735865336, guid: 181b8b249e5132f4ebd88092ab404eae,
         type: 3}
-    - target: {fileID: 1450974851551736075, guid: e80cca94682c9a84dba654a223fd2b7f,
+    - target: {fileID: 2549351551504364918, guid: e80cca94682c9a84dba654a223fd2b7f,
         type: 3}
-      propertyPath: textures.Array.data[2]
+      propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 6640898808822284701, guid: 181b8b249e5132f4ebd88092ab404eae,
-        type: 3}
-    - target: {fileID: 1450974851551736075, guid: e80cca94682c9a84dba654a223fd2b7f,
-        type: 3}
-      propertyPath: textures.Array.data[3]
-      value: 
-      objectReference: {fileID: -5018661808225102323, guid: 181b8b249e5132f4ebd88092ab404eae,
+      objectReference: {fileID: 794602737735865336, guid: 181b8b249e5132f4ebd88092ab404eae,
         type: 3}
     - target: {fileID: 3341871317102476016, guid: e80cca94682c9a84dba654a223fd2b7f,
         type: 3}
@@ -154,7 +154,7 @@ PrefabInstance:
     - target: {fileID: 9029156245598588805, guid: e80cca94682c9a84dba654a223fd2b7f,
         type: 3}
       propertyPath: m_Name
-      value: Player
+      value: Door
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e80cca94682c9a84dba654a223fd2b7f, type: 3}

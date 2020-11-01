@@ -345,10 +345,14 @@ MonoBehaviour:
   TMP_Name: {fileID: 9028436569938867060}
   TMP_Desc: {fileID: 407276746987840982}
   TMP_Creator: {fileID: 7500462061632625874}
+  courseId: 
   levelName: 
   levelDesc: 
   levelCreator: 
   levelJson: 
+  levelScoreTime: 0
+  levelScoreAmount: 0
+  levelScoreBlocks: 0
   pullOutState: 0
 --- !u!222 &2238298485631790700
 CanvasRenderer:
@@ -524,8 +528,9 @@ MonoBehaviour:
       m_Calls: []
   m_text: Level.Desc
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: cec1089bf4439d941ac2e70c70c3ac55, type: 2}
+  m_sharedMaterial: {fileID: 3246150224546963421, guid: cec1089bf4439d941ac2e70c70c3ac55,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -834,8 +839,9 @@ MonoBehaviour:
       m_Calls: []
   m_text: Level.Name
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: cec1089bf4439d941ac2e70c70c3ac55, type: 2}
+  m_sharedMaterial: {fileID: 3246150224546963421, guid: cec1089bf4439d941ac2e70c70c3ac55,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -941,7 +947,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &8017168729853504426
 RectTransform:
   m_ObjectHideFlags: 0

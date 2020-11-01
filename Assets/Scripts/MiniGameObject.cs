@@ -2,6 +2,7 @@
 using System.Collections;
 using System;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class MiniGameObject : MonoBehaviour {
 
@@ -12,7 +13,16 @@ public class MiniGameObject : MonoBehaviour {
     public int moveAnimationType = 0;
     public Vector3 lastPos;
     public Vector3 newPos;
+    public Direction direction = Direction.DOWN;
     public short objectType = 0;
+    public Transform image = null;
+    public List<Sprite> textures = new List<Sprite>();
+
+    void Start() {
+        if ( objectType == 2 ) {
+            changeTexture( (int)direction );
+        }
+    }
 
     void Update() {
         if ( moveAnimationStart != -1f ) {
@@ -25,7 +35,21 @@ public class MiniGameObject : MonoBehaviour {
                     transform.position = Vector3.Lerp( lastPos, newPos, Mathf.Sin( t * 180f * Mathf.Deg2Rad ) );
                     break;
             }
+
+            if ( t == 1f ) {
+                moveAnimationStart = -1f;
+                if ( objectType == 2 ) {
+                    checkDoor();
+                }
+            }
         }
+    }
+
+    public void Turn( int num ) {
+        num = ( num == 0 ) ? 1 : 3;
+
+        direction = (Direction)( ((int)direction + num) % 4 );
+        changeTexture( (int)direction );
     }
 
     public bool Move( int id ) {
@@ -35,17 +59,32 @@ public class MiniGameObject : MonoBehaviour {
         newPos = lastPos;
         Vector2Int delta = new Vector2Int( 0, 0 );
 
-        switch ( id ) {
-            case 0:
-                delta = new Vector2Int( 0, -1 );
-                break;
-            case 1:
+        //switch ( id ) {
+        //    case 0:
+        //        delta = new Vector2Int( 0, -1 );
+        //        break;
+        //    case 1:
+        //        delta = new Vector2Int( 0, 1 );
+        //        break;
+        //    case 2:
+        //        delta = new Vector2Int( -1, 0 );
+        //        break;
+        //    case 3:
+        //        delta = new Vector2Int( 1, 0 );
+        //        break;
+        //}
+
+        switch ( direction ) {
+            case Direction.DOWN:
                 delta = new Vector2Int( 0, 1 );
                 break;
-            case 2:
+            case Direction.UP:
+                delta = new Vector2Int( 0, -1 );
+                break;
+            case Direction.LEFT:
                 delta = new Vector2Int( -1, 0 );
                 break;
-            case 3:
+            case Direction.RIGHT:
                 delta = new Vector2Int( 1, 0 );
                 break;
         }
@@ -72,6 +111,18 @@ public class MiniGameObject : MonoBehaviour {
                 else if ( ( r = containObject( newPosInEnv.x, newPosInEnv.y, 4 ) ).Count > 0 ) {
                     allow = true;
                     Debug.Log( "FLAG" );
+                }
+                else if ( ( r = containObject( newPosInEnv.x, newPosInEnv.y, 5 ) ).Count > 0 ) {
+                    allow = true;
+                    Debug.Log( "HOLE" );
+                }
+                else if ( ( r = containObject( newPosInEnv.x, newPosInEnv.y, 6 ) ).Count > 0 ) {
+                    allow = true;
+                    Debug.Log( "BUTTON" );
+                }
+                else if ( ( r = containObject( newPosInEnv.x, newPosInEnv.y, 0 ) ).Count > 0 ) {
+                    allow = true;
+                    Debug.Log( "DOOR" );
                 }
             }
 
@@ -110,5 +161,28 @@ public class MiniGameObject : MonoBehaviour {
     }
     public bool IsOnFlag() {
         return containObject( posInEnv.x, posInEnv.y, 4 ).Count > 0;
+    }
+    public void checkDoor() {
+        bool allHavingPress = true;
+
+        foreach ( MiniGameObject btn in GameVariable.buttons ) {
+            if ( containObject( btn.posInEnv.x, btn.posInEnv.y, 2 ).Count == 0 && containObject( btn.posInEnv.x, btn.posInEnv.y, 3 ).Count == 0 ) {
+                allHavingPress = false;
+                break;
+            }
+        }
+
+        if ( allHavingPress ) {
+            Debug.Log( "press! open" );
+            foreach ( MiniGameObject door in GameVariable.doors ) {
+                door.changeTexture( 1 );
+                door.objectType = 0;
+            }
+        }
+        //return containObject( posInEnv.x, posInEnv.y, 4 ).Count > 0;
+    }
+
+    public void changeTexture( int i ) {
+        image.GetComponent<Image>().sprite = textures[ Mathf.Min( textures.Count-1, i ) ];
     }
 }

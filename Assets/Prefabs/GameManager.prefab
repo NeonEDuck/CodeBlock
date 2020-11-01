@@ -61,6 +61,8 @@ MonoBehaviour:
     type: 3}
   moveBlockPrefab: {fileID: 1733049511104675455, guid: f54e37c59993cf244acc516d859b1d88,
     type: 3}
+  turnBlockPrefab: {fileID: 1733049511104675455, guid: 9b7c6975f1584644aaea688c4afa7949,
+    type: 3}
   spawnerPrefab: {fileID: 262286372814367248, guid: d042f5051cd4a4b4699ffb95669a5435,
     type: 3}
   obstaclePrefab: {fileID: 3376909157183936004, guid: bdc1108417042f24db874b970dcbf758,
@@ -71,6 +73,12 @@ MonoBehaviour:
     type: 3}
   flagPrefab: {fileID: 3991038437378572142, guid: 8396e887b0849ec4cbd345c622be2429,
     type: 3}
+  holePrefab: {fileID: 3991038437378572142, guid: 73478c47e994b3340badc338241e47c4,
+    type: 3}
+  buttonPrefab: {fileID: 3991038437378572142, guid: 057f1a3262d43a34b8f5d24c93dcf16d,
+    type: 3}
+  doorPrefab: {fileID: 3991038437378572142, guid: a75a932efdfbaea4fa26b41bb32e6413,
+    type: 3}
   gameBoard: {fileID: 0}
   gameView: {fileID: 0}
   gameEnv: 
@@ -80,6 +88,7 @@ MonoBehaviour:
   toolBar: {fileID: 0}
   outsideRect: {fileID: 0}
   nonReactablePanel: {fileID: 0}
+  winPanel: {fileID: 0}
   debugBack: 1
   blockGridsUnderPointer: []
   player: {fileID: 0}
@@ -91,4 +100,3 @@ MonoBehaviour:
   preSelectedBlockGrids: {fileID: 0}
   targetBlock: {fileID: 0}
   blockLibrary: {fileID: 0}
-  variables: {fileID: 0}
