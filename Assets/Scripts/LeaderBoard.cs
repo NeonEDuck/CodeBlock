@@ -87,7 +87,7 @@ public class LeaderBoard : MonoBehaviour {
                 yield break;
             }
 
-            stmt = "SELECT member_name, COUNT(*) AS num, SUM(score_time) AS sum_score_time, SUM(score_amount) AS sum_score_amount, SUM(score_blocks) AS sum_score_blocks FROM class_member LEFT JOIN play_record ON class_member.member_id = play_record.member_id GROUP BY class_member.member_id ORDER BY " + orderBy + ";";
+            stmt = "SELECT member_name, COUNT(*) AS num, SUM(score_time) AS sum_score_time, SUM(score_amount) AS sum_score_amount, SUM(score_blocks) AS sum_score_blocks FROM class_member LEFT JOIN play_record ON class_member.member_id = play_record.member_id WHERE class_id = '" + roomId + "' GROUP BY class_member.member_id ORDER BY " + orderBy + ";";
 
             yield return StartCoroutine( NetworkManager.GetRequest( stmt, returnValue => {
                 jsonString = returnValue;
