@@ -41,7 +41,7 @@ public class GameManager : MonoBehaviour {
     public Transform toolBar = null;
     public RectTransform outsideRect = null;
     public Transform nonReactablePanel = null;
-    public Transform winPanel = null;
+    public WinPanel winPanel = null;
     public bool debugBack = true;
 
     [Header("Private")]
@@ -57,6 +57,10 @@ public class GameManager : MonoBehaviour {
     public Transform targetBlock = null; // What cursor is holding
     private List<Dictionary<string, object>> gameVariableLists = new List<Dictionary<string, object>>();
     private Coroutine gameCoroutine = null;
+
+    private int score_time = 0;
+    private int score_amount = 0;
+    private int score_blocks = 0;
 
     public BlockLibrary blockLibrary = null;
 
@@ -169,6 +173,9 @@ public class GameManager : MonoBehaviour {
         winPanel.gameObject.SetActive( false );
         if ( gameCoroutine == null ) {
             ResetGameView();
+            score_time = 0;
+            score_amount = 0;
+            score_blocks = 0;
             List<Tuple<string, Transform, List<object>>> commands = CreateCommand();
             gameVariableLists.Clear();
             Debug.Log( "before enter" );
@@ -185,6 +192,13 @@ public class GameManager : MonoBehaviour {
         nonReactablePanel.gameObject.SetActive( false );
         if ( win ) {
             winPanel.gameObject.SetActive( true );
+            winPanel.time.text = score_time.ToString() + ":" + VariablesStorage.levelTime.ToString();
+            winPanel.amount.text = score_amount.ToString() + ":" + VariablesStorage.levelAmount.ToString();
+            winPanel.blocks.text = score_blocks.ToString() + ":" + VariablesStorage.levelBlocks.ToString();
+            if ( VariablesStorage.levelTime > score_time || VariablesStorage.levelAmount > score_amount || VariablesStorage.levelBlocks < score_blocks ) {
+                winPanel.newScoreText.gameObject.SetActive( true );
+                winPanel.upload.interactable = true;
+            }
         }
         gameCoroutine = null;
         gameStarted = false;
@@ -205,6 +219,7 @@ public class GameManager : MonoBehaviour {
         gameVariableLists.Add( new Dictionary<string, object>() );
         int local = gameVariableLists.Count - 1;
         bool breakTrigger = false;
+        score_time = 0;
 
         WaitForSeconds wait = new WaitForSeconds( 0.75f );
         foreach ( Tuple<string, Transform, List<object>> command in commands ) {
@@ -400,12 +415,14 @@ public class GameManager : MonoBehaviour {
                         }
 
                         for ( int i = 0; i < time; i++ ) {
+                            score_blocks += -100;
                             yield return StartCoroutine( ExecuteCommand( (List<Tuple<string, Transform, List<object>>>)command.Item3[1] ) );
                         }
 
                         //StartCoroutine( ExecuteCommand( (List<Tuple<string, Transform, List<object>>>)command.Item3[0] ) );
                         break;
                     case "move":
+                        score_blocks += -50;
                         if ( double.TryParse( command.Item3[0].ToString(), out num ) ) {
                             MiniGameObject playerMini = player.GetComponent<MiniGameObject>();
                             playerMini.Move( (int)num );
@@ -414,6 +431,7 @@ public class GameManager : MonoBehaviour {
                 }
             }
 
+            score_time += 1;
             yield return wait;
 
             foreach ( Image img in command.Item2.GetComponentsInChildren<Image>() ) {
@@ -454,10 +472,14 @@ public class GameManager : MonoBehaviour {
                 switch ( blockInfo.blockType ) {
                     case BlockType.StartBlock:
                         type = "start";
+                        score_amount += 1;
+                        score_blocks += 1000;
                         break;
 
                     case BlockType.DefineBlock:
                         type = "define";
+                        score_amount += 1;
+                        score_blocks += 200;
                         if ( blockInfo.refField[0].GetComponent<TMP_InputField>().text == "" ) {
                             infos.Add( null );
                             infos.Add( "You need a name to define variable!" );
@@ -465,9 +487,12 @@ public class GameManager : MonoBehaviour {
                         else {
                             infos.Add( blockInfo.refField[0].GetComponent<TMP_InputField>().text );
                             if ( blockInfo.refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid.childCount > 0 ) {
+                                score_amount += 1;
+                                score_blocks += 50;
                                 infos.Add( "&" + blockInfo.refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid.GetChild( 0 ).GetChild( 1 ).GetComponent<TMP_Text>().text );
                             }
                             else {
+                                score_blocks += 100;
                                 infos.Add( blockInfo.refField[1].GetComponent<ValueBlockSwap>().inputField.GetComponent<TMP_InputField>().text );
                             }
                         }
@@ -475,6 +500,8 @@ public class GameManager : MonoBehaviour {
 
                     case BlockType.SetBlock:
                         type = "set";
+                        score_amount += 2;
+                        score_blocks += 300;
                         if ( blockInfo.refField[0].GetComponent<ValueBlockSwap>().valueBlockGrid.childCount == 0 ) {
                             infos.Add( null );
                             infos.Add( "You need to have a variable to set to!" );
@@ -482,9 +509,12 @@ public class GameManager : MonoBehaviour {
                         else {
                             infos.Add( blockInfo.refField[0].GetComponent<ValueBlockSwap>().valueBlockGrid.GetChild( 0 ).GetChild( 1 ).GetComponent<TMP_Text>().text );
                             if ( blockInfo.refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid.childCount > 0 ) {
+                                score_amount += 1;
+                                score_blocks += 300;
                                 infos.Add( "&" + blockInfo.refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid.GetChild( 0 ).GetChild( 1 ).GetComponent<TMP_Text>().text );
                             }
                             else {
+                                score_blocks += 50;
                                 infos.Add( blockInfo.refField[1].GetComponent<ValueBlockSwap>().inputField.GetComponent<TMP_InputField>().text );
                             }
                         }
@@ -492,11 +522,15 @@ public class GameManager : MonoBehaviour {
 
                     case BlockType.ForBlock:
                         type = "for";
+                        score_amount += 1;
+                        score_blocks += 800;
                         infos.Add( CreateCommand( blockInfo.refField[0] ) );
                         break;
 
                     case BlockType.IfBlock:
                         type = "if";
+                        score_amount += 2;
+                        score_blocks += 800;
                         if ( blockInfo.refField[2].GetComponent<ValueBlockSwap>().valueBlockGrid.childCount == 0 ) {
                             infos.Add( null );
                             infos.Add( "You need to have a login!" );
@@ -506,10 +540,14 @@ public class GameManager : MonoBehaviour {
                         for (int j = 1; j < 3; j++ ) {
                             Transform vc = blockInfo.refField[2].GetComponent<ValueBlockSwap>().valueBlockGrid.GetChild( 0 ).GetChild( j );
                             if ( vc.GetComponent<ValueBlockSwap>().valueBlockGrid.childCount > 0 ) {
+                                score_amount += 1;
+                                score_blocks += 300;
                                 infos.Add( "&" + vc.GetComponent<ValueBlockSwap>().valueBlockGrid.GetChild( 0 ).GetChild( 1 ).GetComponent<TMP_Text>().text );
                                 //Debug.Log( vc.GetComponent<ValueBlockSwap>().valueBlockGrid.GetChild( 0 ).GetChild( 1 ).GetComponent<TMP_Text>().text );
                             }
                             else {
+                                score_amount += 1;
+                                score_blocks += 50;
                                 infos.Add( vc.GetComponent<ValueBlockSwap>().inputField.GetComponent<TMP_InputField>().text );
                                 //Debug.Log( vc.GetComponent<ValueBlockSwap>().inputField.GetComponent<TMP_InputField>().text );
                             }
@@ -526,17 +564,24 @@ public class GameManager : MonoBehaviour {
 
                     case BlockType.MoveBlock:
                         type = "move";
+                        score_amount += 1;
+                        score_blocks += -50;
                         infos.Add( blockInfo.refField[0].GetComponent<TMP_Dropdown>().value );
                         break;
 
                     case BlockType.RepeatBlock:
                         type = "repeat";
+                        score_amount += 1;
+                        score_blocks += 800;
                         //infos.Add( CreateCommand( blockInfo.refField[0] ) );
 
                         if ( blockInfo.refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid.childCount > 0 ) {
+                            score_blocks += 100;
                             infos.Add( blockInfo.refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid.GetChild( 0 ).GetChild( 1 ).GetComponent<TMP_Text>().text );
                         }
                         else {
+                            score_amount += 1;
+                            score_blocks += 200;
                             int num = 0;
                             if ( int.TryParse( blockInfo.refField[1].GetComponent<ValueBlockSwap>().inputField.GetComponent<TMP_InputField>().text, out num ) ) {
                                 infos.Add( num );
@@ -565,6 +610,62 @@ public class GameManager : MonoBehaviour {
         }
 
         return commands;
+    }
+
+    public void Upload() {
+        string stmt = "UPDATE play_record SET " +
+            "score_time = " +   ( ( VariablesStorage.levelTime == -1 || VariablesStorage.levelTime > score_time ) ? score_time : VariablesStorage.levelTime ).ToString() + "," +
+            "score_amount = " + ( ( VariablesStorage.levelAmount == -1 || VariablesStorage.levelAmount > score_amount ) ? score_amount : VariablesStorage.levelAmount ).ToString() + "," +
+            "score_blocks = " + ( ( VariablesStorage.levelBlocks == -1 || VariablesStorage.levelBlocks < score_blocks ) ? score_blocks : VariablesStorage.levelBlocks ).ToString() + " " +
+            "WHERE member_id = '" + VariablesStorage.memberId + "' AND course_id = '" + VariablesStorage.courseId + "';";
+
+        if ( VariablesStorage.levelTime > score_time || VariablesStorage.levelAmount > score_amount || VariablesStorage.levelBlocks < score_blocks ) {
+            StartCoroutine( UploadScore( stmt ) );
+        }
+
+        
+    }
+
+    private IEnumerator UploadScore( string stmt_u ) {
+
+        string stmt = "";
+        string jsonString = null;
+
+        Debug.Log( "upload score" );
+        stmt = "SELECT * FROM play_record WHERE member_id = '" + VariablesStorage.memberId + "' AND course_id = '" + VariablesStorage.courseId + "';";
+        Debug.Log( stmt );
+
+        yield return StartCoroutine( NetworkManager.GetRequest( stmt, returnValue => {
+            jsonString = returnValue;
+        } ) );
+
+        if ( jsonString == null ) {
+            Debug.Log( "sql Error" );
+            //infoText.text = "SQL Error : Please contact us the error!";
+            //infoText.color = new Color( 1, 0, 0 );
+            yield break;
+        }
+        else if ( jsonString.Trim() == "[]" || jsonString.Trim() == "" ) {
+            Debug.Log( "no record" );
+
+
+            stmt = "INSERT INTO play_record VALUES ('" + VariablesStorage.memberId + "','" + VariablesStorage.courseId + "', -1, -1, -1 );";
+
+            yield return StartCoroutine( NetworkManager.GetRequest( stmt, returnValue => {
+                jsonString = returnValue;
+            } ) );
+
+            Debug.Log( stmt );
+            Debug.Log( jsonString );
+
+        }
+
+        Debug.Log( stmt_u );
+        yield return StartCoroutine( NetworkManager.GetRequest( stmt_u, returnValue => {
+            Debug.Log( returnValue );
+        } ) );
+
+
     }
 
     public void BlockGridBlockRaycast( bool enable ) {

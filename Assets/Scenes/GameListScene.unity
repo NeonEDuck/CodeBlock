@@ -656,7 +656,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4fddb8c0f72a9ee40bace98ef0c7a2bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  networkManager: {fileID: 1216268857}
   loadingIcon: {fileID: 189279475}
   nameInput: {fileID: 1796772593}
   PINInput: {fileID: 1052499213}
@@ -751,8 +750,8 @@ GameObject:
   - component: {fileID: 158762431}
   - component: {fileID: 158762430}
   m_Layer: 5
-  m_Name: TMP SubMeshUI [Gontserrat-Bold Atlas Material + SourceHanSansTC-Regular-Common1
-    SDF Atlas]
+  m_Name: TMP SubMeshUI [Gontserrat-Bold Atlas Material + SourceHanSansTC-Regular
+    Atlas]
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -776,7 +775,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_fontAsset: {fileID: 11400000, guid: 307fb8a3ac92612468093190fbeea7c3, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 099995ea3d5bfaf4281ef8c4fc31a535, type: 2}
   m_spriteAsset: {fileID: 0}
   m_material: {fileID: 0}
   m_sharedMaterial: {fileID: 0}
@@ -1131,8 +1130,8 @@ GameObject:
   - component: {fileID: 240405887}
   - component: {fileID: 240405888}
   m_Layer: 5
-  m_Name: TMP SubMeshUI [Gontserrat-Bold Atlas Material + SourceHanSansTC-Regular
-    Atlas]
+  m_Name: TMP SubMeshUI [Gontserrat-Bold Atlas Material + SourceHanSansTC-Regular-Common1
+    SDF Atlas]
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1183,7 +1182,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_fontAsset: {fileID: 11400000, guid: 099995ea3d5bfaf4281ef8c4fc31a535, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 307fb8a3ac92612468093190fbeea7c3, type: 2}
   m_spriteAsset: {fileID: 0}
   m_material: {fileID: 0}
   m_sharedMaterial: {fileID: 0}
@@ -3350,7 +3349,7 @@ RectTransform:
   - {fileID: 189279475}
   - {fileID: 1317708785}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -3445,7 +3444,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d9ba52ac5612dc45aff421e8aedfb9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  networkManager: {fileID: 1216268857}
   PINInput: {fileID: 1052499213}
   content: {fileID: 750614247}
   recordRowPrefab: {fileID: 3994765881978513581, guid: d05942e930e408c4797a9f55193451a4,
@@ -3482,7 +3480,7 @@ RectTransform:
   m_Children:
   - {fileID: 1831332935}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -3532,7 +3530,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1216268857}
+      - m_Target: {fileID: 0}
         m_MethodName: SendData
         m_Mode: 5
         m_Arguments:
@@ -4212,8 +4210,8 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_subTextObjects:
   - {fileID: 0}
-  - {fileID: 240405888}
   - {fileID: 158762430}
+  - {fileID: 240405888}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
@@ -4396,50 +4394,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1187289403}
   m_CullTransparentMesh: 0
---- !u!1 &1216268856
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1216268858}
-  - component: {fileID: 1216268857}
-  m_Layer: 0
-  m_Name: NetworkManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1216268857
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1216268856}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 93586ea5ab4bacb43a586dc661d30dd8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  levelInfoPanelManager: {fileID: 1448477170}
---- !u!4 &1216268858
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1216268856}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 495.76315, y: 376.3048, z: -412.4}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1279470317
 GameObject:
   m_ObjectHideFlags: 0
@@ -4959,7 +4913,6 @@ MonoBehaviour:
   gameInfoPanelPrefab: {fileID: 2238298485631790690, guid: 8ea0628da50f3f644ae2adaff90680af,
     type: 3}
   parentCanvas: {fileID: 765573988}
-  networkManager: {fileID: 1216268857}
   levelButtonHolder: {fileID: 910274902}
   buttonPrefab: {fileID: 8871941261523849888, guid: 64ad63d30aefd2f489794cc8ff8889c7,
     type: 3}
@@ -4976,7 +4929,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1464334134
 GameObject:
@@ -6635,7 +6588,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2053945793
 GameObject:

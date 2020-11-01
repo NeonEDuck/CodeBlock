@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class RoomManager : MonoBehaviour {
 
-    public NetworkManager networkManager = null;
     public Transform loadingIcon = null;
     public TMP_InputField nameInput = null;
     public TMP_InputField PINInput = null;
@@ -28,7 +27,7 @@ public class RoomManager : MonoBehaviour {
     public void EnterRoom() {
 
         if ( nameInput.text.Trim() != "" ) {
-            VariablesStorage.member_name = nameInput.text.Trim();
+            VariablesStorage.memberName = nameInput.text.Trim();
         }
         else {
             infoText.text = "請輸入你的名字!";
@@ -61,7 +60,7 @@ public class RoomManager : MonoBehaviour {
         string jsonString = null;
         string stmt = "SELECT * FROM class WHERE class_id = '" + VariablesStorage.roomId + "';";
 
-        yield return StartCoroutine( networkManager.GetRequest( stmt, returnValue => {
+        yield return StartCoroutine( NetworkManager.GetRequest( stmt, returnValue => {
             jsonString = returnValue;
         } ) );
 
@@ -101,9 +100,9 @@ public class RoomManager : MonoBehaviour {
             "topics : " + topics;
 
 
-        stmt = "SELECT * FROM class_member WHERE member_name = '" + VariablesStorage.member_name + "';";
+        stmt = "SELECT * FROM class_member WHERE member_name = '" + VariablesStorage.memberName + "';";
 
-        yield return StartCoroutine( networkManager.GetRequest( stmt, returnValue => {
+        yield return StartCoroutine( NetworkManager.GetRequest( stmt, returnValue => {
             jsonString = returnValue;
         } ) );
 
@@ -120,15 +119,18 @@ public class RoomManager : MonoBehaviour {
 
             stmt = "SELECT COUNT(*) FROM class_member WHERE class_id = '" + VariablesStorage.roomId + "';";
 
-            yield return StartCoroutine( networkManager.GetRequest( stmt, returnValue => {
+            yield return StartCoroutine( NetworkManager.GetRequest( stmt, returnValue => {
                 jsonO = MiniJSON.Json.Deserialize( returnValue ) as List<object>;
             } ) );
 
             if ( int.Parse((jsonO[0] as Dictionary<string, object>)["count"] as string) < max_number ) {
-                stmt = "INSERT INTO class_member (class_id, member_name) VALUES ('" + VariablesStorage.roomId + "', '" + VariablesStorage.member_name + "');";
+                stmt = "INSERT INTO class_member (class_id, member_name) VALUES ('" + VariablesStorage.roomId + "', '" + VariablesStorage.memberName + "');";
 
-                yield return StartCoroutine( networkManager.GetRequest( stmt, returnValue => {
-                    Debug.Log( returnValue );
+                yield return StartCoroutine( NetworkManager.GetRequest( stmt, returnValue => {
+                    jsonO = MiniJSON.Json.Deserialize( returnValue ) as List<object>;
+
+                    it = jsonO[0] as Dictionary<string, object>;
+                    VariablesStorage.memberId = it["member_id"] as string;
                 } ) );
             }
             else {
@@ -139,12 +141,17 @@ public class RoomManager : MonoBehaviour {
             }
         }
         else {
+            jsonO = MiniJSON.Json.Deserialize( jsonString ) as List<object>;
+
+            it = jsonO[0] as Dictionary<string, object>;
+            VariablesStorage.memberId = it["member_id"] as string;
+
             warningText.text = "警告: 此名稱已經有使用紀錄, 如果你不是此名稱的原主人, 建議改成其他名字";
         }
 
         VariablesStorage.roomOK = true;
         gameObject.SetActive( false );
-        welcomeText.text = "歡迎" + VariablesStorage.member_name + "!";
+        welcomeText.text = "歡迎" + VariablesStorage.memberName + "!";
         lipm.ReloadLevels();
 
         //var jsonO = MiniJSON.Json.Deserialize( jsonString ) as List<object>;

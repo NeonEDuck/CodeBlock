@@ -12,10 +12,14 @@ public class LevelInfoPanel : MonoBehaviour {
     public TMP_Text TMP_Desc = null;
     public TMP_Text TMP_Creator = null;
 
+    public string courseId = "";
     public string levelName = "";
     public string levelDesc = "";
     public string levelCreator = "";
     public string levelJson = "";
+    public int levelScoreTime = 0;
+    public int levelScoreAmount = 0;
+    public int levelScoreBlocks = 0;
 
     public bool pullOutState = false;
     private float pullAnimationStart = -1f;
@@ -54,10 +58,14 @@ public class LevelInfoPanel : MonoBehaviour {
         levelInfoPanelManager.AddOrRemovePanel( ( add ) ? levelId : -1 );
     }
 
-    public void SetInfo( (string, string, string) info ) {
-        levelName = info.Item1;
-        levelDesc = info.Item2;
-        levelJson = info.Item3;
+    public void SetInfo( (string, string, string, string, int, int, int) info ) {
+        courseId = info.Item1;
+        levelName = info.Item2;
+        levelDesc = info.Item3;
+        levelJson = info.Item4;
+        levelScoreTime = info.Item5;
+        levelScoreAmount = info.Item6;
+        levelScoreBlocks = info.Item7;
         DisplayInfo();
     }
     public void DisplayInfo() {
@@ -68,7 +76,11 @@ public class LevelInfoPanel : MonoBehaviour {
 
     public void EnterLevel() {
         VariablesStorage.levelId = levelId;
+        VariablesStorage.courseId = courseId;
         VariablesStorage.levelJson = levelJson;
+        VariablesStorage.levelTime = levelScoreTime;
+        VariablesStorage.levelAmount = levelScoreAmount;
+        VariablesStorage.levelBlocks = levelScoreBlocks;
         SceneManager.LoadScene( "SampleScene" );
     }
 }

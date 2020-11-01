@@ -4,8 +4,6 @@ using TMPro;
 using System.Collections.Generic;
 
 public class LeaderBoard : MonoBehaviour {
-
-    public NetworkManager networkManager = null;
     public TMP_InputField PINInput = null;
     public Transform content = null;
     public GameObject recordRowPrefab = null;
@@ -70,7 +68,7 @@ public class LeaderBoard : MonoBehaviour {
             Debug.Log( "leaderBoard fetching" );
             stmt = "SELECT * FROM class WHERE class_id = '" + roomId + "';";
 
-            yield return StartCoroutine( networkManager.GetRequest( stmt, returnValue => {
+            yield return StartCoroutine( NetworkManager.GetRequest( stmt, returnValue => {
                 jsonString = returnValue;
             } ) );
 
@@ -89,9 +87,9 @@ public class LeaderBoard : MonoBehaviour {
                 yield break;
             }
 
-            stmt = "SELECT member_name, COUNT(*) AS num, SUM(score_time) AS sum_score_time, SUM(score_amount) AS sum_score_amount, SUM(score_blocks) AS sum_score_blocks FROM class_member LEFT JOIN play_record ON class_member.member_id = class_member.member_id GROUP BY class_member.member_id ORDER BY " + orderBy + ";";
+            stmt = "SELECT member_name, COUNT(*) AS num, SUM(score_time) AS sum_score_time, SUM(score_amount) AS sum_score_amount, SUM(score_blocks) AS sum_score_blocks FROM class_member LEFT JOIN play_record ON class_member.member_id = play_record.member_id GROUP BY class_member.member_id ORDER BY " + orderBy + ";";
 
-            yield return StartCoroutine( networkManager.GetRequest( stmt, returnValue => {
+            yield return StartCoroutine( NetworkManager.GetRequest( stmt, returnValue => {
                 jsonString = returnValue;
             } ) );
 
@@ -113,19 +111,23 @@ public class LeaderBoard : MonoBehaviour {
             foreach ( Transform child in content ) {
                 GameObject.Destroy( child.gameObject );
             }
+            int num = 0;
+            int sum_score_time = 0;
+            int sum_score_amount = 0;
+            int sum_score_blocks = 0;
 
             foreach ( Dictionary<string, object> item in jsonO ) {
                 Dictionary<string, object> it = item as Dictionary<string, object>;
                 string member_name = it["member_name"] as string;
-                int num = 0;
-                int sum_score_time = 0;
-                int sum_score_amount = 0;
-                int sum_score_blocks = 0;
+                num = 0;
+                sum_score_time = 0;
+                sum_score_amount = 0;
+                sum_score_blocks = 0;
                 if ( it["sum_score_time"] != null ) {
                     num = int.Parse( it["num"] as string );
-                    sum_score_time = (int)(long)it["sum_score_time"];
-                    sum_score_amount = (int)(long)it["sum_score_amount"];
-                    sum_score_blocks = (int)(long)it["sum_score_blocks"];
+                    sum_score_time = int.Parse( it["sum_score_time"] as string );
+                    sum_score_amount = int.Parse( it["sum_score_amount"] as string );
+                    sum_score_blocks = int.Parse( it["sum_score_blocks"] as string );
                 }
                 RecordRow record = Instantiate( recordRowPrefab, content ).GetComponent<RecordRow>();
 
