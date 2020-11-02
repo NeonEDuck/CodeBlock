@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8601110048307600536}
   - component: {fileID: 8601110048307600537}
+  - component: {fileID: 6237245855067859999}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: GameManager
@@ -81,7 +82,9 @@ MonoBehaviour:
     type: 3}
   gameBoard: {fileID: 0}
   gameView: {fileID: 0}
+  gameContent: {fileID: 0}
   gameEnv: 
+  dir: 0
   matHighLight: {fileID: 2100000, guid: ae1b40b0e0ad91b429a3a01d915b8370, type: 2}
   matRedHighLight: {fileID: 2100000, guid: 940a89433d2639a4ca9479d12f1ceb3e, type: 2}
   canvas: {fileID: 0}
@@ -100,3 +103,15 @@ MonoBehaviour:
   preSelectedBlockGrids: {fileID: 0}
   targetBlock: {fileID: 0}
   blockLibrary: {fileID: 0}
+--- !u!114 &6237245855067859999
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8601110048307600535}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b26010a201a0fa94ab2749e65e8091a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

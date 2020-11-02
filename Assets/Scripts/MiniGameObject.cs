@@ -59,35 +59,44 @@ public class MiniGameObject : MonoBehaviour {
         newPos = lastPos;
         Vector2Int delta = new Vector2Int( 0, 0 );
 
-        //switch ( id ) {
-        //    case 0:
-        //        delta = new Vector2Int( 0, -1 );
-        //        break;
-        //    case 1:
-        //        delta = new Vector2Int( 0, 1 );
-        //        break;
-        //    case 2:
-        //        delta = new Vector2Int( -1, 0 );
-        //        break;
-        //    case 3:
-        //        delta = new Vector2Int( 1, 0 );
-        //        break;
-        //}
 
-        switch ( direction ) {
-            case Direction.DOWN:
-                delta = new Vector2Int( 0, 1 );
-                break;
-            case Direction.UP:
-                delta = new Vector2Int( 0, -1 );
-                break;
-            case Direction.LEFT:
-                delta = new Vector2Int( -1, 0 );
-                break;
-            case Direction.RIGHT:
-                delta = new Vector2Int( 1, 0 );
-                break;
+        if ( objectType == 2 ) {
+            switch ( direction ) {
+                case Direction.DOWN:
+                    delta = new Vector2Int( 0, 1 );
+                    id = 0;
+                    break;
+                case Direction.UP:
+                    delta = new Vector2Int( 0, -1 );
+                    id = 1;
+                    break;
+                case Direction.LEFT:
+                    delta = new Vector2Int( -1, 0 );
+                    id = 2;
+                    break;
+                case Direction.RIGHT:
+                    delta = new Vector2Int( 1, 0 );
+                    id = 3;
+                    break;
+            }
         }
+        else {
+            switch ( id ) {
+                case 0:
+                    delta = new Vector2Int( 0, 1 );
+                    break;
+                case 1:
+                    delta = new Vector2Int( 0, -1 );
+                    break;
+                case 2:
+                    delta = new Vector2Int( -1, 0 );
+                    break;
+                case 3:
+                    delta = new Vector2Int( 1, 0 );
+                    break;
+            }
+        }
+
 
         Vector2Int newPosInEnv = posInEnv + delta;
         Debug.Log( newPosInEnv );

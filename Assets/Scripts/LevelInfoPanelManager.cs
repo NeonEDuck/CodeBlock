@@ -14,8 +14,10 @@ public class LevelInfoPanelManager : MonoBehaviour {
     public Transform levelButtonHolder = null;
     public GameObject buttonPrefab = null;
     public Transform loadingIcon = null;
+    public List<Sprite> previewImg = new List<Sprite>();
+    public LeaderBoard leaderBoard = null;
 
-    public Dictionary<int, ( string, string, string, string, int, int, int)> levelsInfo = new Dictionary<int, ( string, string, string, string, int, int, int)>();
+    public Dictionary<int, ( string, string, string, string, int, int, int, Sprite)> levelsInfo = new Dictionary<int, ( string, string, string, string, int, int, int, Sprite)>();
 
     void Start() {
         //levelsInfo.Add( 1, ("First Level", "Lorem ipsum dolor sit amet, orci erat morbi interdum erat, nibh wisi erat. Sed nulla urna, at vel, vitae aliquam imperdiet placerat scelerisque.", "Creator1", "{\"blocksList\":{\"StartBlock\":1, \"SetBlock\":4, \"DefineBlock\":2, \"MoveBlock\":0}, \"gameEnv\":\"001001010010001000100013120000000001000100\"}") );
@@ -24,6 +26,9 @@ public class LevelInfoPanelManager : MonoBehaviour {
         if ( VariablesStorage.roomOK ) {
             ReloadLevels();
         }
+    }
+    public void FetchLevelLeaderBoard( int levelId ) {
+        leaderBoard.OpenLeaderBoard( true, levelsInfo[levelId].Item1, levelsInfo[levelId].Item2 );
     }
 
     public void ReloadLevels() {
@@ -100,6 +105,14 @@ public class LevelInfoPanelManager : MonoBehaviour {
                 int score_time = ( item["score_time"] is null ) ? -1 : (int)(long)item["score_time"]; ;
                 int score_amount = ( item["score_amount"] is null ) ? -1 : (int)(long)item["score_amount"];
                 int score_blocks = ( item["score_blocks"] is null ) ? -1 : (int)(long)item["score_blocks"];
+                string topic_id = item["topic_id"] as string;
+
+                Sprite img = null;
+
+                if      ( topic_id == "T100" ) img = previewImg[0];
+                else if ( topic_id == "T101" ) img = previewImg[1];
+                else if ( topic_id == "T102" ) img = previewImg[2];
+                else if ( topic_id == "T103" ) img = previewImg[3];
 
 
                 //Debug.LogWarning( "SELECT * FROM play_record WHERE member_id = '" + VariablesStorage.memberId + "' AND course_id = '" + course_id + "';" );
@@ -112,7 +125,7 @@ public class LevelInfoPanelManager : MonoBehaviour {
                 //    }
                 //}
 
-                levelsInfo.Add( i, ( course_id, course_name, description, course_json, score_time, score_amount, score_blocks ) );
+                levelsInfo.Add( i, ( course_id, course_name, description, course_json, score_time, score_amount, score_blocks, img ) );
                 Transform btn = Instantiate( buttonPrefab, levelButtonHolder ).transform;
                 int temp = i++;
                 btn.GetComponent<Button>().onClick.AddListener( delegate { AddOrRemovePanel( temp ); } );

@@ -16,6 +16,14 @@ public class BlockLibrary : MonoBehaviour {
     }
 
     void Start() {
+        resetBlocks();
+    }
+
+    public void resetBlocks() {
+
+        foreach ( Transform child in content ) {
+            Destroy( child.gameObject );
+        }
 
         float height = 0f;
         foreach ( KeyValuePair<int, (BlockType, int)> block in blockList ) {

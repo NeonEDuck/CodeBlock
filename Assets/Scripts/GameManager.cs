@@ -34,6 +34,7 @@ public class GameManager : MonoBehaviour {
     [Header( "MiniPrefab" )]
     public Transform gameBoard = null;
     public Transform gameView = null;
+    public Transform gameContent = null;
     public string gameEnv;
     public Direction dir;
     [HideInInspector] 
@@ -133,8 +134,23 @@ public class GameManager : MonoBehaviour {
         }
         ResetGameView();
     }
+    public void ResetGame() {
+
+        blockLibrary.resetBlocks();
+
+        foreach ( Transform child in gameContent ) {
+            Destroy( child.gameObject );
+        }
+        ResetGameView();
+    }
 
     public void ResetGameView() {
+
+        if ( gameCoroutine != null ) {
+            StopCoroutine( gameCoroutine );
+            StopGame();
+        }
+
         player = null;
         gameEnv2d = new List<MiniGameObject>[7, 6];
         for ( int i = 0; i < 7; i++ ) {
@@ -221,6 +237,11 @@ public class GameManager : MonoBehaviour {
     }
 
     public void StopGame( bool win = false ) {
+
+        foreach ( Image img in gameContent.GetComponentsInChildren<Image>() ) {
+            img.material = null;
+        }
+
         nonReactablePanel.gameObject.SetActive( false );
         if ( win ) {
             winPanel.gameObject.SetActive( true );
@@ -728,7 +749,7 @@ public class GameManager : MonoBehaviour {
 
     public void ResetAll() {
         foreach ( Transform bg in BlockGridDropZone.blockGrids ) {
-            if ( bg != null && bg.parent.name.StartsWith( "GameBoard" ) ) {
+            if ( bg != null && bg.parent.name.StartsWith( "Content" ) ) {
                 BlockGridDropZone bgdz = bg.GetComponent<BlockGridDropZone>();
                 if ( bgdz != null ) {
                     bgdz.InfoReset();

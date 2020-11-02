@@ -34,33 +34,33 @@ public class BlockGridDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandl
             }
         }
         if ( blockGridInfo.priority == 0 && transform.childCount > 0 ) {
-            isInside = false;
+            //isInside = false;
 
-            RectTransform[] check = { transform.GetChild(0).GetComponent<RectTransform>(), transform.GetChild( transform.childCount - 1 ).GetComponent<RectTransform>() };
+            //RectTransform[] check = { transform.GetChild(0).GetComponent<RectTransform>(), transform.GetChild( transform.childCount - 1 ).GetComponent<RectTransform>() };
 
-            // corners of item in world space
-            Vector3 localSpacePoint;
+            //// corners of item in world space
+            //Vector3 localSpacePoint;
 
-            for ( int j = 0; j < 2; j++ ) {
-                Vector3[] corners = new Vector3[4];
-                check[j].GetWorldCorners( corners );
-                for ( int i = 0; i < 4; i++ ) {
-                    // Backtransform to parent space
-                    localSpacePoint = gameManager.canvas.GetComponent<RectTransform>().InverseTransformPoint( corners[i] );
+            //for ( int j = 0; j < 2; j++ ) {
+            //    Vector3[] corners = new Vector3[4];
+            //    check[j].GetWorldCorners( corners );
+            //    for ( int i = 0; i < 4; i++ ) {
+            //        // Backtransform to parent space
+            //        localSpacePoint = gameManager.canvas.GetComponent<RectTransform>().InverseTransformPoint( corners[i] );
 
-                    // If parent (canvas) does not contain checked items any point
-                    if ( gameManager.gameBoard.GetComponent<RectTransform>().rect.Contains( localSpacePoint ) ) {
-                        isInside = true;
-                    }
-                }
-            }
+            //        // If parent (canvas) does not contain checked items any point
+            //        if ( gameManager.gameContent.GetComponent<RectTransform>().rect.Contains( localSpacePoint ) ) {
+            //            isInside = true;
+            //        }
+            //    }
+            //}
 
         }
     }
 
     void Start() {
 
-        if ( transform.parent.name.StartsWith( "GameBoard" ) ) {
+        if ( transform.parent.name.StartsWith( "Content" ) ) {
             blockGridInfo.priority = 0;
             PriorityGiving();
         }
@@ -71,7 +71,7 @@ public class BlockGridDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandl
 
     public void InfoReset() {
         Transform target = transform;
-        while ( !target.parent.name.StartsWith( "GameBoard" ) ) {
+        while ( !target.parent.name.StartsWith( "Content" ) ) {
             target = target.parent;
         }
 
@@ -164,7 +164,7 @@ public class BlockGridDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandl
 
                 bool extend = false;
                 if ( transform.childCount > 0 ) {
-                    if ( transform.parent.name.StartsWith( "GameBoard" ) ) {
+                    if ( transform.parent.name.StartsWith( "Content" ) ) {
                         if ( gameManager.isDraging ) {
                             extend = true;
                         }
