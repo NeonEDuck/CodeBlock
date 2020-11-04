@@ -113,8 +113,10 @@ public class BlockGridDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandl
                     //nextBlockGridDropZone.PriorityGiving();
                     //break;
                 case BlockType.LogicBlock:
-                    ToTheNextPriority( child.GetComponent<BlockInfo>().refField[0].GetComponent<ValueBlockSwap>().valueBlockGrid );
-                    ToTheNextPriority( child.GetComponent<BlockInfo>().refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid );
+                    if ( child.GetComponent<BlockInfo>().refField[0].GetComponent<ValueBlockSwap>() != null ) {
+                        ToTheNextPriority( child.GetComponent<BlockInfo>().refField[0].GetComponent<ValueBlockSwap>().valueBlockGrid );
+                        ToTheNextPriority( child.GetComponent<BlockInfo>().refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid );
+                    }
                     break;
             }
         }

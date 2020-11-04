@@ -1197,6 +1197,7 @@ MonoBehaviour:
   - {fileID: 3821395313766609803}
   - {fileID: 5135162955250658270}
   - {fileID: 2118991872413254827}
+  extraRefField: []
   connectRule: 0101
   hasElse: 1
 --- !u!225 &2845965950022789579
@@ -1924,6 +1925,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3179721744121315996, guid: 38f38ac6b6820354db1effb1d22006f4,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -25
+      objectReference: {fileID: 0}
+    - target: {fileID: 3179721744121315996, guid: 38f38ac6b6820354db1effb1d22006f4,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -45
+      objectReference: {fileID: 0}
+    - target: {fileID: 8849853653252921589, guid: 38f38ac6b6820354db1effb1d22006f4,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 38f38ac6b6820354db1effb1d22006f4, type: 3}

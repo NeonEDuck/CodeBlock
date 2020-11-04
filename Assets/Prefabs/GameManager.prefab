@@ -64,6 +64,12 @@ MonoBehaviour:
     type: 3}
   turnBlockPrefab: {fileID: 1733049511104675455, guid: 9b7c6975f1584644aaea688c4afa7949,
     type: 3}
+  breakBlockPrefab: {fileID: 1733049511104675455, guid: 4b90e5b59d43e454e998c4ba65358835,
+    type: 3}
+  logicBlockPrefab: {fileID: 3691007400728678226, guid: d80fa31a30a74b1489549b43be6feb0b,
+    type: 3}
+  logicSelectorBlockPrefab: {fileID: 3691007400728678226, guid: 9ad80e8047bc5f34496f5f0e718ce86c,
+    type: 3}
   spawnerPrefab: {fileID: 262286372814367248, guid: d042f5051cd4a4b4699ffb95669a5435,
     type: 3}
   obstaclePrefab: {fileID: 3376909157183936004, guid: bdc1108417042f24db874b970dcbf758,
