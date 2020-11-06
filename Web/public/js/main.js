@@ -1,3 +1,4 @@
+
 jQuery(document).ready(function($) {
 
     'use strict';
@@ -38,7 +39,7 @@ jQuery(document).ready(function($) {
             $(tabgroup).children('div').hide();
             $(target).show();
           
-        })
+        });
 
 
 
@@ -66,7 +67,7 @@ jQuery(document).ready(function($) {
                     loop:false
                 }
             }
-        })
+        });
         $(function() {
             console.log('123');
             $( "#dialog-4" ).dialog({
@@ -97,7 +98,7 @@ jQuery(document).ready(function($) {
         //update navigation on scroll...
         $(window).on('scroll', function(){
             updateNavigation();
-        })
+        });
         //...and when the page starts
         updateNavigation();
         
@@ -128,20 +129,39 @@ jQuery(document).ready(function($) {
           e.preventDefault();
           $('html, body').animate({ scrollTop: $($(this).attr('href')).offset().top -0 }, 500, 'linear');
         });
+        
+        // $( ".table-row" ).click(function() {
+        //     var class_id = {class_id:document.getElementsByClassName("value")}
 
-
+        //     console.log(calss_id)
+        // });
+        
+        // for(var xx = 0;xx<10;xx++){
+        //     $("#table_"+xx).click(function () {
+        //     $("#member_"+xx).slideToggle("slow");
+            
+        //     });
+        // }
+        
+       
+        
 });
+
+function toggleMember( id ) {
+    $("#member_"+id).slideToggle("slow");
+}
+
 function goto($name){
     document.location = $name ;
 }
 
 function check( class_id ){
-    var enter = prompt("確定要刪除此課程的話，請輸入'" + class_id + "'")
+    var enter = prompt("確定要刪除此課程的話，請輸入'" + class_id + "'");
     console.log(enter)
     if(enter==class_id){
         console.log("HERE")
         document.getElementById("delete_class").submit();
-        alert("刪除成功")
+        alert("刪除成功");
         
         
     }else if(enter==null){
@@ -151,3 +171,99 @@ function check( class_id ){
     }
 }
 
+function search_class(class_id, table_i,class_name){
+    console.log("js SUCESS")
+    var calss_id =class_id;
+    console.log(class_id)
+    $.ajax({
+        url: '/class_member_search',
+        type: "POST",
+        data:{
+            class_id:class_id
+        },
+        dataType: "json",
+        success:function(data){
+            
+            if(data.length>0){
+                var str1 = '<th id ="asd"colspan="3">成員名單</th>';
+                var str2 = '<td id="td"></td>';
+                // $("#tableId thead tr").prepend(str1);
+                // var thead = $('#member_'+table_i+' thead');
+                var tbody = $('#member_'+table_i+' tbody');
+                $('#member_'+table_i+' thead th').empty();
+                $('#member_'+table_i+' thead th').append("成員名單");
+                tbody.empty();
+                for (var j = 0; j < Math.ceil(data.length/3); j++) {
+                    tbody.append('<tr></tr>');
+                    var tr = tbody.children("tr").last();
+                    for(var i = 0;i<3;i++){
+                        var cnt = j*3+i;
+                        if (cnt >= data.length ){
+                            break;
+                        }
+                        // if(typeof $("#td"+i).html() != "undefined") {
+                            
+                        //     $("#td"+i).remove();
+                        // }  
+                        // $("#tableId tbody tr").append(str2);
+                        
+                        console.log(data[cnt].member_name);
+                        
+                        tr.append('<td class="'+data[cnt].member_name+'_'+class_id+'" onclick="deleteMember(\''+data[cnt].member_name+'\',\''+class_id+'\',\''+class_name+'\',\''+data.length+'\',\''+table_i+'\')">'+data[cnt].member_name+'</td>');
+                        // tr.children('td').last().append( data[cnt].member_name);
+                        // document.getElementById("td").id = "td"+i;
+                        
+                        
+                        // document.getElementById("td"+i).innerHTML = data[i].member_name;
+                        console.log("第" + cnt + "次");
+                    }
+                }
+                // for(var i = data.length;i<30;i++){
+                //     $( "#td"+i ).remove();
+                // }
+               
+            }else{
+                $('#member_'+table_i+' thead th').append("目前沒有學員");
+            }
+            
+            //console.log(data[0].member_name);
+            // for(key in data) {
+            //     console.log(data)
+            //     // if(data.hasOwnProperty(key)) {
+            //     //     var value = data[key];
+            //     //     // $(".text").after("<p>123</p>"+value);
+            //     //     console.log(str +=value);
+            //     // }
+            // }
+        }
+    });      
+}
+function call(a,b){
+    console.log(a)
+    console.log(b)
+}
+function deleteMember(member_id, class_id ,class_name,length,table) {
+    var check = confirm("你確定要把\"" + member_id + "\"這位同學踢出課堂 : \"" + class_name + "\"嗎?")
+    if(check){
+        console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaa");
+        $.ajax({
+            type: 'POST',
+            url: '/class_member_delete' ,
+            data: {
+                member_id:member_id,
+                class_id:class_id
+            } ,
+            dataType: "json",
+            success: function(data){
+                if(length==1){
+                    $('#member_'+table+' thead th').text("目前沒有學員");
+                }
+                console.log("send success")
+                $("."+member_id+'_'+class_id).remove(); 
+            }
+        });
+    }
+
+
+    
+}

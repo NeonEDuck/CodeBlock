@@ -753,7 +753,6 @@ header {
   display: inline-block;
   text-align: center;
   width: 25%;
-  float: left;
   margin: 0;
   padding: 0;
 }
@@ -1559,4 +1558,61 @@ color: #888;
   text-align: center;
   width: 25px;
   }
-  
+ /* ----------------------課堂成員-------------------------------- */
+ table, tbody, tfoot, thead, tr, th, td {
+  margin: 0;
+  padding: 0;
+  outline: 0;
+  vertical-align: baseline;
+  background: transparent;
+  border-collapse: collapse;
+  border-spacing: 0;
+  border: 0;
+  color: #fff;
+}
+
+.tablebox table {
+  border-collapse: separate;
+  border-spacing: 1px;
+  table-layout: fixed;
+}
+
+.tablebox {
+  width: 100%;
+  height: 100px;
+  overflow: hidden;
+  margin: 10px auto;
+  display: none;
+}
+
+.tablebox table {
+  width: 100%;
+}
+
+.tablebox table th, .tablebox table td {
+  font-size: 12px;
+  text-align: center;
+  line-height: 16px;
+  background: #3754a2;
+  padding: 12px;
+}
+
+.tablebox table th {
+  height: 30px;
+  line-height: 30px;
+  background: #6271bd;
+  font-size: 14px;
+  font-weight: normal;
+}
+
+.tablebox table td img {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.tablebox.table_md table td, .tablebox.table_md table th {
+  line-height: 18px;
+}
+.tablebox.table td{
+  word-wrap: break-word;
+}
