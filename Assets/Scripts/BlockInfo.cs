@@ -9,6 +9,7 @@ public class BlockInfo : MonoBehaviour
 
     public BlockType blockType = BlockType.SetBlock;
     public List<Transform> refField;
+    public List<Transform> extraRefField;
     public bool[] connectRule = { true, true };
     public bool hasElse = true;
 

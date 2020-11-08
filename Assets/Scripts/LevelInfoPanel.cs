@@ -2,6 +2,7 @@
 using System.Collections;
 using TMPro;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class LevelInfoPanel : MonoBehaviour {
 
@@ -11,11 +12,17 @@ public class LevelInfoPanel : MonoBehaviour {
     public TMP_Text TMP_Name = null;
     public TMP_Text TMP_Desc = null;
     public TMP_Text TMP_Creator = null;
+    public Transform T_img = null;
 
+    public string courseId = "";
     public string levelName = "";
     public string levelDesc = "";
     public string levelCreator = "";
     public string levelJson = "";
+    public int levelScoreTime = 0;
+    public int levelScoreAmount = 0;
+    public int levelScoreBlocks = 0;
+    public Sprite levelPreviewImg = null;
 
     public bool pullOutState = false;
     private float pullAnimationStart = -1f;
@@ -53,23 +60,35 @@ public class LevelInfoPanel : MonoBehaviour {
     public void AddOrRemovePanel( bool add ) {
         levelInfoPanelManager.AddOrRemovePanel( ( add ) ? levelId : -1 );
     }
+    public void GetLeaderBoard() {
+        levelInfoPanelManager.FetchLevelLeaderBoard( levelId );
+    }
 
-    public void SetInfo( (string, string, string, string) info ) {
-        levelName = info.Item1;
-        levelDesc = info.Item2;
-        levelCreator = info.Item3;
+    public void SetInfo( (string, string, string, string, int, int, int, Sprite) info ) {
+        courseId = info.Item1;
+        levelName = info.Item2;
+        levelDesc = info.Item3;
         levelJson = info.Item4;
+        levelScoreTime = info.Item5;
+        levelScoreAmount = info.Item6;
+        levelScoreBlocks = info.Item7;
+        levelPreviewImg = info.Item8;
         DisplayInfo();
     }
     public void DisplayInfo() {
         TMP_Name.text = levelName;
         TMP_Desc.text = levelDesc;
         TMP_Creator.text = levelCreator;
+        T_img.GetComponent<Image>().sprite = levelPreviewImg;
     }
 
     public void EnterLevel() {
-        GameObject.FindGameObjectWithTag("VariablesStorage").GetComponent<VariablesStorage>().levelId = levelId;
-        GameObject.FindGameObjectWithTag( "VariablesStorage" ).GetComponent<VariablesStorage>().levelJson = levelJson;
+        VariablesStorage.levelId = levelId;
+        VariablesStorage.courseId = courseId;
+        VariablesStorage.levelJson = levelJson;
+        VariablesStorage.levelTime = levelScoreTime;
+        VariablesStorage.levelAmount = levelScoreAmount;
+        VariablesStorage.levelBlocks = levelScoreBlocks;
         SceneManager.LoadScene( "SampleScene" );
     }
 }

@@ -99,7 +99,7 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
         // if the original BlockGrid doesn't have Block anymore, there is no reason to return back
         // Prevent snapping to an seemingly empty space
-        if ( oldParent.childCount == 0 && oldParent.GetComponent<BlockGridInfo>().blockGridType == BlockGridType.Block && oldParent.parent == gameManager.gameBoard ) {
+        if ( oldParent.childCount == 0 && oldParent.GetComponent<BlockGridInfo>().blockGridType == BlockGridType.Block && oldParent.parent == gameManager.gameContent ) {
             oldParent.gameObject.GetComponent<CanvasGroup>().blocksRaycasts = false;
             gameManager.blockGridsUnderPointer.Remove( oldParent );
             foreach ( BlockGridDropZone opc in oldParent.GetComponentsInChildren<BlockGridDropZone>() ) {
@@ -117,7 +117,9 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
 
         // It's holding BlockGrid, move it up half of height ( BlockGrid's pivot point is on the top )
-        gameManager.targetBlock.position = eventData.position + pointerOffset + new Vector2(0f, rect.sizeDelta.y / 2);
+        if ( GameVariable.mouseInWindow ) {
+            gameManager.targetBlock.position = eventData.position + pointerOffset + new Vector2( 0f, rect.sizeDelta.y / 2 );
+        }
 
         //Debug.DrawLine(eventData.position, eventData.position + new Vector2(0, (GameUtility.BLOCK_HEIGHT - GameUtility.CONNECTOR_HEIGHT) / 2) , Color.red);
         
@@ -327,6 +329,7 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
             }
             else {
                 BlockRaycastWithChildGrid( gameManager.targetBlock, true );
+                gameManager.targetBlock.SetParent( gameManager.gameContent );
                 placeHolderParent = transform.parent;
             }
         }
@@ -349,7 +352,7 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         // Destroy o.BlockGrid if no child
         if (oldParent != null)
         {
-            if ( oldParent.GetComponent<BlockGridInfo>().blockGridType == BlockGridType.Block && oldParent.parent == gameManager.gameBoard ) {
+            if ( oldParent.GetComponent<BlockGridInfo>().blockGridType == BlockGridType.Block && oldParent.parent == gameManager.gameContent ) {
                 if ( oldParent.childCount == 0 ) {
                     Destroy( oldParent.gameObject );
                 }
@@ -363,7 +366,7 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
         gameManager.ResetAll();
 
-        if ( gameManager.wannaTrash || !gameManager.targetBlock.GetComponent<BlockGridDropZone>().isInside ) {
+        if ( gameManager.wannaTrash || !GameVariable.mouseInWindow ) {
             Destroy( gameManager.targetBlock.gameObject );
         }
 
@@ -409,7 +412,7 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
         string parent = transform.parent.name;
 
-        if ( parent.StartsWith( "GameBoard" ) ) {
+        if ( parent.StartsWith( "Content" ) ) {
             Transform blockGrid = Instantiate(blockGridPrefab, transform.parent).GetComponent<Transform>();
             blockGrid.position = position + new Vector3(0, gridHeight/2, 0);
             transform.SetParent(blockGrid);

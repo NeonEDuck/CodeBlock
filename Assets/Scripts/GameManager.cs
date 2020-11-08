@@ -20,17 +20,26 @@ public class GameManager : MonoBehaviour {
     public GameObject startBlockPrefab;
     public GameObject valueBlockPrefab;
     public GameObject moveBlockPrefab;
+    public GameObject turnBlockPrefab;
+    public GameObject breakBlockPrefab;
+    public GameObject logicBlockPrefab;
+    public GameObject logicSelectorBlockPrefab;
     public GameObject spawnerPrefab;
     [Header( "MiniPrefab" )]
     public GameObject obstaclePrefab;
     public GameObject playerPrefab;
     public GameObject boxPrefab;
     public GameObject flagPrefab;
+    public GameObject holePrefab;
+    public GameObject buttonPrefab;
+    public GameObject doorPrefab;
 
     [Header( "MiniPrefab" )]
     public Transform gameBoard = null;
     public Transform gameView = null;
-    public string gameEnv; 
+    public Transform gameContent = null;
+    public string gameEnv;
+    public Direction dir;
     [HideInInspector] 
     public List<MiniGameObject>[,] gameEnv2d = new List<MiniGameObject>[7,6];
 
@@ -41,7 +50,7 @@ public class GameManager : MonoBehaviour {
     public Transform toolBar = null;
     public RectTransform outsideRect = null;
     public Transform nonReactablePanel = null;
-    public Transform winPanel = null;
+    public WinPanel winPanel = null;
     public bool debugBack = true;
 
     [Header("Private")]
@@ -57,37 +66,67 @@ public class GameManager : MonoBehaviour {
     public Transform targetBlock = null; // What cursor is holding
     private List<Dictionary<string, object>> gameVariableLists = new List<Dictionary<string, object>>();
     private Coroutine gameCoroutine = null;
+    private List<Coroutine> gameLoopCoroutines = new List<Coroutine>();
+    private List<MiniGameObject> miniGameObjects = new List<MiniGameObject>();
+    private bool gameBreakTrigger = false;
+    private bool loopBreakTrigger = false;
+
+    private int score_time = 0;
+    private int score_amount = 0;
+    private int score_blocks = 0;
 
     public BlockLibrary blockLibrary = null;
-    public VariablesStorage variables = null;
 
     public void Awake() {
 
 #if UNITY_EDITOR
-        if ( debugBack && GameObject.FindGameObjectWithTag( "VariablesStorage" ) == null ) {
+        if ( debugBack && VariablesStorage.levelJson == "" ) {
             SceneManager.LoadScene( "GameListScene" );
         }
 #endif
 
 
-        if ( GameObject.FindGameObjectWithTag( "VariablesStorage" ) != null ) {
-            variables = GameObject.FindGameObjectWithTag( "VariablesStorage" ).GetComponent<VariablesStorage>();
-        }
         if ( blockLibrary == null && GameObject.FindGameObjectWithTag( "BlockLibrary" ) != null ) {
             blockLibrary = GameObject.FindGameObjectWithTag( "BlockLibrary" ).GetComponent<BlockLibrary>();
         }
 
-        if ( variables != null && blockLibrary != null ) {
-            var jsonO = MiniJSON.Json.Deserialize( variables.levelJson ) as Dictionary< string, object >;
+        if ( blockLibrary != null ) {
+            var jsonO = MiniJSON.Json.Deserialize( VariablesStorage.levelJson ) as Dictionary< string, object >;
 
             gameEnv = jsonO["gameEnv"] as string;
             gameEnv = gameEnv.Replace( "\n", "" );
+            dir = Direction.DOWN;
 
-            Dictionary<int, (BlockType, int)> dict = new Dictionary<int, (BlockType, int)>();
+            if ( jsonO.ContainsKey( "playerDir" ) ) {
+                dir = (Direction)(long)jsonO["playerDir"];
+
+                Debug.Log( (int)dir );
+                Debug.Log( (int)Direction.UP );
+                Debug.Log( (int)Direction.RIGHT );
+                Debug.Log( (int)Direction.DOWN );
+                Debug.Log( (int)Direction.LEFT );
+            }
+
+            Dictionary<int, (BlockType, int, Dictionary<string, string>)> dict = new Dictionary<int, (BlockType, int, Dictionary<string, string>)>();
 
             foreach ( KeyValuePair<string, object> kvp in jsonO["blocksList"] as Dictionary<string, object> ) {
                 //dict[dict.Count] = ( GameUtility.StringToBlockType( kvp.Key.ToString() ), (int)kvp.Value );
-                dict[dict.Count] = ( GameUtility.StringToBlockType( kvp.Key.ToString()), int.Parse( kvp.Value.ToString() ) );
+                string[] keyargs = kvp.Key.ToString().Split( ':' );
+                Dictionary<string, string> args = new Dictionary<string, string>();
+                BlockType blockType = GameUtility.StringToBlockType( keyargs[0] );
+
+                if      ( blockType == BlockType.MoveBlock ) {
+                    if ( keyargs.Length-1 >= 1 ) {
+                        args.Add( "direction", keyargs[1] );
+                    }
+                }
+                else if ( blockType == BlockType.RepeatBlock ) {
+                    if ( keyargs.Length - 1 >= 1 ) {
+                        args.Add( "repeat_n", keyargs[1] );
+                    }
+                }
+
+                dict[dict.Count] = ( blockType, int.Parse( kvp.Value.ToString() ), args );
             }
             blockLibrary.blockList = dict;
         }
@@ -106,18 +145,57 @@ public class GameManager : MonoBehaviour {
             gameEnv = jsonO["gameEnv"] as string;
             gameEnv = gameEnv.Replace( "\n", "" );
 
-            Dictionary<int, (BlockType, int)> dict = new Dictionary<int, (BlockType, int)>();
+
+            Dictionary<int, (BlockType, int, Dictionary<string, string>)> dict = new Dictionary<int, (BlockType, int, Dictionary<string, string>)>();
 
             foreach ( KeyValuePair<string, object> kvp in jsonO["blocksList"] as Dictionary<string, object> ) {
                 //dict[dict.Count] = ( GameUtility.StringToBlockType( kvp.Key.ToString() ), (int)kvp.Value );
-                dict[dict.Count] = (GameUtility.StringToBlockType( kvp.Key.ToString() ), int.Parse( kvp.Value.ToString() ));
+                string[] keyargs = kvp.Key.ToString().Split( ':' );
+                Dictionary<string, string> args = new Dictionary<string, string>();
+                BlockType blockType = GameUtility.StringToBlockType( keyargs[0] );
+
+                if ( blockType == BlockType.MoveBlock ) {
+                    if ( keyargs.Length - 1 >= 1 ) {
+                        args.Add( "direction", keyargs[1] );
+                    }
+                }
+                else if ( blockType == BlockType.RepeatBlock ) {
+                    if ( keyargs.Length - 1 >= 1 ) {
+                        args.Add( "repeat_n", keyargs[1] );
+                    }
+                }
+
+                dict[dict.Count] = (blockType, int.Parse( kvp.Value.ToString() ), args);
             }
             blockLibrary.blockList = dict;
         }
         ResetGameView();
     }
+    public void ResetGame() {
+
+        blockLibrary.resetBlocks();
+
+        foreach ( Transform child in gameContent ) {
+            Destroy( child.gameObject );
+        }
+        ResetGameView();
+    }
 
     public void ResetGameView() {
+
+        if ( gameCoroutine != null ) {
+            StopCoroutine( gameCoroutine );
+            StopGame();
+        }
+
+        GameVariable.gamePiece.Clear();
+        GameVariable.gamePiece.Add( 1, new List<MiniGameObject>() );
+        GameVariable.gamePiece.Add( 2, new List<MiniGameObject>() );
+        GameVariable.gamePiece.Add( 3, new List<MiniGameObject>() );
+        GameVariable.gamePiece.Add( 4, new List<MiniGameObject>() );
+        GameVariable.gamePiece.Add( 5, new List<MiniGameObject>() );
+        GameVariable.gamePiece.Add( 6, new List<MiniGameObject>() );
+        GameVariable.gamePiece.Add( 7, new List<MiniGameObject>() );
         player = null;
         gameEnv2d = new List<MiniGameObject>[7, 6];
         for ( int i = 0; i < 7; i++ ) {
@@ -139,21 +217,41 @@ public class GameManager : MonoBehaviour {
                     case '1':
                     case 'o':
                         spawn = Instantiate( obstaclePrefab, gameView ).transform;
+                        GameVariable.gamePiece[1].Add( spawn.GetComponent<MiniGameObject>() );
                         break;
                     case '2':
                     case 'p':
                         if ( player == null ) {
                             spawn = Instantiate( playerPrefab, gameView ).transform;
+                            spawn.GetComponent<MiniGameObject>().direction = dir;
                             player = spawn;
+                            GameVariable.gamePiece[2].Add( spawn.GetComponent<MiniGameObject>() );
                         }
                         break;
                     case '3':
                     case 'b':
                         spawn = Instantiate( boxPrefab, gameView ).transform;
+                        GameVariable.gamePiece[3].Add( spawn.GetComponent<MiniGameObject>() );
                         break;
                     case '4':
                     case 'f':
                         spawn = Instantiate( flagPrefab, gameView ).transform;
+                        GameVariable.gamePiece[4].Add( spawn.GetComponent<MiniGameObject>() );
+                        break;
+                    case '5':
+                    case 'h':
+                        spawn = Instantiate( holePrefab, gameView ).transform;
+                        GameVariable.gamePiece[5].Add( spawn.GetComponent<MiniGameObject>() );
+                        break;
+                    case '6':
+                    case 'j':
+                        spawn = Instantiate( buttonPrefab, gameView ).transform;
+                        GameVariable.gamePiece[6].Add( spawn.GetComponent<MiniGameObject>() );
+                        break;
+                    case '7':
+                    case 'd':
+                        spawn = Instantiate( doorPrefab, gameView ).transform;
+                        GameVariable.gamePiece[7].Add( spawn.GetComponent<MiniGameObject>() );
                         break;
                 }
                 if ( spawn != null ) {
@@ -173,6 +271,9 @@ public class GameManager : MonoBehaviour {
         winPanel.gameObject.SetActive( false );
         if ( gameCoroutine == null ) {
             ResetGameView();
+            score_time = 0;
+            score_amount = 0;
+            score_blocks = 0;
             List<Tuple<string, Transform, List<object>>> commands = CreateCommand();
             gameVariableLists.Clear();
             Debug.Log( "before enter" );
@@ -180,16 +281,32 @@ public class GameManager : MonoBehaviour {
             gameCoroutine = StartCoroutine( ExecuteCommand( commands, false ) );
         }
         else {
-            StopCoroutine( gameCoroutine );
             StopGame();
         }
     }
 
     public void StopGame( bool win = false ) {
+
+        foreach ( Image img in gameContent.GetComponentsInChildren<Image>() ) {
+            img.material = null;
+        }
+
         nonReactablePanel.gameObject.SetActive( false );
         if ( win ) {
             winPanel.gameObject.SetActive( true );
+            winPanel.time.text = score_time.ToString() + ":" + VariablesStorage.levelTime.ToString();
+            winPanel.amount.text = score_amount.ToString() + ":" + VariablesStorage.levelAmount.ToString();
+            winPanel.blocks.text = score_blocks.ToString() + ":" + VariablesStorage.levelBlocks.ToString();
+            if ( VariablesStorage.levelTime > score_time || VariablesStorage.levelAmount > score_amount || VariablesStorage.levelBlocks < score_blocks ) {
+                winPanel.newScoreText.gameObject.SetActive( true );
+                winPanel.upload.interactable = true;
+            }
         }
+
+        foreach ( Coroutine c in gameLoopCoroutines ) {
+            StopCoroutine( c );
+        }
+
         gameCoroutine = null;
         gameStarted = false;
     }
@@ -208,7 +325,10 @@ public class GameManager : MonoBehaviour {
         gameStarted = true;
         gameVariableLists.Add( new Dictionary<string, object>() );
         int local = gameVariableLists.Count - 1;
-        bool breakTrigger = false;
+        loopBreakTrigger = false;
+        gameBreakTrigger = false;
+        score_time = 0;
+        if ( !child ) gameLoopCoroutines.Clear();
 
         WaitForSeconds wait = new WaitForSeconds( 0.75f );
         foreach ( Tuple<string, Transform, List<object>> command in commands ) {
@@ -217,9 +337,9 @@ public class GameManager : MonoBehaviour {
                     img.material = matRedHighLight;
                 }
                 Debug.Log( command.Item3[1].ToString() );
-                breakTrigger = true;
+                gameBreakTrigger = true;
             }
-            if ( !breakTrigger ) {
+            if ( !gameBreakTrigger ) {
                 foreach ( Image img in command.Item2.GetComponentsInChildren<Image>() ) {
                     img.material = matHighLight;
                 }
@@ -247,7 +367,7 @@ public class GameManager : MonoBehaviour {
                                     img.material = matRedHighLight;
                                 }
                                 Debug.LogWarning( "variable \"" + value + "\" doesn't exsit!" );
-                                breakTrigger = true;
+                                gameBreakTrigger = true;
                                 break;
                             }
                         }
@@ -285,7 +405,7 @@ public class GameManager : MonoBehaviour {
                                     img.material = matRedHighLight;
                                 }
                                 Debug.LogWarning( "variable \"" + value + "\" doesn't exsit!" );
-                                breakTrigger = true;
+                                gameBreakTrigger = true;
                                 break;
                             }
                         }
@@ -304,7 +424,7 @@ public class GameManager : MonoBehaviour {
                                 img.material = matRedHighLight;
                             }
                             Debug.LogWarning( "variable \"" + variableName + "\" doesn't exsit!" );
-                            breakTrigger = true;
+                            gameBreakTrigger = true;
                             break;
                         }
 
@@ -313,6 +433,13 @@ public class GameManager : MonoBehaviour {
                         yield return StartCoroutine( ExecuteCommand( (List<Tuple<string, Transform, List<object>>>)command.Item3[0] ) );
                         break;
                     case "if":
+
+                        foreach ( Image img in ((Transform)command.Item3[5]).GetComponentsInChildren<Image>() ) {
+                            img.material = null;
+                        }
+                        foreach ( Image img in ( (Transform)command.Item3[6] ).GetComponentsInChildren<Image>() ) {
+                            img.material = null;
+                        }
 
                         value = command.Item3[0].ToString();
 
@@ -326,7 +453,7 @@ public class GameManager : MonoBehaviour {
                                     img.material = matRedHighLight;
                                 }
                                 Debug.LogWarning( "variable \"" + value + "\" doesn't exsit!" );
-                                breakTrigger = true;
+                                gameBreakTrigger = true;
                                 break;
                             }
                         }
@@ -342,11 +469,11 @@ public class GameManager : MonoBehaviour {
                                     img.material = matRedHighLight;
                                 }
                                 Debug.LogWarning( "variable \"" + value2 + "\" doesn't exsit!" );
-                                breakTrigger = true;
+                                gameBreakTrigger = true;
                                 break;
                             }
                         }
-
+                        Debug.Log( value + value2 );
                         bool enter = false;
 
                         if ( command.Item3[2].ToString() == "==" ) {
@@ -371,6 +498,15 @@ public class GameManager : MonoBehaviour {
                                     enter = num <= num2;
                                 }
                             }
+                            else if ( GameUtility.OptionTextToNumber( value, out int num3 )  && GameUtility.OptionTextToNumber( value2, out int num4 ) ) {
+                                Debug.Log( num3 + num4 );
+                                foreach ( MiniGameObject mini in GameVariable.gamePiece[num3] ) {
+                                    if      ( command.Item3[2].ToString() == "面向" )     enter = mini.IsFacing( num4 );
+                                    else if ( command.Item3[2].ToString() == "沒有面向" ) enter = !mini.IsFacing( num4 );
+                                    else if ( command.Item3[2].ToString() == "腳下有" )   enter = mini.IsOn( num4 );
+                                    else if ( command.Item3[2].ToString() == "腳下沒有" ) enter = !mini.IsOn( num4 );
+                                }
+                            }
                         }
 
                         if ( enter ) {
@@ -385,46 +521,107 @@ public class GameManager : MonoBehaviour {
                         //StartCoroutine( ExecuteCommand( (List<Tuple<string, Transform, List<object>>>)command.Item3[1] ) );
                         break;
                     case "repeat":
+
+                        foreach ( Image img in ( (Transform)command.Item3[2] ).GetComponentsInChildren<Image>() ) {
+                            img.material = null;
+                        }
+
                         int time = 0;
                         if ( command.Item3[0].GetType() == typeof( int ) ) {
                             time = (int)command.Item3[0];
                         }
                         else {
                             variableName = command.Item3[0].ToString();
+                            if ( variableName.StartsWith( "&" ) ) {
+                                variableName = variableName.Substring( 1 );
 
-                            Debug.Log( variableName );
+                                Debug.Log( variableName );
 
-                            if ( ( layer = findVariableInLists( variableName, local ) ) != -1 ) {
-                                time = (int)(double)gameVariableLists[layer][variableName];
-                                Debug.Log( time );
-                            }
-                            else {
-                                Debug.LogWarning( "variable \"" + variableName + "\" doesn't exsit!" );
+                                if ( ( layer = findVariableInLists( variableName, local ) ) != -1 ) {
+                                    time = (int)(double)gameVariableLists[layer][variableName];
+                                    Debug.Log( time );
+                                }
+                                else {
+                                    Debug.LogWarning( "variable \"" + variableName + "\" doesn't exsit!" );
+                                }
                             }
                         }
-
-                        for ( int i = 0; i < time; i++ ) {
-                            yield return StartCoroutine( ExecuteCommand( (List<Tuple<string, Transform, List<object>>>)command.Item3[1] ) );
+                        int x = 0;
+                        if ( variableName == "infinity" ) {
+                            while ( true ) {
+                                score_blocks += -100;
+                                gameLoopCoroutines.Add( StartCoroutine( ExecuteCommand( (List<Tuple<string, Transform, List<object>>>)command.Item3[1] ) ) );
+                                x = gameLoopCoroutines.Count - 1;
+                                yield return gameLoopCoroutines[x];
+                                if ( loopBreakTrigger || gameBreakTrigger ) {
+                                    loopBreakTrigger = false;
+                                    break;
+                                }
+                            }
+                        }
+                        else {
+                            for ( int i = 0; i < time; i++ ) {
+                                score_blocks += -100;
+                                gameLoopCoroutines.Add( StartCoroutine( ExecuteCommand( (List<Tuple<string, Transform, List<object>>>)command.Item3[1] ) ) );
+                                x = gameLoopCoroutines.Count - 1;
+                                yield return gameLoopCoroutines[x];
+                                if ( loopBreakTrigger || gameBreakTrigger ) {
+                                    loopBreakTrigger = false;
+                                    break;
+                                }
+                            }
                         }
 
                         //StartCoroutine( ExecuteCommand( (List<Tuple<string, Transform, List<object>>>)command.Item3[0] ) );
                         break;
                     case "move":
+                        score_blocks += -50;
                         if ( double.TryParse( command.Item3[0].ToString(), out num ) ) {
                             MiniGameObject playerMini = player.GetComponent<MiniGameObject>();
                             playerMini.Move( (int)num );
                         }
                         break;
+                    case "turn":
+                        score_blocks += -50;
+                        if ( double.TryParse( command.Item3[0].ToString(), out num ) ) {
+                            MiniGameObject playerMini = player.GetComponent<MiniGameObject>();
+                            playerMini.Turn( (int)num );
+                        }
+                        break;
+                    case "break":
+                        loopBreakTrigger = true;
+                        break;
                 }
             }
 
+            score_time += 1;
             yield return wait;
+
+            foreach ( List< MiniGameObject > list in gameEnv2d ) {
+                foreach ( MiniGameObject mgo in list ) {
+                    //if ( mgo.containObject( mgo.posInEnv.x, mgo.posInEnv.y, 5 ).Count >= 0 ) {
+                    //    mgo.fallToDead = true;
+                    //    mgo.moveAnimationType = 2;
+                    //    mgo.moveAnimationStart = Time.time;
+                    //}
+                    if ( mgo.objectType == 2 || mgo.objectType == 3 ) {
+                        if ( mgo.containObject( mgo.posInEnv.x, mgo.posInEnv.y, 5 ).Count > 0 ) {
+                            mgo.fallToDead = true;
+                            mgo.moveAnimationType = 2;
+                            mgo.moveAnimationStart = Time.time;
+                            if ( mgo.objectType == 2 ) {
+                                gameBreakTrigger = true;
+                            }
+                        }
+                    }
+                }
+            }
 
             foreach ( Image img in command.Item2.GetComponentsInChildren<Image>() ) {
                 img.material = null;
             }
 
-            if ( breakTrigger ) {
+            if ( gameBreakTrigger ) {
                 StopGame();
                 yield break;
             }
@@ -458,10 +655,14 @@ public class GameManager : MonoBehaviour {
                 switch ( blockInfo.blockType ) {
                     case BlockType.StartBlock:
                         type = "start";
+                        score_amount += 1;
+                        score_blocks += 1000;
                         break;
 
                     case BlockType.DefineBlock:
                         type = "define";
+                        score_amount += 1;
+                        score_blocks += 200;
                         if ( blockInfo.refField[0].GetComponent<TMP_InputField>().text == "" ) {
                             infos.Add( null );
                             infos.Add( "You need a name to define variable!" );
@@ -469,9 +670,12 @@ public class GameManager : MonoBehaviour {
                         else {
                             infos.Add( blockInfo.refField[0].GetComponent<TMP_InputField>().text );
                             if ( blockInfo.refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid.childCount > 0 ) {
+                                score_amount += 1;
+                                score_blocks += 50;
                                 infos.Add( "&" + blockInfo.refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid.GetChild( 0 ).GetChild( 1 ).GetComponent<TMP_Text>().text );
                             }
                             else {
+                                score_blocks += 100;
                                 infos.Add( blockInfo.refField[1].GetComponent<ValueBlockSwap>().inputField.GetComponent<TMP_InputField>().text );
                             }
                         }
@@ -479,6 +683,8 @@ public class GameManager : MonoBehaviour {
 
                     case BlockType.SetBlock:
                         type = "set";
+                        score_amount += 2;
+                        score_blocks += 300;
                         if ( blockInfo.refField[0].GetComponent<ValueBlockSwap>().valueBlockGrid.childCount == 0 ) {
                             infos.Add( null );
                             infos.Add( "You need to have a variable to set to!" );
@@ -486,9 +692,12 @@ public class GameManager : MonoBehaviour {
                         else {
                             infos.Add( blockInfo.refField[0].GetComponent<ValueBlockSwap>().valueBlockGrid.GetChild( 0 ).GetChild( 1 ).GetComponent<TMP_Text>().text );
                             if ( blockInfo.refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid.childCount > 0 ) {
+                                score_amount += 1;
+                                score_blocks += 300;
                                 infos.Add( "&" + blockInfo.refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid.GetChild( 0 ).GetChild( 1 ).GetComponent<TMP_Text>().text );
                             }
                             else {
+                                score_blocks += 50;
                                 infos.Add( blockInfo.refField[1].GetComponent<ValueBlockSwap>().inputField.GetComponent<TMP_InputField>().text );
                             }
                         }
@@ -496,54 +705,92 @@ public class GameManager : MonoBehaviour {
 
                     case BlockType.ForBlock:
                         type = "for";
+                        score_amount += 1;
+                        score_blocks += 800;
                         infos.Add( CreateCommand( blockInfo.refField[0] ) );
                         break;
 
                     case BlockType.IfBlock:
                         type = "if";
+                        score_amount += 2;
+                        score_blocks += 800;
                         if ( blockInfo.refField[2].GetComponent<ValueBlockSwap>().valueBlockGrid.childCount == 0 ) {
                             infos.Add( null );
                             infos.Add( "You need to have a login!" );
                             break;
                         }
+                        int k = 3;
 
-                        for (int j = 1; j < 3; j++ ) {
-                            Transform vc = blockInfo.refField[2].GetComponent<ValueBlockSwap>().valueBlockGrid.GetChild( 0 ).GetChild( j );
-                            if ( vc.GetComponent<ValueBlockSwap>().valueBlockGrid.childCount > 0 ) {
-                                infos.Add( "&" + vc.GetComponent<ValueBlockSwap>().valueBlockGrid.GetChild( 0 ).GetChild( 1 ).GetComponent<TMP_Text>().text );
-                                //Debug.Log( vc.GetComponent<ValueBlockSwap>().valueBlockGrid.GetChild( 0 ).GetChild( 1 ).GetComponent<TMP_Text>().text );
-                            }
-                            else {
-                                infos.Add( vc.GetComponent<ValueBlockSwap>().inputField.GetComponent<TMP_InputField>().text );
-                                //Debug.Log( vc.GetComponent<ValueBlockSwap>().inputField.GetComponent<TMP_InputField>().text );
+                        if ( blockInfo.refField[2].GetComponent<ValueBlockSwap>().valueBlockGrid.GetChild( 0 ).GetChild( 1 ).GetComponent<ValueBlockSwap>() == null ) {
+                            k = 1;
+                        }
+                        else {
+                            for ( int j = 1; j < 3; j++ ) {
+                                Transform vc = blockInfo.refField[2].GetComponent<ValueBlockSwap>().valueBlockGrid.GetChild( 0 ).GetChild( j );
+                                if ( vc.GetComponent<ValueBlockSwap>().valueBlockGrid.childCount > 0 ) {
+                                    score_amount += 1;
+                                    score_blocks += 300;
+                                    infos.Add( "&" + vc.GetComponent<ValueBlockSwap>().valueBlockGrid.GetChild( 0 ).GetChild( 1 ).GetComponent<TMP_Text>().text );
+                                    //Debug.Log( vc.GetComponent<ValueBlockSwap>().valueBlockGrid.GetChild( 0 ).GetChild( 1 ).GetComponent<TMP_Text>().text );
+                                }
+                                else {
+                                    score_amount += 1;
+                                    score_blocks += 50;
+                                    infos.Add( vc.GetComponent<ValueBlockSwap>().inputField.GetComponent<TMP_InputField>().text );
+                                    //Debug.Log( vc.GetComponent<ValueBlockSwap>().inputField.GetComponent<TMP_InputField>().text );
+                                }
                             }
                         }
 
-                        TMP_Dropdown dp = blockInfo.refField[2].GetComponent<ValueBlockSwap>().valueBlockGrid.GetChild( 0 ).GetChild( 3 ).GetComponent<TMP_Dropdown>();
-                        infos.Add( dp.options[dp.value].text );
-                        //Debug.Log( dp.options[dp.value].text );
+                        for (int j = k; j <= 3; j++ ) {
+                            TMP_Dropdown dp = blockInfo.refField[2].GetComponent<ValueBlockSwap>().valueBlockGrid.GetChild( 0 ).GetChild( j ).GetComponent<TMP_Dropdown>();
+                            infos.Add( dp.options[dp.value].text );
+                            //Debug.Log( dp.options[dp.value].text );
+                        }
 
 
                         infos.Add( CreateCommand( blockInfo.refField[0] ) );
                         infos.Add( CreateCommand( blockInfo.refField[1] ) );
+
+                        infos.Add( blockInfo.refField[0] );
+                        infos.Add( blockInfo.refField[1] );
+
                         break;
 
                     case BlockType.MoveBlock:
                         type = "move";
+                        score_amount += 1;
+                        score_blocks += -50;
+                        infos.Add( 1 );
+                        break;
+
+
+                    case BlockType.TurnBlock:
+                        type = "turn";
+                        score_amount += 1;
+                        score_blocks += -50;
                         infos.Add( blockInfo.refField[0].GetComponent<TMP_Dropdown>().value );
                         break;
 
                     case BlockType.RepeatBlock:
                         type = "repeat";
+                        score_amount += 1;
+                        score_blocks += 800;
                         //infos.Add( CreateCommand( blockInfo.refField[0] ) );
 
                         if ( blockInfo.refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid.childCount > 0 ) {
+                            score_blocks += 100;
                             infos.Add( blockInfo.refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid.GetChild( 0 ).GetChild( 1 ).GetComponent<TMP_Text>().text );
                         }
                         else {
+                            score_amount += 1;
+                            score_blocks += 200;
                             int num = 0;
                             if ( int.TryParse( blockInfo.refField[1].GetComponent<ValueBlockSwap>().inputField.GetComponent<TMP_InputField>().text, out num ) ) {
                                 infos.Add( num );
+                            }
+                            else if ( blockInfo.refField[1].GetComponent<ValueBlockSwap>().inputField.GetComponent<TMP_InputField>().text == "infinity" ) {
+                                infos.Add( "infinity" );
                             }
                             else {
                                 infos.Add( null );
@@ -551,6 +798,7 @@ public class GameManager : MonoBehaviour {
                             }
                         }
                         infos.Add( CreateCommand( blockInfo.refField[0] ) );
+                        infos.Add( blockInfo.refField[0] );
 
                         //if ( blockInfo.refField[0].GetComponent<ValueBlockSwap>().valueBlockGrid.childCount == 0 ) {
                         //    infos.Add( null );
@@ -558,9 +806,13 @@ public class GameManager : MonoBehaviour {
                         //}
                         //else {
                         //    infos.Add( blockInfo.refField[0].GetComponent<ValueBlockSwap>().valueBlockGrid.GetChild( 0 ).GetChild( 1 ).GetComponent<TMP_Text>().text );
-                            
+
                         //}
                         //infos.Add( blockInfo.refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid.GetChild( 0 ).GetChild( 1 ).GetComponent<TMP_Text>().text );
+                        break;
+                    case BlockType.BreakBlock:
+                        type = "break";
+                        score_amount += 1;
                         break;
                 }
 
@@ -569,6 +821,65 @@ public class GameManager : MonoBehaviour {
         }
 
         return commands;
+    }
+    public void StartUpload() {
+        StartCoroutine( Upload() );
+    }
+
+    public IEnumerator Upload() {
+        string stmt = "UPDATE play_record SET " +
+            "score_time = " +   ( ( VariablesStorage.levelTime == -1 || VariablesStorage.levelTime > score_time ) ? score_time : VariablesStorage.levelTime ).ToString() + "," +
+            "score_amount = " + ( ( VariablesStorage.levelAmount == -1 || VariablesStorage.levelAmount > score_amount ) ? score_amount : VariablesStorage.levelAmount ).ToString() + "," +
+            "score_blocks = " + ( ( VariablesStorage.levelBlocks == -1 || VariablesStorage.levelBlocks < score_blocks ) ? score_blocks : VariablesStorage.levelBlocks ).ToString() + " " +
+            "WHERE member_id = '" + VariablesStorage.memberId + "' AND course_id = '" + VariablesStorage.courseId + "';";
+
+        if ( VariablesStorage.levelTime > score_time || VariablesStorage.levelAmount > score_amount || VariablesStorage.levelBlocks < score_blocks ) {
+            yield return StartCoroutine( UploadScore( stmt ) );
+            winPanel.back.interactable = true;
+        }
+        
+    }
+
+    private IEnumerator UploadScore( string stmt_u ) {
+
+        string stmt = "";
+        string jsonString = null;
+
+        Debug.Log( "upload score" );
+        stmt = "SELECT * FROM play_record WHERE member_id = '" + VariablesStorage.memberId + "' AND course_id = '" + VariablesStorage.courseId + "';";
+        Debug.Log( stmt );
+
+        yield return StartCoroutine( NetworkManager.GetRequest( stmt, returnValue => {
+            jsonString = returnValue;
+        } ) );
+
+        if ( jsonString == null ) {
+            Debug.Log( "sql Error" );
+            //infoText.text = "SQL Error : Please contact us the error!";
+            //infoText.color = new Color( 1, 0, 0 );
+            yield break;
+        }
+        else if ( jsonString.Trim() == "[]" || jsonString.Trim() == "" ) {
+            Debug.Log( "no record" );
+
+
+            stmt = "INSERT INTO play_record VALUES ('" + VariablesStorage.memberId + "','" + VariablesStorage.courseId + "', -1, -1, -1 );";
+
+            yield return StartCoroutine( NetworkManager.GetRequest( stmt, returnValue => {
+                jsonString = returnValue;
+            } ) );
+
+            Debug.Log( stmt );
+            Debug.Log( jsonString );
+
+        }
+
+        Debug.Log( stmt_u );
+        yield return StartCoroutine( NetworkManager.GetRequest( stmt_u, returnValue => {
+            Debug.Log( returnValue );
+        } ) );
+
+
     }
 
     public void BlockGridBlockRaycast( bool enable ) {
@@ -581,7 +892,7 @@ public class GameManager : MonoBehaviour {
 
     public void ResetAll() {
         foreach ( Transform bg in BlockGridDropZone.blockGrids ) {
-            if ( bg != null && bg.parent.name.StartsWith( "GameBoard" ) ) {
+            if ( bg != null && bg.parent.name.StartsWith( "Content" ) ) {
                 BlockGridDropZone bgdz = bg.GetComponent<BlockGridDropZone>();
                 if ( bgdz != null ) {
                     bgdz.InfoReset();
@@ -640,6 +951,18 @@ public class GameManager : MonoBehaviour {
                 break;
             case BlockType.RepeatBlock:
                 blockPrefab = repeatBlockPrefab;
+                break;
+            case BlockType.TurnBlock:
+                blockPrefab = turnBlockPrefab;
+                break;
+            case BlockType.BreakBlock:
+                blockPrefab = breakBlockPrefab;
+                break;
+            case BlockType.LogicBlock:
+                blockPrefab = logicBlockPrefab;
+                break;
+            case BlockType.LogicSelectorBlock:
+                blockPrefab = logicSelectorBlockPrefab;
                 break;
         }
         return blockPrefab;

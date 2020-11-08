@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class BlockLibrary : MonoBehaviour {
     public GameManager gameManager;
     public Transform content;
-    public Dictionary<int, (BlockType, int)> blockList;
+    public Dictionary<int, (BlockType, int, Dictionary<string, string>)> blockList;
 
     void Awake() {
         if ( gameManager == null ) {
@@ -16,14 +16,26 @@ public class BlockLibrary : MonoBehaviour {
     }
 
     void Start() {
+        resetBlocks();
+    }
+
+    public void resetBlocks() {
+
+        foreach ( Transform child in content ) {
+            Destroy( child.gameObject );
+        }
 
         float height = 0f;
-        foreach ( KeyValuePair<int, (BlockType, int)> block in blockList ) {
+        foreach ( KeyValuePair<int, (BlockType, int, Dictionary<string, string>)> block in blockList ) {
             Transform spawner = Instantiate( gameManager.spawnerPrefab ).transform;
             spawner.SetParent( content );
             spawner.localScale = Vector3.one;
             spawner.GetComponent<BlockSpawner>().blockType = block.Value.Item1;
             spawner.GetComponent<BlockSpawner>().maxCount = block.Value.Item2;
+            foreach ( string key in block.Value.Item3.Keys ) {
+                spawner.GetComponent<BlockSpawner>().ModifyArgs( key, block.Value.Item3[key] );
+            }
+
             height += gameManager.getBlockPrefab( block.Value.Item1 ).GetComponent<RectTransform>().sizeDelta.y;
         }
         height += ( blockList.Count + 1 ) * 24f;

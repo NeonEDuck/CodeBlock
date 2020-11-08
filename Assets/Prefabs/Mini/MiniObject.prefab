@@ -127,5 +127,9 @@ MonoBehaviour:
   posInEnv: {x: 0, y: 0}
   moveAnimationTotal: 0.5
   moveAnimationStart: -1
+  moveAnimationType: 0
   lastPos: {x: 0, y: 0, z: 0}
   newPos: {x: 0, y: 0, z: 0}
+  objectType: 0
+  image: {fileID: 590216574262826772}
+  textures: []

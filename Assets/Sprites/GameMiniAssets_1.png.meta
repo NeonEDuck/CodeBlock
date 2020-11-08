@@ -26,6 +26,21 @@ TextureImporter:
   - first:
       213: -745633131908025591
     second: GameMiniAssets_1_6
+  - first:
+      213: 6999039437102010384
+    second: GameMiniAssets_1_7
+  - first:
+      213: 8042361006854022921
+    second: GameMiniAssets_1_8
+  - first:
+      213: -2971768867513528349
+    second: GameMiniAssets_1_9
+  - first:
+      213: 794602737735865336
+    second: GameMiniAssets_1_10
+  - first:
+      213: -1856760116261455953
+    second: GameMiniAssets_1_11
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -254,7 +269,28 @@ TextureImporter:
         serializedVersion: 2
         x: 139
         y: 167
-        width: 59
+        width: 60
+        height: 60
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9033cd7fd9af6a5f0800000000000000
+      internalID: -745633131908025591
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GameMiniAssets_1_7
+      rect:
+        serializedVersion: 2
+        x: 203
+        y: 167
+        width: 60
         height: 60
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -263,8 +299,71 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9033cd7fd9af6a5f0800000000000000
-      internalID: -745633131908025591
+      spriteID: 0105a691945912160800000000000000
+      internalID: 6999039437102010384
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GameMiniAssets_1_8
+      rect:
+        serializedVersion: 2
+        x: 11
+        y: 103
+        width: 60
+        height: 60
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 907acf8b9b43c9f60800000000000000
+      internalID: 8042361006854022921
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GameMiniAssets_1_9
+      rect:
+        serializedVersion: 2
+        x: 75
+        y: 103
+        width: 60
+        height: 60
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3ef8a49c5f722c6d0800000000000000
+      internalID: -2971768867513528349
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GameMiniAssets_1_10
+      rect:
+        serializedVersion: 2
+        x: 139
+        y: 103
+        width: 60
+        height: 60
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8f39c40eafef60b00800000000000000
+      internalID: 794602737735865336
       vertices: []
       indices: 
       edges: []

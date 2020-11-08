@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8601110048307600536}
   - component: {fileID: 8601110048307600537}
+  - component: {fileID: 6237245855067859999}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: GameManager
@@ -61,6 +62,14 @@ MonoBehaviour:
     type: 3}
   moveBlockPrefab: {fileID: 1733049511104675455, guid: f54e37c59993cf244acc516d859b1d88,
     type: 3}
+  turnBlockPrefab: {fileID: 1733049511104675455, guid: 9b7c6975f1584644aaea688c4afa7949,
+    type: 3}
+  breakBlockPrefab: {fileID: 1733049511104675455, guid: 4b90e5b59d43e454e998c4ba65358835,
+    type: 3}
+  logicBlockPrefab: {fileID: 3691007400728678226, guid: d80fa31a30a74b1489549b43be6feb0b,
+    type: 3}
+  logicSelectorBlockPrefab: {fileID: 3691007400728678226, guid: 9ad80e8047bc5f34496f5f0e718ce86c,
+    type: 3}
   spawnerPrefab: {fileID: 262286372814367248, guid: d042f5051cd4a4b4699ffb95669a5435,
     type: 3}
   obstaclePrefab: {fileID: 3376909157183936004, guid: bdc1108417042f24db874b970dcbf758,
@@ -71,15 +80,24 @@ MonoBehaviour:
     type: 3}
   flagPrefab: {fileID: 3991038437378572142, guid: 8396e887b0849ec4cbd345c622be2429,
     type: 3}
+  holePrefab: {fileID: 3991038437378572142, guid: 73478c47e994b3340badc338241e47c4,
+    type: 3}
+  buttonPrefab: {fileID: 3991038437378572142, guid: 057f1a3262d43a34b8f5d24c93dcf16d,
+    type: 3}
+  doorPrefab: {fileID: 3991038437378572142, guid: a75a932efdfbaea4fa26b41bb32e6413,
+    type: 3}
   gameBoard: {fileID: 0}
   gameView: {fileID: 0}
+  gameContent: {fileID: 0}
   gameEnv: 
+  dir: 0
   matHighLight: {fileID: 2100000, guid: ae1b40b0e0ad91b429a3a01d915b8370, type: 2}
   matRedHighLight: {fileID: 2100000, guid: 940a89433d2639a4ca9479d12f1ceb3e, type: 2}
   canvas: {fileID: 0}
   toolBar: {fileID: 0}
   outsideRect: {fileID: 0}
   nonReactablePanel: {fileID: 0}
+  winPanel: {fileID: 0}
   debugBack: 1
   blockGridsUnderPointer: []
   player: {fileID: 0}
@@ -91,4 +109,15 @@ MonoBehaviour:
   preSelectedBlockGrids: {fileID: 0}
   targetBlock: {fileID: 0}
   blockLibrary: {fileID: 0}
-  variables: {fileID: 0}
+--- !u!114 &6237245855067859999
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8601110048307600535}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b26010a201a0fa94ab2749e65e8091a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

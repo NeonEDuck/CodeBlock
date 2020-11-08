@@ -33,6 +33,32 @@ public static class GameUtility
         //BlockType item = (BlockType)Enum.Parse( typeof( BlockType ), s, false );
         return blockType;
     }
+
+    static public bool OptionTextToNumber( string s, out int num ) {
+        num = 0;
+        if      ( s == "小人偶" ) {
+            num = 2;
+        }
+        else if ( s == "箱子" ) {
+            num = 3;
+        }
+        else if ( s == "旗子" ) {
+            num = 4;
+        }
+        else if ( s == "牆" ) {
+            num = 1;
+        }
+        else if ( s == "洞" ) {
+            num = 5;
+        }
+        else if ( s == "壓力板" ) {
+            num = 6;
+        }
+        else if ( s == "門" ) {
+            num = 7;
+        }
+        return num > 0;
+    }
 };
 public enum BlockType
 {
@@ -49,10 +75,20 @@ public enum BlockType
     MoveBlock,
     LogicBlock,
     RepeatBlock,
+    TurnBlock,
+    BreakBlock,
+    LogicSelectorBlock,
     Other
 }
 public enum BlockGridType {
     Block,
     Value,
     Logic
+}
+
+public enum Direction {
+    UP,
+    RIGHT,
+    DOWN,
+    LEFT
 }

@@ -14,9 +14,38 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1450974851551736075, guid: e80cca94682c9a84dba654a223fd2b7f,
         type: 3}
+      propertyPath: textures.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1450974851551736075, guid: e80cca94682c9a84dba654a223fd2b7f,
+        type: 3}
       propertyPath: objectType
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 1450974851551736075, guid: e80cca94682c9a84dba654a223fd2b7f,
+        type: 3}
+      propertyPath: textures.Array.data[0]
+      value: 
+      objectReference: {fileID: 6920059594391161883, guid: 181b8b249e5132f4ebd88092ab404eae,
+        type: 3}
+    - target: {fileID: 1450974851551736075, guid: e80cca94682c9a84dba654a223fd2b7f,
+        type: 3}
+      propertyPath: textures.Array.data[1]
+      value: 
+      objectReference: {fileID: -751624441270430234, guid: 181b8b249e5132f4ebd88092ab404eae,
+        type: 3}
+    - target: {fileID: 1450974851551736075, guid: e80cca94682c9a84dba654a223fd2b7f,
+        type: 3}
+      propertyPath: textures.Array.data[2]
+      value: 
+      objectReference: {fileID: 6640898808822284701, guid: 181b8b249e5132f4ebd88092ab404eae,
+        type: 3}
+    - target: {fileID: 1450974851551736075, guid: e80cca94682c9a84dba654a223fd2b7f,
+        type: 3}
+      propertyPath: textures.Array.data[3]
+      value: 
+      objectReference: {fileID: -5018661808225102323, guid: 181b8b249e5132f4ebd88092ab404eae,
+        type: 3}
     - target: {fileID: 3341871317102476016, guid: e80cca94682c9a84dba654a223fd2b7f,
         type: 3}
       propertyPath: m_LocalPosition.x

@@ -11,18 +11,24 @@ public class LevelInfoPanelManager : MonoBehaviour {
     Stack levelList = new Stack();
     public LevelInfoPanel gameInfoPanelPrefab = null;
     public Transform parentCanvas = null;
-    public NetworkManager networkManager = null;
     public Transform levelButtonHolder = null;
     public GameObject buttonPrefab = null;
     public Transform loadingIcon = null;
+    public List<Sprite> previewImg = new List<Sprite>();
+    public LeaderBoard leaderBoard = null;
 
-    public Dictionary<int, (string, string, string, string)> levelsInfo = new Dictionary<int, (string, string, string, string)>();
+    public Dictionary<int, ( string, string, string, string, int, int, int, Sprite)> levelsInfo = new Dictionary<int, ( string, string, string, string, int, int, int, Sprite)>();
 
     void Start() {
         //levelsInfo.Add( 1, ("First Level", "Lorem ipsum dolor sit amet, orci erat morbi interdum erat, nibh wisi erat. Sed nulla urna, at vel, vitae aliquam imperdiet placerat scelerisque.", "Creator1", "{\"blocksList\":{\"StartBlock\":1, \"SetBlock\":4, \"DefineBlock\":2, \"MoveBlock\":0}, \"gameEnv\":\"001001010010001000100013120000000001000100\"}") );
         //levelsInfo.Add( 2, ("Second Level", "Quis nullam massa eleifend egestas donec massa, velit dui accumsan, augue vivamus.", "Creator2", "{\"blocksList\":{\"StartBlock\":1, \"SetBlock\":1}, \"gameEnv\":\"001001010010001000100013120000000001000100\"}") );
 
-        ReloadLevels();
+        if ( VariablesStorage.roomOK ) {
+            ReloadLevels();
+        }
+    }
+    public void FetchLevelLeaderBoard( int levelId ) {
+        leaderBoard.OpenLeaderBoard( true, levelsInfo[levelId].Item1, levelsInfo[levelId].Item2 );
     }
 
     public void ReloadLevels() {
@@ -47,14 +53,16 @@ public class LevelInfoPanelManager : MonoBehaviour {
         //stmt = "INSERT INTO course ( course_name, type_id, player_id, course_json ) VALUES ( 'test', 'T1000000', 'P1000000', '" + cjson + "' )";
         //stmt = "DELETE FROM course WHERE course_name = 'test'";
         // {"course_id":"C1000003","course_name":"test","type_id":"T1000000","hint":null,"player_id":"P1000000","course_json":null}
-        stmt = "SELECT * FROM course LEFT JOIN player ON course.player_id = player.player_id";
+        stmt = "SELECT course.*, play_record.score_time, play_record.score_amount, play_record.score_blocks FROM course left outer join play_record on course.course_id = play_record.course_id where member_id = '" + VariablesStorage.memberId + "' or member_id is null order by course.course_id;";
         //stmt = "INSERT INTO course_type ( type_name ) VALUES ( 'type_test' )";
 
-        yield return StartCoroutine( networkManager.GetRequest( stmt, returnValue => {
+        yield return StartCoroutine( NetworkManager.GetRequest( stmt, returnValue => {
             jsonString = returnValue;
         }));
 #if UNITY_EDITOR
-        jsonString = "[{\"course_name\" : \"Course Test1\",\"player_name\" : \"PlayerAAA\",\"course_json\" : \"{\\\"blocksList\\\":{\\\"StartBlock\\\":1,\\\"SetBlock\\\":0,\\\"DefineBlock\\\":0,\\\"MoveBlock\\\":0,\\\"ForBlock\\\":0,\\\"IfBlock\\\":0,\\\"RepeatBlock\\\":0},\\\"gameEnv\\\":\\\"001001010010001000100013120000400001000100\\\"}\"},{\"course_name\" : \"Course Test2\",\"player_name\" : \"PlayerAAA\",\"course_json\" : \"{\\\"blocksList\\\":{\\\"StartBlock\\\":2,\\\"SetBlock\\\":2,\\\"DefineBlock\\\":1,\\\"MoveBlock\\\":0},\\\"gameEnv\\\":\\\"001001010010001000100013120000000001000100\\\"}\"},{\"course_name\" : \"Course Test3\",\"player_name\" : \"PlayerBBB\",\"course_json\" : \"{\\\"blocksList\\\":{\\\"StartBlock\\\":3,\\\"SetBlock\\\":4,\\\"DefineBlock\\\":3,\\\"MoveBlock\\\":0},\\\"gameEnv\\\":\\\"001001010010001000100013120000000001000100\\\"}\"}]";
+        if ( jsonString == null || jsonString == "" ) {
+            jsonString = "[{\"course_name\" : \"Course Test1\",\"player_name\" : \"PlayerAAA\",\"course_json\" : \"{\\\"blocksList\\\":{\\\"StartBlock\\\":1,\\\"SetBlock\\\":0,\\\"DefineBlock\\\":0,\\\"MoveBlock\\\":0,\\\"ForBlock\\\":0,\\\"IfBlock\\\":0,\\\"RepeatBlock\\\":0},\\\"gameEnv\\\":\\\"001001010010001000100013120000400001000100\\\"}\"},{\"course_name\" : \"Course Test2\",\"player_name\" : \"PlayerAAA\",\"course_json\" : \"{\\\"blocksList\\\":{\\\"StartBlock\\\":2,\\\"SetBlock\\\":2,\\\"DefineBlock\\\":1,\\\"MoveBlock\\\":0},\\\"gameEnv\\\":\\\"001001010010001000100013120000000001000100\\\"}\"},{\"course_name\" : \"Course Test3\",\"player_name\" : \"PlayerBBB\",\"course_json\" : \"{\\\"blocksList\\\":{\\\"StartBlock\\\":3,\\\"SetBlock\\\":4,\\\"DefineBlock\\\":3,\\\"MoveBlock\\\":0},\\\"gameEnv\\\":\\\"001001010010001000100013120000000001000100\\\"}\"}]";
+        }
 #endif
 
         if ( jsonString == null ) {
@@ -66,14 +74,58 @@ public class LevelInfoPanelManager : MonoBehaviour {
         else {
             Debug.Log( jsonString );
 
+            //List<object> jsonO2 = new List<object>();
+
+            //yield return StartCoroutine( NetworkManager.GetRequest( "SELECT * FROM play_record WHERE member_id = '" + VariablesStorage.memberId + "';", returnValue => {
+            //    if ( !( returnValue.Trim() == "[]" || returnValue.Trim() == "" ) ) {
+            //        Debug.LogWarning( "returnValue:" + returnValue );
+            //        jsonO2 = MiniJSON.Json.Deserialize( returnValue ) as List<object>;
+            //    }
+            //} ) );
+
+
+
+            //it = jsonO[0] as Dictionary<string, object>;
+
+            //foreach ( var k in it.Keys ) {
+            //    Debug.Log( k );
+            //}
+            //score_time = (int)(long)it["score_time"];
+            //score_amount = (int)(long)it["score_amount"];
+            //score_blocks = (int)(long)it["score_blocks"];
+
             var jsonO = MiniJSON.Json.Deserialize( jsonString ) as List<object>;
             int i = 1;
             foreach ( Dictionary<string, object> item in jsonO ) {
-                Dictionary<string, object> it = item as Dictionary<string, object>;
-                string course_name = it["course_name"] as string;
-                string player_name = it["player_name"] as string;
-                string course_json = it["course_json"] as string;
-                levelsInfo.Add( i, (course_name, "Lorem ipsum dolor sit amet, orci erat morbi interdum erat, nibh wisi erat. Sed nulla urna, at vel, vitae aliquam imperdiet placerat scelerisque.", player_name, course_json) );
+                string course_id = item["course_id"] as string;
+                string course_name = item["course_name"] as string;
+                string description = item["description"] as string;
+                string course_json = item["course_json"] as string;
+                course_json = course_json.Replace( "\n", "" ).Replace( "\t", "" );
+                int score_time = ( item["score_time"] is null ) ? -1 : (int)(long)item["score_time"]; ;
+                int score_amount = ( item["score_amount"] is null ) ? -1 : (int)(long)item["score_amount"];
+                int score_blocks = ( item["score_blocks"] is null ) ? -1 : (int)(long)item["score_blocks"];
+                string topic_id = item["topic_id"] as string;
+
+                Sprite img = null;
+
+                if      ( topic_id == "T100" ) img = previewImg[0];
+                else if ( topic_id == "T101" ) img = previewImg[1];
+                else if ( topic_id == "T102" ) img = previewImg[2];
+                else if ( topic_id == "T103" ) img = previewImg[3];
+
+
+                //Debug.LogWarning( "SELECT * FROM play_record WHERE member_id = '" + VariablesStorage.memberId + "' AND course_id = '" + course_id + "';" );
+
+                //foreach ( Dictionary<string, object> item2 in jsonO2 ) {
+                //    if ( item["course_id"] as string == course_id ) {
+                //        score_time = (int)(long)item2["score_time"];
+                //        score_amount = (int)(long)item2["score_amount"];
+                //        score_blocks = (int)(long)item2["score_blocks"];
+                //    }
+                //}
+
+                levelsInfo.Add( i, ( course_id, course_name, description, course_json, score_time, score_amount, score_blocks, img ) );
                 Transform btn = Instantiate( buttonPrefab, levelButtonHolder ).transform;
                 int temp = i++;
                 btn.GetComponent<Button>().onClick.AddListener( delegate { AddOrRemovePanel( temp ); } );
