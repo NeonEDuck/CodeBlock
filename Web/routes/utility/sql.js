@@ -1,4 +1,3 @@
-
 const sql = require('./asyncDB');
 
 var request = async function(stmt){

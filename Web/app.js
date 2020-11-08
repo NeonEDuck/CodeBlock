@@ -1,40 +1,68 @@
-require('dotenv').config();
 
+require('dotenv').config();
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-//------------------------------------------------------------
-// 增加引用模組
-//------------------------------------------------------------
+// var session = require('express-session');
+
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-var intro = require('./routes/intro');
-var user_login_form = require('./routes/user_login_form');
-var user_register_form = require('./routes/user_register_form');
-var user_register = require('./routes/user_register');
-var user_register_sucess = require('./routes/user_register_sucess');
-var user_register_fail = require('./routes/user_register_fail');
-var user_register_fail_error = require('./routes/user_register_fail_error');
-
-
-var login_fail = require('./routes/login_fail');
-var user_login = require('./routes/user_login');
-var user_logout = require('./routes/user_logout');
-var user_show = require('./routes/user_show');
-
-
-var gameRouter = require('./routes/game');
+var userRouter = require('./routes/user');
+var classRouter = require('./routes/class');
+var checkAuth = require('./routes/checkAuth');
+var class_add = require('./routes/class_add');
+var class_list = require('./routes/class_list');
+var class_remove = require('./routes/class_remove');
+var class_member_search = require('./routes/class_member_search');
+var class_member_delete = require('./routes/class_member_delete');
 var sqlRouter = require('./routes/sql');
-
 var app = express();
-//--------------------------------------------------------------------
-// 增加引用express-session
-//--------------------------------------------------------------------
-var session = require('express-session');
-app.use(session({secret: 'asd', cookie: { maxAge: 60000 }}));
-//--------------------------------------------------------------------
+
+//---------------------------------------------
+// 使用passport-google-oauth2套件進行認證
+//---------------------------------------------
+var passport = require('passport');
+
+app.use(require('express-session')({
+    secret: 'keyboard cat',
+    resave: true,
+    saveUninitialized: true
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.serializeUser(function(user, done) {
+    done(null, user);
+});
+
+passport.deserializeUser(function(user, done) {
+    done(null, user);
+});
+
+//載入google oauth2
+var GoogleStrategy = require('passport-google-oauth20').Strategy;
+
+console.log(process.env.DB_CONN)
+console.log(process.env.CLIENT_ID)
+console.log(process.env.CLIENT_SECRET)
+//填入自己在google cloud platform建立的憑證
+passport.use(
+    new GoogleStrategy({
+        clientID: process.env.CLIENT_ID, 
+        clientSecret: process.env.CLIENT_SECRET,
+        callbackURL: "http://localhost:80/auth/google/callback"
+    },
+    function(accessToken, refreshToken, profile, done) {
+        if (profile) {
+            return done(null, profile);
+        }else {
+            return done(null, false);
+        }
+    }
+));
+//---------------------------------------------
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -46,32 +74,44 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-//-----------------------------------------
-// 設定模組使用方式
-//-----------------------------------------
 app.use('/', indexRouter);
-app.use('/index', indexRouter);
-app.use('/users', usersRouter);
-app.use('/game',gameRouter);
-app.use('/intro',intro);
-app.use('/user_login_form', user_login_form);
-app.use('/user_register_form', user_register_form);
-app.use('/user_register', user_register);
-app.use('/user_register_sucess', user_register_sucess);
-app.use('/user_register_fail', user_register_fail);
-app.use('/user_register_fail_error', user_register_fail_error);
-
-
-
-app.use('/user/login_fail', login_fail);
-app.use('/user/login', user_login);
-app.use('/user/logout', user_logout);
-app.use('/user/show', user_show);
-
-app.use('/game', gameRouter);
+app.use('/user', checkAuth,userRouter);
+app.use('/class', checkAuth,class_list);
+app.use('/class/add',class_add);
+app.use('/class/remove',class_remove);
+app.use('/class_member_search',class_member_search);
+app.use('/class_member_delete',class_member_delete);
 app.use('/sql', sqlRouter);
 
+//---------------------------------------------
+// 設定登入及登出方法內容
+//---------------------------------------------
+app.get('/user/login',
+    passport.authenticate('google', { scope: ['email', 'profile'] }));   //進行google第三方認證
 
+app.get('/auth/google/callback', 
+    passport.authenticate('google', { failureRedirect: '/login' }),   //導向登入失敗頁面	
+    function(req, res) {
+        // 如果登入成功, 使用者資料已存在session
+        console.log(req.session.passport.user.id);
+        console.log(req.session.passport.user.displayName);
+        console.log(req.session.passport.user.emails[0].value);	   
+        console.log(req.session.passport.user.photos[0].value);
+        
+        
+        res.redirect('/user');   //導向登入成功頁面
+    });
+
+app.get('/user/logout', function(req, res){    
+    req.logout();        //將使用者資料從session移除
+    
+    try{
+        req.session.passport.user.id = null;       
+    }catch(e){}
+    
+    res.redirect('/');   //導向登出頁面
+});    
+   
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
@@ -87,5 +127,6 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
 
 module.exports = app;
