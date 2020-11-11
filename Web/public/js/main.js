@@ -5,7 +5,6 @@ jQuery(document).ready(function($) {
 
     'use strict';
 
-
         $(".Modern-Slider").slick({
             autoplay:true,
             speed:1000,
@@ -150,7 +149,10 @@ jQuery(document).ready(function($) {
 });
 
 function toggleMember( id ) {
-    $("#member_"+id).slideToggle("slow");
+    $("#bar_"+id).slideToggle("slow");
+    
+    $("#member_"+id).hide();
+    //$("#loading_"+id).slideToggle("slow")
 }
 
 function goto($name){
@@ -174,7 +176,7 @@ function check( class_id ){
     }
 }
 
-async function search_class(class_id, table_i,class_name){
+async function search_class(class_id, table_i,class_name,id){
     console.log("js SUCESS")
     console.log(class_id)
     await $.ajax({
@@ -202,28 +204,33 @@ async function search_class(class_id, table_i,class_name){
                         if (cnt >= data.length ){
                             break;
                         }
-                        
-                        
                         console.log(data[cnt].member_name);
-                        
                         tr.append('<td class="'+data[cnt].member_name+'_'+class_id+'" onclick="deleteMember(\''+data[cnt].member_name+'\',\''+class_id+'\',\''+class_name+'\',\''+data.length+'\',\''+table_i+'\')">'+data[cnt].member_name+'</td>');
-                        
                         console.log("第" + cnt + "次");
+                        //$("#member_"+id).slideToggle("slow");
                     }
                 }
+                $("#loading_"+id).hide();
+                $("#member_"+id).show();
                 
                
             }else{
-                $('#member_'+table_i+' thead th').append("目前沒有學員");
+                $('#member_'+table_i+' thead th').empty();
+                $('#member_'+table_i+' thead th').append("目前沒有成員");
+                $("#loading_"+id).hide();
+                $("#member_"+id).show();
             }
         }
     });  
     console.log('end')    
 }
 var loopload = {};
-function run_setInterval(class_id, table_i,class_name){
+function run_setInterval(class_id, table_i,class_name,id){
     if(!(class_id in loopload)){
-        loopload[class_id] = setInterval(function(){search_class(class_id, table_i,class_name)},3000);
+        
+        $("#loading_"+id).show();
+        
+        loopload[class_id] = setInterval(function(){search_class(class_id, table_i,class_name,id)},3000);
         
     }else{
         clearInterval(loopload[class_id]);
