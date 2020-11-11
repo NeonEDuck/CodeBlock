@@ -127,7 +127,7 @@
                               </li>
                               <% if (items.length > 0) { %>
                                 <% for(var i=0; i<items.length; i++) {%>
-                                <li id="table_<%= i %>" class="table-row" onclick="search_class('<%= items[i].class_id %>', '<%= i %>' , '<%= items[i].name %>');toggleMember('<%= i %>')">
+                                <li id="table_<%= i %>" class="table-row" onclick="run_setInterval('<%= items[i].class_id %>', '<%= i %>' , '<%= items[i].name %>');toggleMember('<%= i %>')">
                                     <div class="col col-1" data-label=""><%= items[i].class_id %></div>
                                     <div class="col col-2" data-label=""><%= items[i].school %></div>
                                     <div class="col col-3" data-label=""><%= items[i].name %></div>
@@ -153,16 +153,14 @@
                                         <thead>
                                             <tr>
                                                 <th colspan="3">
-                                                    <!-- <th colspan="3">成員名單</th> -->
+                                                    
                                                     
                                                 </th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <tr>
-                                                <!-- <td id="td0"style="width:33%"></td>
-                                                <td id="td1"style="width:33%"></td>
-                                                <td id="td2"style="width:33%"></td> -->
+                                                
                                             </tr>
                                             
                                             
