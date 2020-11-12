@@ -131,18 +131,7 @@ jQuery(document).ready(function($) {
           $('html, body').animate({ scrollTop: $($(this).attr('href')).offset().top -0 }, 500, 'linear');
         });
         
-        // $( ".table-row" ).click(function() {
-        //     var class_id = {class_id:document.getElementsByClassName("value")}
-
-        //     console.log(calss_id)
-        // });
         
-        // for(var xx = 0;xx<10;xx++){
-        //     $("#table_"+xx).click(function () {
-        //     $("#member_"+xx).slideToggle("slow");
-            
-        //     });
-        // }
         
        
         
@@ -152,7 +141,7 @@ function toggleMember( id ) {
     $("#bar_"+id).slideToggle("slow");
     
     $("#member_"+id).hide();
-    //$("#loading_"+id).slideToggle("slow")
+    
 }
 
 function goto($name){
@@ -205,7 +194,7 @@ async function search_class(class_id, table_i,class_name,id){
                             break;
                         }
                         console.log(data[cnt].member_name);
-                        tr.append('<td class="'+data[cnt].member_name+'_'+class_id+'" onclick="deleteMember(\''+data[cnt].member_name+'\',\''+class_id+'\',\''+class_name+'\',\''+data.length+'\',\''+table_i+'\')">'+data[cnt].member_name+'</td>');
+                        tr.append('<td class="'+data[cnt].member_name+'_'+class_id+'" onclick="deleteMember(\''+data[cnt].member_name+'\',\''+class_id+'\',\''+class_name+'\',\''+data.length+'\',\''+table_i+'\',\''+id+'\')">'+data[cnt].member_name+'</td>');
                         console.log("第" + cnt + "次");
                         //$("#member_"+id).slideToggle("slow");
                     }
@@ -237,11 +226,15 @@ function run_setInterval(class_id, table_i,class_name,id){
         delete loopload[class_id];
     }
 }
-function deleteMember(member_id, class_id ,class_name,length,table) {
+async function deleteMember(member_id, class_id ,class_name,length,table_i,id) {
     var check = confirm("你確定要把\"" + member_id + "\"這位同學踢出課堂 : \"" + class_name + "\"嗎?")
     if(check){
-        console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaa");
-        $.ajax({
+
+        clearInterval(loopload[class_id]);
+        delete loopload[class_id];
+
+        $("#loading2_"+id).show();
+        await $.ajax({
             type: 'POST',
             url: '/class_member_delete' ,
             data: {
@@ -251,9 +244,13 @@ function deleteMember(member_id, class_id ,class_name,length,table) {
             dataType: "json",
             success: function(data){
                 
-                $("."+member_id+'_'+class_id).remove(); 
+                
             }
         });
+        $("."+member_id+'_'+class_id).fadeOut();
+        $("#loading2_"+id).hide();
+        loopload[class_id] = setInterval(function(){search_class(class_id, table_i,class_name,id)},3000);
+        
     }
 
 

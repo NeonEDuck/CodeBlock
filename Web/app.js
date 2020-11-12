@@ -109,7 +109,7 @@ app.get('/user/logout', function(req, res){
         req.session.passport.user.id = null;       
     }catch(e){}
     
-    res.redirect('/');   //導向登出頁面
+    res.redirect('/index');   //導向登出頁面
 });    
    
 // catch 404 and forward to error handler
