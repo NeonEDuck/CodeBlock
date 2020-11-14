@@ -17,6 +17,7 @@ var class_remove = require('./routes/class_remove');
 var class_member_search = require('./routes/class_member_search');
 var class_member_delete = require('./routes/class_member_delete');
 var sqlRouter = require('./routes/sql');
+var gameRouter = require('./routes/game');
 var app = express();
 
 //---------------------------------------------
@@ -75,6 +76,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
+app.use('/index', indexRouter);
 app.use('/user', checkAuth,userRouter);
 app.use('/class', checkAuth,class_list);
 app.use('/class/add',class_add);
@@ -82,6 +84,7 @@ app.use('/class/remove',class_remove);
 app.use('/class_member_search',class_member_search);
 app.use('/class_member_delete',class_member_delete);
 app.use('/sql', sqlRouter);
+app.use('/game',gameRouter);
 
 //---------------------------------------------
 // 設定登入及登出方法內容
@@ -109,7 +112,7 @@ app.get('/user/logout', function(req, res){
         req.session.passport.user.id = null;       
     }catch(e){}
     
-    res.redirect('/index');   //導向登出頁面
+    res.redirect('/');   //導向登出頁面
 });    
    
 // catch 404 and forward to error handler
