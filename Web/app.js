@@ -3,6 +3,7 @@ require('dotenv').config();
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
+const fs = require('fs')
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 // var session = require('express-session');
@@ -114,6 +115,17 @@ app.get('/user/logout', function(req, res){
     
     res.redirect('/');   //導向登出頁面
 });    
+app.get('/teacher_guide_book', (req, res) => {
+    const path = './public/pdf/123.pdf'
+    if (fs.existsSync(path)) {
+        res.contentType("application/pdf");
+        fs.createReadStream(path).pipe(res)
+    } else {
+        res.status(500)
+        console.log('File not found')
+        res.send('File not found')
+    }
+})
    
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

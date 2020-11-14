@@ -146,6 +146,14 @@ function toggleMember( id ) {
 
 function goto($name){
     document.location = $name ;
+    
+}
+function gotopdf($name){
+    //document.location = $name ;
+    window.open(
+        $name,
+        '_blank' // <- This is what makes it open in a new window.
+    );
 }
 
 function check( class_id ){
