@@ -14,6 +14,8 @@ public class RoomManager : MonoBehaviour {
     public TMP_Text warningText = null;
     public LevelInfoPanelManager lipm = null;
     public Transform blockPanel = null;
+    public Transform namePanel = null;
+    public TMP_Text nameText = null;
 
     void Awake() {
         if ( VariablesStorage.roomOK ) {
@@ -21,13 +23,29 @@ public class RoomManager : MonoBehaviour {
         }
         else {
             gameObject.SetActive( true );
+            if ( VariablesStorage.last_played != "" ) {
+                infoText.text = "已在其他裝置登入!";
+                infoText.color = new Color( 1, 0, 0 );
+            }
         }
     }
 
     public void EnterRoom() {
 
+        //string p = "abctetet";
+        //Debug.Log( $"testing this {p} aaaa" );
+
         if ( nameInput.text.Trim() != "" ) {
-            VariablesStorage.memberName = nameInput.text.Trim();
+            string name = nameInput.text.Trim();
+
+            if ( name.Contains("#") ) {
+                VariablesStorage.memberName = name.Split( "#".ToCharArray(), 2 )[0].Trim();
+                VariablesStorage.memberPin = name.Split( "#".ToCharArray(), 2 )[1].Trim();
+            }
+            else {
+                VariablesStorage.memberName = name;
+                VariablesStorage.memberPin = null;
+            }
         }
         else {
             infoText.text = "請輸入你的名字!";
@@ -100,38 +118,79 @@ public class RoomManager : MonoBehaviour {
             "topics : " + topics;
 
 
-        stmt = "SELECT * FROM class_member WHERE member_name = '" + VariablesStorage.memberName + "' AND class_id = '" + VariablesStorage.roomId + "';";
+        if ( VariablesStorage.memberPin != null ) {
+            stmt = $"SELECT * FROM class_member WHERE member_name = '{VariablesStorage.memberName}' AND class_id = '{VariablesStorage.roomId}' AND pin = '{VariablesStorage.memberPin}';";
 
-        yield return StartCoroutine( NetworkManager.GetRequest( stmt, returnValue => {
-            jsonString = returnValue;
-        } ) );
+            yield return StartCoroutine( NetworkManager.GetRequest( stmt, returnValue => {
+                jsonString = returnValue;
+            } ) );
 
 
-        if ( jsonString == null ) {
-            Debug.Log( "sql Error" );
-            infoText.text = "SQL Error : Please contact us the error!";
-            infoText.color = new Color( 1, 0, 0 );
-            yield break;
+            if ( jsonString == null ) {
+                Debug.Log( "sql Error" );
+                infoText.text = "SQL Error : Please contact us the error!";
+                infoText.color = new Color( 1, 0, 0 );
+                yield break;
+            }
+            else if ( jsonString.Trim() == "[]" || jsonString.Trim() == "" ) {
+                Debug.Log( "memeber not found" );
+
+                stmt = $"SELECT COUNT(*) FROM class_member WHERE member_name = '{VariablesStorage.memberName}' AND class_id = '{VariablesStorage.roomId}';";
+
+                yield return StartCoroutine( NetworkManager.GetRequest( stmt, returnValue => {
+                    jsonO = MiniJSON.Json.Deserialize( returnValue ) as List<object>;
+                } ) );
+
+                if ( int.Parse( ( jsonO[0] as Dictionary<string, object> )["count"] as string ) > 0 ) {
+                    Debug.Log( "wrong pin" );
+                    infoText.text = "Pin碼不對!請確認一下#後4碼是否正確!\n如有問題,可以請老師幫您確認";
+                    infoText.color = new Color( 1, 0, 0 );
+                    yield break;
+                }
+                else {
+                    Debug.Log( "No member" );
+                    infoText.text = "沒有此成員在房間裡!\n如果是初次進入的話,請將名字內的#刪除掉!";
+                    infoText.color = new Color( 1, 0, 0 );
+                    yield break;
+                }
+            }
+            else {
+                jsonO = MiniJSON.Json.Deserialize( jsonString ) as List<object>;
+
+                it = jsonO[0] as Dictionary<string, object>;
+                VariablesStorage.memberId = it["member_id"] as string;
+
+                yield return StartCoroutine( NetworkManager.GetRequest( $"select updatetime('{VariablesStorage.memberId}');", returnValue => {
+                    jsonO = MiniJSON.Json.Deserialize( returnValue ) as List<object>;
+
+                    it = jsonO[0] as Dictionary<string, object>;
+                    VariablesStorage.last_played = it["updatetime"] as string;
+                } ) );
+            }
         }
-        else if ( jsonString.Trim() == "[]" || jsonString.Trim() == "" ) {
-            Debug.Log( "memeber not found" );
+        else {
 
 
-            stmt = "SELECT COUNT(*) FROM class_member WHERE class_id = '" + VariablesStorage.roomId + "';";
+            stmt = $"SELECT COUNT(*) FROM class_member WHERE class_id = '{VariablesStorage.roomId}';";
 
             yield return StartCoroutine( NetworkManager.GetRequest( stmt, returnValue => {
                 jsonO = MiniJSON.Json.Deserialize( returnValue ) as List<object>;
             } ) );
 
-            if ( int.Parse((jsonO[0] as Dictionary<string, object>)["count"] as string) < max_number ) {
-                stmt = "INSERT INTO class_member (class_id, member_name) VALUES ('" + VariablesStorage.roomId + "', '" + VariablesStorage.memberName + "');";
+            if ( int.Parse( ( jsonO[0] as Dictionary<string, object> )["count"] as string ) < max_number ) {
+
+
+                stmt = $"select member_id, pin from AddNewMember('{VariablesStorage.memberName}','{VariablesStorage.roomId}') as ( member_id char(8), pin char(4) )";
 
                 yield return StartCoroutine( NetworkManager.GetRequest( stmt, returnValue => {
                     jsonO = MiniJSON.Json.Deserialize( returnValue ) as List<object>;
 
                     it = jsonO[0] as Dictionary<string, object>;
                     VariablesStorage.memberId = it["member_id"] as string;
+                    VariablesStorage.memberPin = it["pin"] as string;
                 } ) );
+                nameText.text = $"{VariablesStorage.memberName}#{VariablesStorage.memberPin}";
+                namePanel.gameObject.SetActive( true );
             }
             else {
                 Debug.Log( "Room is full" );
@@ -139,14 +198,6 @@ public class RoomManager : MonoBehaviour {
                 infoText.color = new Color( 1, 0, 0 );
                 yield break;
             }
-        }
-        else {
-            jsonO = MiniJSON.Json.Deserialize( jsonString ) as List<object>;
-
-            it = jsonO[0] as Dictionary<string, object>;
-            VariablesStorage.memberId = it["member_id"] as string;
-
-            warningText.text = "警告: 此名稱已經有使用紀錄, 如果你不是此名稱的原主人, 建議改成其他名字";
         }
 
         VariablesStorage.roomOK = true;
