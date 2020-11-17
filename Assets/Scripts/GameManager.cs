@@ -5,9 +5,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using UnityEditor.Animations;
-using UnityEditor;
-using System.Linq;
 
 public class GameManager : MonoBehaviour {
     [Header( "BlockPrefab" )]
@@ -208,6 +205,12 @@ public class GameManager : MonoBehaviour {
         }
         Vector3 origin = gameView.position + new Vector3( 0, gameView.GetComponent<RectTransform>().sizeDelta.y, 0 );
         if ( gameEnv != null ) {
+
+            List<List<Transform>> spawnList = new List<List<Transform>>();
+            for ( int i = 0; i < 3; i++ ) {
+                spawnList.Add(new List<Transform>());
+            }
+
             for ( int i = 0; i < gameEnv.Length; i++ ) {
                 Transform spawn = null;
                 switch ( gameEnv[i] ) {
@@ -216,42 +219,49 @@ public class GameManager : MonoBehaviour {
                         break;
                     case '1':
                     case 'o':
-                        spawn = Instantiate( obstaclePrefab, gameView ).transform;
+                        spawn = Instantiate( obstaclePrefab ).transform;
                         GameVariable.gamePiece[1].Add( spawn.GetComponent<MiniGameObject>() );
+                        spawnList[0].Add( spawn );
                         break;
                     case '2':
                     case 'p':
                         if ( player == null ) {
-                            spawn = Instantiate( playerPrefab, gameView ).transform;
+                            spawn = Instantiate( playerPrefab ).transform;
                             spawn.GetComponent<MiniGameObject>().direction = dir;
                             player = spawn;
                             GameVariable.gamePiece[2].Add( spawn.GetComponent<MiniGameObject>() );
+                            spawnList[2].Add( spawn );
                         }
                         break;
                     case '3':
                     case 'b':
-                        spawn = Instantiate( boxPrefab, gameView ).transform;
+                        spawn = Instantiate( boxPrefab ).transform;
                         GameVariable.gamePiece[3].Add( spawn.GetComponent<MiniGameObject>() );
+                        spawnList[2].Add( spawn );
                         break;
                     case '4':
                     case 'f':
-                        spawn = Instantiate( flagPrefab, gameView ).transform;
+                        spawn = Instantiate( flagPrefab ).transform;
                         GameVariable.gamePiece[4].Add( spawn.GetComponent<MiniGameObject>() );
+                        spawnList[1].Add( spawn );
                         break;
                     case '5':
                     case 'h':
-                        spawn = Instantiate( holePrefab, gameView ).transform;
+                        spawn = Instantiate( holePrefab ).transform;
                         GameVariable.gamePiece[5].Add( spawn.GetComponent<MiniGameObject>() );
+                        spawnList[0].Add( spawn );
                         break;
                     case '6':
                     case 'j':
-                        spawn = Instantiate( buttonPrefab, gameView ).transform;
+                        spawn = Instantiate( buttonPrefab ).transform;
                         GameVariable.gamePiece[6].Add( spawn.GetComponent<MiniGameObject>() );
+                        spawnList[0].Add( spawn );
                         break;
                     case '7':
                     case 'd':
-                        spawn = Instantiate( doorPrefab, gameView ).transform;
+                        spawn = Instantiate( doorPrefab ).transform;
                         GameVariable.gamePiece[7].Add( spawn.GetComponent<MiniGameObject>() );
+                        spawnList[1].Add( spawn );
                         break;
                 }
                 if ( spawn != null ) {
@@ -262,6 +272,12 @@ public class GameManager : MonoBehaviour {
                     s.gameManager = this;
                     gameEnv2d[x, y].Add( s );
                     spawn.position = origin + new Vector3( ( x + 0.5f ) * 50f, -( y + 0.5f ) * 50f, 0f );
+                }
+            }
+
+            foreach ( List<Transform> minis in spawnList ) {
+                foreach ( Transform mini in minis ) {
+                    mini.SetParent( gameView );
                 }
             }
         }
