@@ -1,8 +1,9 @@
 
+
+
 jQuery(document).ready(function($) {
 
     'use strict';
-
 
         $(".Modern-Slider").slick({
             autoplay:true,
@@ -130,32 +131,33 @@ jQuery(document).ready(function($) {
           $('html, body').animate({ scrollTop: $($(this).attr('href')).offset().top -0 }, 500, 'linear');
         });
         
-        // $( ".table-row" ).click(function() {
-        //     var class_id = {class_id:document.getElementsByClassName("value")}
-
-        //     console.log(calss_id)
-        // });
         
-        // for(var xx = 0;xx<10;xx++){
-        //     $("#table_"+xx).click(function () {
-        //     $("#member_"+xx).slideToggle("slow");
-            
-        //     });
-        // }
         
        
         
 });
 
 function toggleMember( id ) {
-    $("#member_"+id).slideToggle("slow");
+    $("#bar_"+id).slideToggle("slow");
+    
+    $("#member_"+id).hide();
+    
 }
 
 function goto($name){
     document.location = $name ;
+    
+}
+function gotopdf($name){
+    //document.location = $name ;
+    window.open(
+        $name,
+        '_blank' // <- This is what makes it open in a new window.
+    );
 }
 
 function check( class_id ){
+    event.stopPropagation();
     var enter = prompt("確定要刪除此課程的話，請輸入'" + class_id + "'");
     console.log(enter)
     if(enter==class_id){
@@ -171,11 +173,10 @@ function check( class_id ){
     }
 }
 
-function search_class(class_id, table_i,class_name){
+async function search_class(class_id, table_i,class_name,id){
     console.log("js SUCESS")
-    var calss_id =class_id;
     console.log(class_id)
-    $.ajax({
+    await $.ajax({
         url: '/class_member_search',
         type: "POST",
         data:{
@@ -187,8 +188,7 @@ function search_class(class_id, table_i,class_name){
             if(data.length>0){
                 var str1 = '<th id ="asd"colspan="3">成員名單</th>';
                 var str2 = '<td id="td"></td>';
-                // $("#tableId thead tr").prepend(str1);
-                // var thead = $('#member_'+table_i+' thead');
+                
                 var tbody = $('#member_'+table_i+' tbody');
                 $('#member_'+table_i+' thead th').empty();
                 $('#member_'+table_i+' thead th').append("成員名單");
@@ -201,52 +201,48 @@ function search_class(class_id, table_i,class_name){
                         if (cnt >= data.length ){
                             break;
                         }
-                        // if(typeof $("#td"+i).html() != "undefined") {
-                            
-                        //     $("#td"+i).remove();
-                        // }  
-                        // $("#tableId tbody tr").append(str2);
-                        
                         console.log(data[cnt].member_name);
-                        
-                        tr.append('<td class="'+data[cnt].member_name+'_'+class_id+'" onclick="deleteMember(\''+data[cnt].member_name+'\',\''+class_id+'\',\''+class_name+'\',\''+data.length+'\',\''+table_i+'\')">'+data[cnt].member_name+'</td>');
-                        // tr.children('td').last().append( data[cnt].member_name);
-                        // document.getElementById("td").id = "td"+i;
-                        
-                        
-                        // document.getElementById("td"+i).innerHTML = data[i].member_name;
+                        tr.append('<td class="'+data[cnt].member_name+'_'+class_id+'" onclick="deleteMember(\''+data[cnt].member_name+'\',\''+class_id+'\',\''+class_name+'\',\''+data.length+'\',\''+table_i+'\',\''+id+'\')">'+data[cnt].member_name+'</td>');
                         console.log("第" + cnt + "次");
+                        //$("#member_"+id).slideToggle("slow");
                     }
                 }
-                // for(var i = data.length;i<30;i++){
-                //     $( "#td"+i ).remove();
-                // }
+                $("#loading_"+id).hide();
+                $("#member_"+id).show();
+                
                
             }else{
-                $('#member_'+table_i+' thead th').append("目前沒有學員");
+                $('#member_'+table_i+' thead th').empty();
+                $('#member_'+table_i+' thead th').append("目前沒有成員");
+                $("#loading_"+id).hide();
+                $("#member_"+id).show();
             }
-            
-            //console.log(data[0].member_name);
-            // for(key in data) {
-            //     console.log(data)
-            //     // if(data.hasOwnProperty(key)) {
-            //     //     var value = data[key];
-            //     //     // $(".text").after("<p>123</p>"+value);
-            //     //     console.log(str +=value);
-            //     // }
-            // }
         }
-    });      
+    });  
+    console.log('end')    
 }
-function call(a,b){
-    console.log(a)
-    console.log(b)
+var loopload = {};
+function run_setInterval(class_id, table_i,class_name,id){
+    if(!(class_id in loopload)){
+        
+        $("#loading_"+id).show();
+        
+        loopload[class_id] = setInterval(function(){search_class(class_id, table_i,class_name,id)},3000);
+        
+    }else{
+        clearInterval(loopload[class_id]);
+        delete loopload[class_id];
+    }
 }
-function deleteMember(member_id, class_id ,class_name,length,table) {
+async function deleteMember(member_id, class_id ,class_name,length,table_i,id) {
     var check = confirm("你確定要把\"" + member_id + "\"這位同學踢出課堂 : \"" + class_name + "\"嗎?")
     if(check){
-        console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaa");
-        $.ajax({
+
+        clearInterval(loopload[class_id]);
+        delete loopload[class_id];
+
+        $("#loading2_"+id).show();
+        await $.ajax({
             type: 'POST',
             url: '/class_member_delete' ,
             data: {
@@ -255,13 +251,14 @@ function deleteMember(member_id, class_id ,class_name,length,table) {
             } ,
             dataType: "json",
             success: function(data){
-                if(length==1){
-                    $('#member_'+table+' thead th').text("目前沒有學員");
-                }
-                console.log("send success")
-                $("."+member_id+'_'+class_id).remove(); 
+                
+                
             }
         });
+        $("."+member_id+'_'+class_id).fadeOut();
+        $("#loading2_"+id).hide();
+        loopload[class_id] = setInterval(function(){search_class(class_id, table_i,class_name,id)},3000);
+        
     }
 
 

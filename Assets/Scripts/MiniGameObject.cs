@@ -22,6 +22,7 @@ public class MiniGameObject : MonoBehaviour {
     void Start() {
         if ( objectType == 2 ) {
             changeTexture( (int)direction );
+            transform.GetChild( 1 ).localRotation = Quaternion.Euler( 0, 0, (int)direction * -90f );
         }
     }
 
@@ -61,6 +62,10 @@ public class MiniGameObject : MonoBehaviour {
 
         direction = (Direction)( ((int)direction + num) % 4 );
         changeTexture( (int)direction );
+
+        if ( objectType == 2 ) {
+            transform.GetChild( 1 ).localRotation = Quaternion.Euler( 0, 0, (int)direction * -90f );
+        }
     }
 
     public bool Move( int id ) {
