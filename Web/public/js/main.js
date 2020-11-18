@@ -202,7 +202,7 @@ async function search_class(class_id, table_i,class_name,id){
                             break;
                         }
                         console.log(data[cnt].member_name);
-                        tr.append('<td class="'+data[cnt].member_name+'_'+class_id+'" onclick="deleteMember(\''+data[cnt].member_name+'\',\''+class_id+'\',\''+class_name+'\',\''+data.length+'\',\''+table_i+'\',\''+id+'\')">'+data[cnt].member_name+'</td>');
+                        tr.append('<td class="'+data[cnt].member_name+'_'+class_id+'" onclick="deleteMember(\''+data[cnt].member_name+'\',\''+class_id+'\',\''+class_name+'\',\''+data.length+'\',\''+table_i+'\',\''+id+'\')">'+data[cnt].member_name+'\#'+data[cnt].pin+'</td>');
                         console.log("第" + cnt + "次");
                         //$("#member_"+id).slideToggle("slow");
                     }

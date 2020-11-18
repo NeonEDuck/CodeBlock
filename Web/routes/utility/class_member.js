@@ -8,16 +8,18 @@ const sql = require('./asyncDB');
 //------------------------------------------
 var search = async function(newData){
     
-    var member_name;
-    await sql('SELECT member_name  FROM "class_member" WHERE class_id = $1', [newData.class_id])
+    var member_data;
+    await sql('SELECT member_name,pin  FROM "class_member" WHERE class_id = $1', [newData.class_id])
         .then((data) => {
+            console.log("==========================================")
             console.log(data.rows)  
-            member_name = data.rows;  
+            console.log("==========================================")
+            member_data = data.rows;  
         }, (error) => {
             result = [];
         });
     var result = {};
-    result.member_name = member_name;
+    result.member_data = member_data;
     return result;
 }
 var remove = async function(newData){
