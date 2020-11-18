@@ -13,7 +13,7 @@ public static class VariablesStorage {
     public static string memberId = "";
     public static string memberPin = "";
     public static string memberName = "";
-    public static string hostName = "http://127.0.0.1";
+    public static string hostName = "";
     public static string roomId = "";
     public static bool roomOK = false;
     public static string last_played = "";
