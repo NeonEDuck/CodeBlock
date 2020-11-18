@@ -189,6 +189,15 @@ public class RoomManager : MonoBehaviour {
                     VariablesStorage.memberId = it["member_id"] as string;
                     VariablesStorage.memberPin = it["pin"] as string;
                 } ) );
+
+
+                yield return StartCoroutine( NetworkManager.GetRequest( $"select updatetime('{VariablesStorage.memberId}');", returnValue => {
+                    jsonO = MiniJSON.Json.Deserialize( returnValue ) as List<object>;
+
+                    it = jsonO[0] as Dictionary<string, object>;
+                    VariablesStorage.last_played = it["updatetime"] as string;
+                } ) );
+
                 nameText.text = $"{VariablesStorage.memberName}#{VariablesStorage.memberPin}";
                 namePanel.gameObject.SetActive( true );
             }

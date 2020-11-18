@@ -46,11 +46,11 @@ public class LevelInfoPanel : MonoBehaviour {
         pullOutState = pullOut;
         if ( pullOut ) {
             fromPos = transform.localPosition;
-            toPos = new Vector3( Screen.width / 2, 0, 0 );
+            toPos = new Vector3( ( Screen.width / transform.lossyScale.x ) / 2, 0, 0 );
         }
         else {
             fromPos = transform.localPosition;
-            toPos = new Vector3( Screen.width, transform.localPosition.y );
+            toPos = new Vector3( ( Screen.width / transform.lossyScale.x ), transform.localPosition.y );
         }
 
         delta = 0f;
