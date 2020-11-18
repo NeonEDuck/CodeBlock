@@ -156,13 +156,13 @@ function gotopdf($name){
     );
 }
 
-function check( class_id ){
+function check( class_id,i ){
     event.stopPropagation();
     var enter = prompt("確定要刪除此課程的話，請輸入'" + class_id + "'");
     console.log(enter)
     if(enter==class_id){
         console.log("HERE")
-        document.getElementById("delete_class").submit();
+        document.getElementById("delete_class_"+i).submit();
         alert("刪除成功");
         
         
@@ -264,3 +264,11 @@ async function deleteMember(member_id, class_id ,class_name,length,table_i,id) {
 
     
 }
+function playAudio(text) {
+    event.stopPropagation();
+    var msg = new SpeechSynthesisUtterance(text);
+    msg.lang = 'en-US';
+    msg.voiceURI = 'native';
+    msg.rate = 0.6; // 0.1 to 10
+    window.speechSynthesis.speak(msg);
+  }

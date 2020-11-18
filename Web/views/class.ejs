@@ -117,7 +117,7 @@
                 </div>
                 <div class = "logout" style="text-align: right;">
                     <a href="/user/logout"><img src="\img\logout.png" width="4%" height="4%"></a>
-                    
+      
                 </div>           
                     <section id="class" class="content-section">
                         <div class="container">
@@ -135,18 +135,18 @@
                               <% if (items.length > 0) { %>
                                 <% for(var i=0; i<items.length; i++) {%>
                                 <li id="table_<%= i %>" class="table-row" onclick="run_setInterval('<%= items[i].class_id %>', '<%= i %>' , '<%= items[i].name %>','<%= i %>');toggleMember('<%= i %>')">
-                                    <div class="col col-1" data-label=""><%= items[i].class_id %></div>
+                                    <div class="col col-1" data-label="" onclick="playAudio('<%= items[i].class_id %>')"><%= items[i].class_id %></div>
                                     <div class="col col-2" data-label=""><%= items[i].school %></div>
                                     <div class="col col-3" data-label=""><%= items[i].name %></div>
                                     <div class="col col-4" data-label=""><%= items[i].topics %></div>
                                     <div class="col col-5" data-label=""><%= items[i].max_number %></div>
                                     <div class="col col-6">
-                                        <form action = "/class/remove" method = "post" name="delete_class" id="delete_class">
+                                        <form action = "/class/remove" method = "post" name="delete_class" id="delete_class_<%= i %>">
                                             <div class="form">
                                                 
                                                 
                                                 <span class="value"><input type="text" name="class_id"style="display:none" value="<%= items[i].class_id %>"></span>
-                                                <button class="deleteButton" name="delete" id="delete" type="button" onclick="check('<%= items[i].class_id %>')">—</button>                      
+                                                <button class="deleteButton" name="delete" id="delete" type="button" onclick="check('<%= items[i].class_id %>','<%= i %>')">—</button>                      
                                                   
                                             </div>    
                                         </form>    
@@ -208,7 +208,6 @@
                                 <label><input type="checkbox" name="topics" value="T101"> T101 </label>
                                 <label><input type="checkbox" name="topics" value="T102"> T102 </label>
                                 <label><input type="checkbox" name="topics" value="T103"> T103 </label>
-                                <label><input type="checkbox" name="topics" value="T104"> T104 </label>
                               </div>
                               
                               <fieldset>
