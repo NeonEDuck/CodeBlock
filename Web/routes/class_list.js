@@ -12,12 +12,21 @@ router.get('/', function(req, res, next) {
         console.log("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO")
         console.log(data)
         console.log("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO")
-        if(data==null){
-            res.render('error');  //導向錯誤頁面
-        }else {
-            res.render('class', {items:data});  //將資料傳給顯示頁面
-        }
-      })
+
+        class1.type().then(type => {
+            
+            for (var d in data) {
+                for (var t in type) {
+                    data[d]['topics'] = data[d]['topics'].replace( type[t]['topic_id'], type[t]['topic_name'] );
+                }
+            }
+            if(data==null){
+                res.render('error');  //導向錯誤頁面
+            }else {
+                res.render('class', {items:data});  //將資料傳給顯示頁面
+            }
+        })
+    })
 });
 
 module.exports = router;

@@ -271,4 +271,7 @@ function playAudio(text) {
     msg.voiceURI = 'native';
     msg.rate = 0.6; // 0.1 to 10
     window.speechSynthesis.speak(msg);
-  }
+}
+function checkbox(){
+    $("#ap").prop('checked', true);
+}

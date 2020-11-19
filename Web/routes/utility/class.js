@@ -53,5 +53,19 @@ var remove = async function(class_id){
 		
     return result;
 }
+
+var type = async function(){
+    var result=[];
+	
+    await sql('SELECT * FROM "topic"')
+        .then((data) => {            
+            result = data.rows;  
+        }, (error) => {
+            result = null;
+        });
+		
+    return result;
+}
+
 //匯出
-module.exports = {add,list,remove};
+module.exports = {add,list,remove,type};
