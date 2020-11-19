@@ -313,11 +313,17 @@ public class GameManager : MonoBehaviour {
 
         nonReactablePanel.gameObject.SetActive( false );
         if ( win ) {
+            score_blocks = Mathf.Max( 0, score_blocks );
+
+            bool timeBool = VariablesStorage.levelTime > score_time || VariablesStorage.levelTime == -1;
+            bool amountBool = VariablesStorage.levelAmount > score_amount || VariablesStorage.levelAmount == -1;
+            bool blocksBool = VariablesStorage.levelBlocks < score_blocks || VariablesStorage.levelBlocks == -1;
+
             winPanel.gameObject.SetActive( true );
-            winPanel.time.text = score_time.ToString() + ":" + VariablesStorage.levelTime.ToString();
-            winPanel.amount.text = score_amount.ToString() + ":" + VariablesStorage.levelAmount.ToString();
-            winPanel.blocks.text = score_blocks.ToString() + ":" + VariablesStorage.levelBlocks.ToString();
-            if ( VariablesStorage.levelTime > score_time || VariablesStorage.levelAmount > score_amount || VariablesStorage.levelBlocks < score_blocks ) {
+            winPanel.time.text = score_time.ToString() + ( timeBool ? " new!" : "" );
+            winPanel.amount.text = score_amount.ToString() + ( amountBool ? " new!" : "" );
+            winPanel.blocks.text = score_blocks.ToString() + ( blocksBool ? " new!" : "" );
+            if ( timeBool || amountBool || blocksBool ) {
                 winPanel.newScoreText.gameObject.SetActive( true );
                 winPanel.upload.interactable = true;
             }
@@ -858,6 +864,10 @@ public class GameManager : MonoBehaviour {
 
         if ( VariablesStorage.levelTime > score_time || VariablesStorage.levelAmount > score_amount || VariablesStorage.levelBlocks < score_blocks ) {
             yield return StartCoroutine( UploadScore( stmt ) );
+
+            VariablesStorage.levelTime = score_time;
+            VariablesStorage.levelAmount = score_amount;
+            VariablesStorage.levelBlocks = score_blocks;
             winPanel.back.interactable = true;
         }
         

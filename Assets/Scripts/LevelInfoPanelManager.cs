@@ -16,8 +16,12 @@ public class LevelInfoPanelManager : MonoBehaviour {
     public Transform loadingIcon = null;
     public List<Sprite> previewImg = new List<Sprite>();
     public LeaderBoard leaderBoard = null;
+    public Transform topicPanel = null;
+    public Transform blockPanel = null;
 
     public Dictionary<int, ( string, string, string, string, int, int, int, Sprite)> levelsInfo = new Dictionary<int, ( string, string, string, string, int, int, int, Sprite)>();
+    public List<( string, Transform )> levelsBtns = new List<(string, Transform)>();
+    public Dictionary<string, string> topics = new Dictionary<string, string>();
 
     void Start() {
         //levelsInfo.Add( 1, ("First Level", "Lorem ipsum dolor sit amet, orci erat morbi interdum erat, nibh wisi erat. Sed nulla urna, at vel, vitae aliquam imperdiet placerat scelerisque.", "Creator1", "{\"blocksList\":{\"StartBlock\":1, \"SetBlock\":4, \"DefineBlock\":2, \"MoveBlock\":0}, \"gameEnv\":\"001001010010001000100013120000000001000100\"}") );
@@ -39,6 +43,7 @@ public class LevelInfoPanelManager : MonoBehaviour {
 
         print( "start" );
         loadingIcon.gameObject.SetActive( true );
+        blockPanel.gameObject.SetActive( true );
         AddOrRemovePanel(-1);
 
         levelsInfo.Clear();
@@ -46,6 +51,20 @@ public class LevelInfoPanelManager : MonoBehaviour {
         for ( int i = levelButtonHolder.childCount - 1; i >= 0; i-- ) {
             Destroy( levelButtonHolder.GetChild( i ).gameObject );
         }
+
+        yield return StartCoroutine( NetworkManager.GetRequest( "SELECT * FROM topic ORDER BY topic_id ASC", returnValue => {
+            var jsonO = MiniJSON.Json.Deserialize( returnValue ) as List<object>;
+            int i = 0;
+            foreach ( Dictionary<string, object> item in jsonO ) {
+                topics.Add( item["topic_id"] as string, item["topic_name"] as string );
+                Debug.Log( item["topic_id"] as string + ", " + item["topic_name"] as string );
+                if ( i < topicPanel.GetComponent<TopicPanel>().buttons.Count ) {
+                    topicPanel.GetComponent<TopicPanel>().buttons[i].GetComponent<TopicButton>().text.text = item["topic_name"] as string;
+                    topicPanel.GetComponent<TopicPanel>().buttons[i].GetComponent<Button>().onClick.AddListener( () => { ChangeType( item["topic_id"] as string ); } );
+                    i++;
+                }
+            }
+        } ) );
 
         string jsonString = null;
         string stmt = "";
@@ -127,17 +146,16 @@ public class LevelInfoPanelManager : MonoBehaviour {
 
                 levelsInfo.Add( i, ( course_id, course_name, description, course_json, score_time, score_amount, score_blocks, img ) );
                 Transform btn = Instantiate( buttonPrefab, levelButtonHolder ).transform;
+                btn.SetParent( transform );
                 int temp = i++;
                 btn.GetComponent<Button>().onClick.AddListener( delegate { AddOrRemovePanel( temp ); } );
                 btn.GetChild( 0 ).GetComponent<TMP_Text>().text = course_name;
+                levelsBtns.Add( ( topic_id, btn ) );
             }
         }
-
-        Transform btnReload = Instantiate( buttonPrefab, levelButtonHolder ).transform;
-        btnReload.GetComponent<Button>().onClick.AddListener( () => ReloadLevels() );
-        btnReload.GetChild( 0 ).GetComponent<TMP_Text>().text = "Reload";
-
+        
         loadingIcon.gameObject.SetActive( false );
+        blockPanel.gameObject.SetActive( false );
         print( "end" );
     }
 
@@ -163,6 +181,26 @@ public class LevelInfoPanelManager : MonoBehaviour {
             gip.SetInfo( levelsInfo[id] );
             gip.levelInfoPanelManager = this;
             gip.PullTrigger( true );
+        }
+    }
+
+    public void ChangeType(string type) {
+
+        if ( type == "" ) {
+            topicPanel.gameObject.SetActive( true );
+            AddOrRemovePanel( -1 );
+        }
+        else {
+            topicPanel.gameObject.SetActive( false );
+        }
+
+        foreach ( (string, Transform) d in levelsBtns ) {
+            if ( d.Item1 == type ) {
+                d.Item2.SetParent( levelButtonHolder );
+            }
+            else {
+                d.Item2.SetParent( transform );
+            }
         }
     }
 }
