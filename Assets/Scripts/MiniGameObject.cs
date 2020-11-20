@@ -31,10 +31,10 @@ public class MiniGameObject : MonoBehaviour {
             float t = Mathf.Min( 1f, ( Time.time - moveAnimationStart ) / moveAnimationTotal );
             switch ( moveAnimationType ) {
                 case 0:
-                    transform.position = Vector3.Lerp( lastPos, newPos, Mathf.Pow( t, 2.0f ) );
+                    transform.localPosition = Vector3.Lerp( lastPos, newPos, Mathf.Pow( t, 2.0f ) );
                     break;
                 case 1:
-                    transform.position = Vector3.Lerp( lastPos, newPos, Mathf.Sin( t * 180f * Mathf.Deg2Rad ) );
+                    transform.localPosition = Vector3.Lerp( lastPos, newPos, Mathf.Sin( t * 180f * Mathf.Deg2Rad ) );
                     break;
                 case 2:
                     transform.localScale = new Vector3( 1.0f - Mathf.Pow( t, 2.0f ), 1.0f - Mathf.Pow( t, 2.0f ), 1 );
@@ -71,7 +71,7 @@ public class MiniGameObject : MonoBehaviour {
     public bool Move( int id ) {
         bool canMove = true;
         moveAnimationType = -1;
-        lastPos = transform.position;
+        lastPos = transform.localPosition;
         newPos = lastPos;
         Vector2Int delta = new Vector2Int( 0, 0 );
 
@@ -114,24 +114,19 @@ public class MiniGameObject : MonoBehaviour {
                             allow = true;
                         }
                     }
-                    Debug.Log( "BOX" );
                 }
                 else if ( ( r = containObject( newPosInEnv.x, newPosInEnv.y, 4 ) ).Count > 0 ) {
                     allow = true;
-                    Debug.Log( "FLAG" );
                 }
                 else if ( ( r = containObject( newPosInEnv.x, newPosInEnv.y, 5 ) ).Count > 0 ) {
                     allow = true;
                     fallToDead = true;
-                    Debug.Log( "HOLE" );
                 }
                 else if ( ( r = containObject( newPosInEnv.x, newPosInEnv.y, 6 ) ).Count > 0 ) {
                     allow = true;
-                    Debug.Log( "BUTTON" );
                 }
                 else if ( ( r = containObject( newPosInEnv.x, newPosInEnv.y, 0 ) ).Count > 0 ) {
                     allow = true;
-                    Debug.Log( "DOOR" );
                 }
             }
 
@@ -141,15 +136,14 @@ public class MiniGameObject : MonoBehaviour {
                 gameManager.gameEnv2d[newPosInEnv.x, newPosInEnv.y].Add( this );
                 gameManager.gameEnv2d[posInEnv.x, posInEnv.y].Remove( this );
                 posInEnv = newPosInEnv;
-                newPos = transform.position + new Vector3( delta.x * 50.0f, delta.y * -50.0f, 0 );
+                newPos = transform.localPosition + new Vector3( delta.x * 50.0f, delta.y * -50.0f, 0 );
                 moveAnimationType = 0;
             }
         }
 
         if ( moveAnimationType == -1 ) {
             canMove = false;
-            newPos = transform.position + new Vector3( delta.x * 10.0f, delta.y * -10.0f, 0 );
-            Debug.Log( newPos );
+            newPos = transform.localPosition + new Vector3( delta.x * 10.0f, delta.y * -10.0f, 0 );
             moveAnimationType = 1;
         }
 
@@ -185,7 +179,6 @@ public class MiniGameObject : MonoBehaviour {
         }
 
         if ( allHavingPress ) {
-            Debug.Log( "press! open" );
             foreach ( MiniGameObject door in GameVariable.gamePiece[7] ) {
                 door.changeTexture( 1 );
                 door.objectType = 0;
@@ -199,7 +192,6 @@ public class MiniGameObject : MonoBehaviour {
     }
 
     public bool IsOn( int num ) {
-        Debug.Log( "ISON" + posInEnv.x + posInEnv.y + num );
         if ( containObject( posInEnv.x, posInEnv.y, num ).Count > 0 ) {
             return true;
         }
