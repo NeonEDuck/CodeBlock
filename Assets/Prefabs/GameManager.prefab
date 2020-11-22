@@ -99,6 +99,8 @@ MonoBehaviour:
   nonReactablePanel: {fileID: 0}
   winPanel: {fileID: 0}
   debugBack: 1
+  imgStart: {fileID: 21300000, guid: 7cbb0c5adf667c7449ed9a87184ff221, type: 3}
+  imgStop: {fileID: 21300000, guid: 55fabec40be1cab49b51d12e1b0f39ab, type: 3}
   blockGridsUnderPointer: []
   player: {fileID: 0}
   isDraging: 0

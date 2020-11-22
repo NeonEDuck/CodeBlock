@@ -49,6 +49,9 @@ public class GameManager : MonoBehaviour {
     public Transform nonReactablePanel = null;
     public WinPanel winPanel = null;
     public bool debugBack = true;
+    public Image StartButton = null;
+    public Sprite imgStart = null;
+    public Sprite imgStop = null;
 
     [Header("Private")]
     //public List<Transform> blockGrids = new List<Transform>();
@@ -90,6 +93,7 @@ public class GameManager : MonoBehaviour {
         }
 
         if ( blockLibrary != null ) {
+            Debug.Log( VariablesStorage.levelJson );
             var jsonO = MiniJSON.Json.Deserialize( VariablesStorage.levelJson ) as Dictionary< string, object >;
 
             gameEnv = jsonO["gameEnv"] as string;
@@ -288,9 +292,10 @@ public class GameManager : MonoBehaviour {
     public void StartGame() {
         winPanel.gameObject.SetActive( false );
         if ( gameCoroutine == null ) {
+            StartButton.sprite = imgStop;
             ResetGameView();
-            score_time = 0;
             score_amount = 0;
+            score_time = 0;
             score_blocks = 0;
             Debug.Log( "before command" );
             commands = CreateCommand();
@@ -301,11 +306,14 @@ public class GameManager : MonoBehaviour {
             gameCoroutine = StartCoroutine( ExecuteCommand( commands, false ) );
         }
         else {
-            StopGame();
+            StartButton.sprite = imgStart;
+            ResetGameView();
         }
     }
 
     public void StopGame( bool win = false ) {
+
+        StartButton.sprite = imgStart;
 
         foreach ( Image img in gameContent.GetComponentsInChildren<Image>() ) {
             img.material = null;

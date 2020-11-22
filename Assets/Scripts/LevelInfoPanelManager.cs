@@ -18,10 +18,11 @@ public class LevelInfoPanelManager : MonoBehaviour {
     public LeaderBoard leaderBoard = null;
     public Transform topicPanel = null;
     public Transform blockPanel = null;
+    public Transform topicLabel = null;
 
     public Dictionary<int, ( string, string, string, string, int, int, int, Sprite)> levelsInfo = new Dictionary<int, ( string, string, string, string, int, int, int, Sprite)>();
     public List<( string, Transform )> levelsBtns = new List<(string, Transform)>();
-    public Dictionary<string, string> topics = new Dictionary<string, string>();
+    public Dictionary<string, (string, Color, Color)> topics = new Dictionary<string, (string, Color, Color)>();
 
     void Start() {
         //levelsInfo.Add( 1, ("First Level", "Lorem ipsum dolor sit amet, orci erat morbi interdum erat, nibh wisi erat. Sed nulla urna, at vel, vitae aliquam imperdiet placerat scelerisque.", "Creator1", "{\"blocksList\":{\"StartBlock\":1, \"SetBlock\":4, \"DefineBlock\":2, \"MoveBlock\":0}, \"gameEnv\":\"001001010010001000100013120000000001000100\"}") );
@@ -56,7 +57,10 @@ public class LevelInfoPanelManager : MonoBehaviour {
             var jsonO = MiniJSON.Json.Deserialize( returnValue ) as List<object>;
             int i = 0;
             foreach ( Dictionary<string, object> item in jsonO ) {
-                topics.Add( item["topic_id"] as string, item["topic_name"] as string );
+                Color HColor = topicPanel.GetComponent<TopicPanel>().buttons[i].GetChild( 2 ).GetComponent<Image>().color;
+                Color BColor = topicPanel.GetComponent<TopicPanel>().buttons[i].GetChild( 3 ).GetComponent<Image>().color;
+
+                topics.Add( item["topic_id"] as string, ( item["topic_name"] as string, HColor, BColor ) );
                 Debug.Log( item["topic_id"] as string + ", " + item["topic_name"] as string );
                 if ( i < topicPanel.GetComponent<TopicPanel>().buttons.Count ) {
                     topicPanel.GetComponent<TopicPanel>().buttons[i].GetComponent<TopicButton>().text.text = item["topic_name"] as string;
@@ -72,7 +76,7 @@ public class LevelInfoPanelManager : MonoBehaviour {
         //stmt = "INSERT INTO course ( course_name, type_id, player_id, course_json ) VALUES ( 'test', 'T1000000', 'P1000000', '" + cjson + "' )";
         //stmt = "DELETE FROM course WHERE course_name = 'test'";
         // {"course_id":"C1000003","course_name":"test","type_id":"T1000000","hint":null,"player_id":"P1000000","course_json":null}
-        stmt = "SELECT course.*, play_record.score_time, play_record.score_amount, play_record.score_blocks FROM course left outer join play_record on course.course_id = play_record.course_id where member_id = '" + VariablesStorage.memberId + "' or member_id is null order by course.course_id;";
+        stmt = $"SELECT course.*, play_record.score_time, play_record.score_amount, play_record.score_blocks FROM course left join (	select course_id, play_record.score_time, play_record.score_amount, play_record.score_blocks FROM play_record where member_id = '{VariablesStorage.memberId}') as play_record on course.course_id = play_record.course_id order by course.course_id";
         //stmt = "INSERT INTO course_type ( type_name ) VALUES ( 'type_test' )";
 
         yield return StartCoroutine( NetworkManager.GetRequest( stmt, returnValue => {
@@ -191,6 +195,9 @@ public class LevelInfoPanelManager : MonoBehaviour {
             AddOrRemovePanel( -1 );
         }
         else {
+            topicLabel.GetComponentInChildren<TMP_Text>().text = topics[type].Item1;
+            topicLabel.GetChild( 2 ).GetComponent<Image>().color = topics[type].Item2;
+            topicLabel.GetChild( 3 ).GetComponent<Image>().color = topics[type].Item3;
             topicPanel.gameObject.SetActive( false );
         }
 

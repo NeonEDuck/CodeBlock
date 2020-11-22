@@ -143,6 +143,7 @@ public class LeaderBoard : MonoBehaviour {
             int sum_score_time = 0;
             int sum_score_amount = 0;
             int sum_score_blocks = 0;
+            content.GetComponent<RectTransform>().sizeDelta = new Vector2( content.GetComponent<RectTransform>().sizeDelta.x, 50 * jsonO.Count );
 
             foreach ( Dictionary<string, object> item in jsonO ) {
                 Dictionary<string, object> it = item as Dictionary<string, object>;

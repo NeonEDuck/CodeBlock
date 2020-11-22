@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 public class MiniGameObject : MonoBehaviour {
 
+    public bool debug = false;
     public GameManager gameManager;
     public Vector2Int posInEnv;
     public float moveAnimationTotal = 0.5f;
@@ -54,7 +55,8 @@ public class MiniGameObject : MonoBehaviour {
     }
 
     private void OnDestroy() {
-        gameManager.gameEnv2d[posInEnv.x, posInEnv.y].Remove( this );
+        if ( !debug )
+            gameManager.gameEnv2d[posInEnv.x, posInEnv.y].Remove( this );
     }
 
     public void Turn( int num ) {
