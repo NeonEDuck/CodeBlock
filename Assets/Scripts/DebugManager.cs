@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
+using System.IO;
 
 public class DebugManager : MonoBehaviour {
 
@@ -22,7 +24,7 @@ public class DebugManager : MonoBehaviour {
 
 
     IEnumerator LoadLevels() {
-        string stmt = "SELECT * FROM course order by course.course_id";
+        string stmt = "SELECT course.*, topic_name FROM course LEFT JOIN topic ON course.topic_id = topic.topic_id order by course.course_id";
 
         yield return StartCoroutine( NetworkManager.GetRequest( stmt, returnValue => {
             var jsonO = MiniJSON.Json.Deserialize( returnValue ) as List<object>;
@@ -38,6 +40,8 @@ public class DebugManager : MonoBehaviour {
 
                 Transform gameView = Instantiate( gameViewTemplate, content ).transform;
 
+                gameView.GetComponentInChildren<TMP_Text>().text = item["topic_name"] as string + ',' + item["course_name"] as string;
+
                 Vector3 origin = gameView.localPosition;
 
                 gameEnv = jsonO2["gameEnv"] as string;
@@ -46,12 +50,6 @@ public class DebugManager : MonoBehaviour {
 
                 if ( jsonO2.ContainsKey( "playerDir" ) ) {
                     dir = (Direction)(long)jsonO2["playerDir"];
-
-                    Debug.Log( (int)dir );
-                    Debug.Log( (int)Direction.UP );
-                    Debug.Log( (int)Direction.RIGHT );
-                    Debug.Log( (int)Direction.DOWN );
-                    Debug.Log( (int)Direction.LEFT );
                 }
 
                 if ( gameEnv != null ) {
@@ -107,5 +105,7 @@ public class DebugManager : MonoBehaviour {
             }
 
         } ) );
+
+        //ScreenCapture.CaptureScreenshot( Application.dataPath + "ScreenShot.png" );
     }
 }
