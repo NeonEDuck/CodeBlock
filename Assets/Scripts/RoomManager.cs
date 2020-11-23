@@ -11,7 +11,6 @@ public class RoomManager : MonoBehaviour {
     public TMP_Text infoText = null;
     public TMP_Text debugText = null;
     public TMP_Text welcomeText = null;
-    public TMP_Text warningText = null;
     public LevelInfoPanelManager lipm = null;
     public Transform blockPanel = null;
     public Transform namePanel = null;

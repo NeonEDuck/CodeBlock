@@ -46,7 +46,7 @@ public class GameManager : MonoBehaviour {
     public Transform canvas = null;
     public Transform toolBar = null;
     public RectTransform outsideRect = null;
-    public Transform nonReactablePanel = null;
+    public List<Transform> nonReactablePanels = new List<Transform>();
     public WinPanel winPanel = null;
     public bool debugBack = true;
     public Image StartButton = null;
@@ -72,6 +72,17 @@ public class GameManager : MonoBehaviour {
     private bool loopBreakTrigger = false;
     private List<Tuple<string, Transform, List<object>>> commands = null;
     private List<List<Transform>> spawnList = new List<List<Transform>>();
+    private Dictionary<BlockType, int> blockScore = new Dictionary<BlockType, int> {
+        { BlockType.StartBlock, 0 },
+        { BlockType.DefineBlock, 100 },
+        { BlockType.SetBlock, 100 },
+        { BlockType.MoveBlock, 100 },
+        { BlockType.TurnBlock, 100 },
+        { BlockType.RepeatBlock, 200 },
+        { BlockType.IfBlock, 200 },
+        { BlockType.ValueBlock, 100 }
+    };
+    private Dictionary<BlockType, int> blockNum = new Dictionary<BlockType, int>();
 
     private int score_time = 0;
     private int score_amount = 0;
@@ -191,14 +202,16 @@ public class GameManager : MonoBehaviour {
             StopGame();
         }
 
-        GameVariable.gamePiece.Clear();
-        GameVariable.gamePiece.Add( 1, new List<MiniGameObject>() );
-        GameVariable.gamePiece.Add( 2, new List<MiniGameObject>() );
-        GameVariable.gamePiece.Add( 3, new List<MiniGameObject>() );
-        GameVariable.gamePiece.Add( 4, new List<MiniGameObject>() );
-        GameVariable.gamePiece.Add( 5, new List<MiniGameObject>() );
-        GameVariable.gamePiece.Add( 6, new List<MiniGameObject>() );
-        GameVariable.gamePiece.Add( 7, new List<MiniGameObject>() );
+        GameVariable.gamePiece = new Dictionary<int, List<MiniGameObject>> {
+            { 1, new List<MiniGameObject>() },
+            { 2, new List<MiniGameObject>() },
+            { 3, new List<MiniGameObject>() },
+            { 4, new List<MiniGameObject>() },
+            { 5, new List<MiniGameObject>() },
+            { 6, new List<MiniGameObject>() },
+            { 7, new List<MiniGameObject>() }
+        };
+
         player = null;
         gameEnv2d = new List<MiniGameObject>[7, 6];
         for ( int i = 0; i < 7; i++ ) {
@@ -297,12 +310,18 @@ public class GameManager : MonoBehaviour {
             score_amount = 0;
             score_time = 0;
             score_blocks = 0;
+
+            blockNum.Clear();
+            foreach ( BlockType type in blockScore.Keys ) {
+                blockNum.Add( type, 0 );
+            }
+
             Debug.Log( "before command" );
             commands = CreateCommand();
             Debug.Log( "after command" );
             gameVariableLists.Clear();
             Debug.Log( "before enter" );
-            nonReactablePanel.gameObject.SetActive( true );
+            nonReactablePanels.ForEach( t => { t.gameObject.SetActive( true ); } );
             gameCoroutine = StartCoroutine( ExecuteCommand( commands, false ) );
         }
         else {
@@ -319,9 +338,34 @@ public class GameManager : MonoBehaviour {
             img.material = null;
         }
 
-        nonReactablePanel.gameObject.SetActive( false );
+        nonReactablePanels.ForEach( t => { t.gameObject.SetActive( false ); } );
         if ( win ) {
-            score_blocks = Mathf.Max( 0, score_blocks );
+
+            score_blocks = 0;
+            foreach ( BlockType type in blockLibrary.blockDict.Keys ) {
+
+                if ( !blockScore.ContainsKey( type ) ) continue;
+
+                int x = blockLibrary.blockDict[type];
+                int y = blockNum[type];
+                int z = blockScore[type];
+                int n = y - 1;
+                int val = 0;
+                
+                if (x > 1) {
+                    val = z / ( ( x - x % 2 ) / 2 );
+                }
+                
+                //int score = y * z - ( n * ( n + 1 ) / 2 ) * ( z / x );
+                int score = y * z - ( n * ( n + 1 ) / 2 ) * val;
+                
+                score_blocks += score;
+
+                score_amount += y;
+            }
+
+
+
 
             bool timeBool = VariablesStorage.levelTime > score_time || VariablesStorage.levelTime == -1;
             bool amountBool = VariablesStorage.levelAmount > score_amount || VariablesStorage.levelAmount == -1;
@@ -385,9 +429,11 @@ public class GameManager : MonoBehaviour {
 
                 switch ( command.Item1 ) {
                     case "start":
-                        // do nothing
+                        blockNum[BlockType.StartBlock] += 1;
                         break;
                     case "define":
+                        blockNum[BlockType.DefineBlock] += 1;
+
                         variableName = command.Item3[0].ToString();
                         value = command.Item3[1].ToString();
 
@@ -424,6 +470,7 @@ public class GameManager : MonoBehaviour {
                         }
                         break;
                     case "set":
+                        blockNum[BlockType.SetBlock] += 1;
 
                         variableName = command.Item3[0].ToString();
 
@@ -467,6 +514,7 @@ public class GameManager : MonoBehaviour {
                         yield return StartCoroutine( ExecuteCommand( (List<Tuple<string, Transform, List<object>>>)command.Item3[0] ) );
                         break;
                     case "if":
+                        blockNum[BlockType.IfBlock] += 1;
 
                         foreach ( Image img in ((Transform)command.Item3[5]).GetComponentsInChildren<Image>() ) {
                             img.material = null;
@@ -556,6 +604,8 @@ public class GameManager : MonoBehaviour {
                         break;
                     case "repeat":
 
+                        blockNum[BlockType.RepeatBlock] += 1;
+
                         foreach ( Image img in ( (Transform)command.Item3[2] ).GetComponentsInChildren<Image>() ) {
                             img.material = null;
                         }
@@ -583,7 +633,6 @@ public class GameManager : MonoBehaviour {
                         int x = 0;
                         if ( variableName == "infinity" ) {
                             while ( true ) {
-                                score_blocks += -100;
                                 gameLoopCoroutines.Add( StartCoroutine( ExecuteCommand( (List<Tuple<string, Transform, List<object>>>)command.Item3[1] ) ) );
                                 x = gameLoopCoroutines.Count - 1;
                                 yield return gameLoopCoroutines[x];
@@ -595,7 +644,6 @@ public class GameManager : MonoBehaviour {
                         }
                         else {
                             for ( int i = 0; i < time; i++ ) {
-                                score_blocks += -100;
                                 gameLoopCoroutines.Add( StartCoroutine( ExecuteCommand( (List<Tuple<string, Transform, List<object>>>)command.Item3[1] ) ) );
                                 x = gameLoopCoroutines.Count - 1;
                                 yield return gameLoopCoroutines[x];
@@ -609,14 +657,14 @@ public class GameManager : MonoBehaviour {
                         //StartCoroutine( ExecuteCommand( (List<Tuple<string, Transform, List<object>>>)command.Item3[0] ) );
                         break;
                     case "move":
-                        score_blocks += -50;
+                        blockNum[BlockType.MoveBlock] += 1;
                         if ( double.TryParse( command.Item3[0].ToString(), out num ) ) {
                             MiniGameObject playerMini = player.GetComponent<MiniGameObject>();
                             playerMini.Move( (int)num );
                         }
                         break;
                     case "turn":
-                        score_blocks += -50;
+                        blockNum[BlockType.TurnBlock] += 1;
                         if ( double.TryParse( command.Item3[0].ToString(), out num ) ) {
                             MiniGameObject playerMini = player.GetComponent<MiniGameObject>();
                             playerMini.Turn( (int)num );
@@ -696,14 +744,12 @@ public class GameManager : MonoBehaviour {
                 switch ( blockInfo.blockType ) {
                     case BlockType.StartBlock:
                         type = "start";
-                        score_amount += 1;
-                        score_blocks += 1000;
+                        //score_amount += 1;
                         break;
 
                     case BlockType.DefineBlock:
                         type = "define";
-                        score_amount += 1;
-                        score_blocks += 200;
+                        //score_amount += 1;
                         if ( blockInfo.refField[0].GetComponent<TMP_InputField>().text == "" ) {
                             infos.Add( null );
                             infos.Add( "You need a name to define variable!" );
@@ -711,12 +757,10 @@ public class GameManager : MonoBehaviour {
                         else {
                             infos.Add( blockInfo.refField[0].GetComponent<TMP_InputField>().text );
                             if ( blockInfo.refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid.childCount > 0 ) {
-                                score_amount += 1;
-                                score_blocks += 50;
+                                //score_amount += 1;
                                 infos.Add( "&" + blockInfo.refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid.GetChild( 0 ).GetChild( 1 ).GetComponent<TMP_Text>().text );
                             }
                             else {
-                                score_blocks += 100;
                                 infos.Add( blockInfo.refField[1].GetComponent<ValueBlockSwap>().inputField.GetComponent<TMP_InputField>().text );
                             }
                         }
@@ -724,8 +768,7 @@ public class GameManager : MonoBehaviour {
 
                     case BlockType.SetBlock:
                         type = "set";
-                        score_amount += 2;
-                        score_blocks += 300;
+                        //score_amount += 2;
                         if ( blockInfo.refField[0].GetComponent<ValueBlockSwap>().valueBlockGrid.childCount == 0 ) {
                             infos.Add( null );
                             infos.Add( "You need to have a variable to set to!" );
@@ -733,12 +776,10 @@ public class GameManager : MonoBehaviour {
                         else {
                             infos.Add( blockInfo.refField[0].GetComponent<ValueBlockSwap>().valueBlockGrid.GetChild( 0 ).GetChild( 1 ).GetComponent<TMP_Text>().text );
                             if ( blockInfo.refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid.childCount > 0 ) {
-                                score_amount += 1;
-                                score_blocks += 300;
+                                //score_amount += 1;
                                 infos.Add( "&" + blockInfo.refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid.GetChild( 0 ).GetChild( 1 ).GetComponent<TMP_Text>().text );
                             }
                             else {
-                                score_blocks += 50;
                                 infos.Add( blockInfo.refField[1].GetComponent<ValueBlockSwap>().inputField.GetComponent<TMP_InputField>().text );
                             }
                         }
@@ -746,15 +787,13 @@ public class GameManager : MonoBehaviour {
 
                     case BlockType.ForBlock:
                         type = "for";
-                        score_amount += 1;
-                        score_blocks += 800;
+                        //score_amount += 1;
                         infos.Add( CreateCommand( blockInfo.refField[0] ) );
                         break;
 
                     case BlockType.IfBlock:
                         type = "if";
-                        score_amount += 2;
-                        score_blocks += 800;
+                        //score_amount += 2;
                         if ( blockInfo.refField[2].GetComponent<ValueBlockSwap>().valueBlockGrid.childCount == 0 ) {
                             infos.Add( null );
                             infos.Add( "You need to have a login!" );
@@ -769,14 +808,12 @@ public class GameManager : MonoBehaviour {
                             for ( int j = 1; j < 3; j++ ) {
                                 Transform vc = blockInfo.refField[2].GetComponent<ValueBlockSwap>().valueBlockGrid.GetChild( 0 ).GetChild( j );
                                 if ( vc.GetComponent<ValueBlockSwap>().valueBlockGrid.childCount > 0 ) {
-                                    score_amount += 1;
-                                    score_blocks += 300;
+                                    //score_amount += 1;
                                     infos.Add( "&" + vc.GetComponent<ValueBlockSwap>().valueBlockGrid.GetChild( 0 ).GetChild( 1 ).GetComponent<TMP_Text>().text );
                                     //Debug.Log( vc.GetComponent<ValueBlockSwap>().valueBlockGrid.GetChild( 0 ).GetChild( 1 ).GetComponent<TMP_Text>().text );
                                 }
                                 else {
-                                    score_amount += 1;
-                                    score_blocks += 50;
+                                    //score_amount += 1;
                                     infos.Add( vc.GetComponent<ValueBlockSwap>().inputField.GetComponent<TMP_InputField>().text );
                                     //Debug.Log( vc.GetComponent<ValueBlockSwap>().inputField.GetComponent<TMP_InputField>().text );
                                 }
@@ -800,7 +837,7 @@ public class GameManager : MonoBehaviour {
 
                     case BlockType.MoveBlock:
                         type = "move";
-                        score_amount += 1;
+                        //score_amount += 1;
                         score_blocks += -50;
                         infos.Add( 1 );
                         break;
@@ -808,24 +845,21 @@ public class GameManager : MonoBehaviour {
 
                     case BlockType.TurnBlock:
                         type = "turn";
-                        score_amount += 1;
+                        //score_amount += 1;
                         score_blocks += -50;
                         infos.Add( blockInfo.refField[0].GetComponent<TMP_Dropdown>().value );
                         break;
 
                     case BlockType.RepeatBlock:
                         type = "repeat";
-                        score_amount += 1;
-                        score_blocks += 800;
+                        //score_amount += 1;
                         //infos.Add( CreateCommand( blockInfo.refField[0] ) );
 
                         if ( blockInfo.refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid.childCount > 0 ) {
-                            score_blocks += 100;
                             infos.Add( blockInfo.refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid.GetChild( 0 ).GetChild( 1 ).GetComponent<TMP_Text>().text );
                         }
                         else {
-                            score_amount += 1;
-                            score_blocks += 200;
+                            //score_amount += 1;
                             int num = 0;
                             if ( int.TryParse( blockInfo.refField[1].GetComponent<ValueBlockSwap>().inputField.GetComponent<TMP_InputField>().text, out num ) ) {
                                 infos.Add( num );
@@ -853,7 +887,7 @@ public class GameManager : MonoBehaviour {
                         break;
                     case BlockType.BreakBlock:
                         type = "break";
-                        score_amount += 1;
+                        //score_amount += 1;
                         break;
                 }
 

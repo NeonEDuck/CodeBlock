@@ -39,7 +39,7 @@ public class BlockInfo : MonoBehaviour
         transform.GetChild( transform.childCount - 2 ).gameObject.SetActive( hasElse );
         transform.GetChild( transform.childCount - 3 ).gameObject.SetActive( hasElse );
         //transform.GetComponent<RectTransform>().sizeDelta = new Vector2( transform.GetComponent<RectTransform>().sizeDelta.x, hasElse ? 244 : 154 );
-        float height = 0f;
+        //float height = 0f;
         for ( int i = 0; i < transform.childCount; i++ ) {
             //height += transform.GetChild(i).GetComponent<RectTransform>().sizeDelta.y - GameUtility.CONNECTOR_HEIGHT;
         }
