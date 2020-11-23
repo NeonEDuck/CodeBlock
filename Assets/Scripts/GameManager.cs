@@ -662,10 +662,8 @@ public class GameManager : MonoBehaviour {
         }
 
 
-
-        if ( !child ) {
-            StopGame( player.GetComponent<MiniGameObject>().IsOnFlag() );
-        }
+        
+        StopGame( player.GetComponent<MiniGameObject>().IsOnFlag() );
     }
 
     public List<Tuple<string, Transform, List<object>>> CreateCommand( Transform target = null ) {
