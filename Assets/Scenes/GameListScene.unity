@@ -6486,7 +6486,12 @@ MonoBehaviour:
   buttonPrefab: {fileID: 8871941261523849888, guid: 64ad63d30aefd2f489794cc8ff8889c7,
     type: 3}
   loadingIcon: {fileID: 189279475}
-  previewImg:
+  previewImgKey:
+  - T100
+  - T101
+  - T102
+  - T103
+  previewImgValue:
   - {fileID: 21300000, guid: 2f4f9939c22bd8e46b0148212768c8a2, type: 3}
   - {fileID: 21300000, guid: 5b92d7a40b321064b832e85abf70f06f, type: 3}
   - {fileID: 21300000, guid: 1ebf8c2471fa9a348a12dff48e970322, type: 3}

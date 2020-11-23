@@ -3,6 +3,7 @@ using System.Collections;
 using TMPro;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 public class LevelInfoPanel : MonoBehaviour {
 
@@ -19,6 +20,7 @@ public class LevelInfoPanel : MonoBehaviour {
     public string levelDesc = "";
     public string levelCreator = "";
     public string levelJson = "";
+    public string levelTopic = "";
     public int levelScoreTime = 0;
     public int levelScoreAmount = 0;
     public int levelScoreBlocks = 0;
@@ -64,7 +66,7 @@ public class LevelInfoPanel : MonoBehaviour {
         levelInfoPanelManager.FetchLevelLeaderBoard( levelId );
     }
 
-    public void SetInfo( (string, string, string, string, int, int, int, Sprite) info ) {
+    public void SetInfo( (string, string, string, string, int, int, int, string) info ) {
         courseId = info.Item1;
         levelName = info.Item2;
         levelDesc = info.Item3;
@@ -72,7 +74,10 @@ public class LevelInfoPanel : MonoBehaviour {
         levelScoreTime = info.Item5;
         levelScoreAmount = info.Item6;
         levelScoreBlocks = info.Item7;
-        levelPreviewImg = info.Item8;
+        levelTopic = info.Item8;
+
+        levelPreviewImg = levelInfoPanelManager.previewImgValue[(int)Mathf.Max( levelInfoPanelManager.previewImgKey.IndexOf( levelTopic ), 0 )];
+
         DisplayInfo();
     }
     public void DisplayInfo() {
@@ -89,6 +94,7 @@ public class LevelInfoPanel : MonoBehaviour {
         VariablesStorage.levelTime = levelScoreTime;
         VariablesStorage.levelAmount = levelScoreAmount;
         VariablesStorage.levelBlocks = levelScoreBlocks;
+        VariablesStorage.levelTopic = levelTopic;
         SceneManager.LoadScene( "SampleScene" );
     }
 }

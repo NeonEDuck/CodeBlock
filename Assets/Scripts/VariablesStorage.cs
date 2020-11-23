@@ -7,6 +7,7 @@ public static class VariablesStorage {
     public static int levelId = 0;
     public static string courseId = "";
     public static string levelJson = "";
+    public static string levelTopic = "";
     public static int levelTime = 0;
     public static int levelAmount = 0;
     public static int levelBlocks = 0;
