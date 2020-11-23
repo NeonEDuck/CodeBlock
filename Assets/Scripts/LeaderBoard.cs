@@ -5,10 +5,13 @@ using System.Collections.Generic;
 
 public class LeaderBoard : MonoBehaviour {
     public TMP_InputField PINInput = null;
+    public Transform title = null;
     public Transform content = null;
     public GameObject recordRowPrefab = null;
     public TMP_Text courseName = null;
-    private string orderBy = "class_member.member_id";
+    private string[] orderBy = { "class_member.member_id" , "num", "sum_score_time", "sum_score_amount", "sum_score_blocks" };
+    private int orderId = 0;
+    private bool ascending = true;
     private string roomId = null;
     private string courseId = null;
     private Coroutine currentCoroutine = null;
@@ -25,11 +28,22 @@ public class LeaderBoard : MonoBehaviour {
         courseName.text = "全部總分";
     }
     public void SetOrderBy( int num ) {
-        if      ( num == 0 ) orderBy = "class_member.member_id";
-        else if ( num == 1 ) orderBy = "num";
-        else if ( num == 2 ) orderBy = "sum_score_time";
-        else if ( num == 3 ) orderBy = "sum_score_amount";
-        else if ( num == 4 ) orderBy = "sum_score_blocks";
+
+        if ( orderId == num ) {
+            ascending = !ascending;
+        }
+        else {
+            ascending = true;
+        }
+
+        orderId = num;
+
+        foreach ( Transform child in title ) {
+            child.GetChild( 1 ).gameObject.SetActive( false );
+        }
+
+        title.GetChild( orderId ).GetChild( 1 ).gameObject.SetActive( true );
+        title.GetChild( orderId ).GetChild( 1 ).localRotation = Quaternion.Euler( new Vector3( 0, 0, ( ascending ) ? 0 : 180 ) );
 
         startFetching();
     }
@@ -84,7 +98,7 @@ public class LeaderBoard : MonoBehaviour {
         string jsonString = null;
         while ( true ) {
             Debug.Log( "leaderBoard fetching" );
-            stmt = "SELECT * FROM class WHERE class_id = '" + roomId + "';";
+            stmt = $"SELECT * FROM class WHERE class_id = '{roomId}';";
 
             yield return StartCoroutine( NetworkManager.GetRequest( stmt, returnValue => {
                 jsonString = returnValue;
@@ -104,11 +118,8 @@ public class LeaderBoard : MonoBehaviour {
                 //infoText.color = new Color( 1, 0, 0 );
                 yield break;
             }
-
-            if ( courseId == null )
-                stmt = "SELECT member_name, COUNT(*) AS num, SUM(score_time) AS sum_score_time, SUM(score_amount) AS sum_score_amount, SUM(score_blocks) AS sum_score_blocks FROM class_member LEFT JOIN play_record ON class_member.member_id = play_record.member_id WHERE class_id = '" + roomId + "' GROUP BY class_member.member_id ORDER BY " + orderBy + ";";
-            else
-                stmt = "SELECT member_name, COUNT(*) AS num, SUM(score_time) AS sum_score_time, SUM(score_amount) AS sum_score_amount, SUM(score_blocks) AS sum_score_blocks FROM class_member LEFT JOIN play_record ON class_member.member_id = play_record.member_id WHERE class_id = '" + roomId + "' AND course_id = '" + courseId + "' GROUP BY class_member.member_id ORDER BY " + orderBy + ";";
+            
+            stmt = $"SELECT member_name, COUNT(*) AS num, coalesce(SUM(score_time),0) AS sum_score_time, coalesce(SUM(score_amount),0) AS sum_score_amount, coalesce(SUM(score_blocks),0) AS sum_score_blocks FROM class_member LEFT JOIN play_record ON class_member.member_id = play_record.member_id WHERE class_id = '{roomId}'{ ( ( courseId == null ) ? "" : $" AND course_id = '{courseId}'" ) } GROUP BY class_member.member_id ORDER BY {orderBy[orderId]} {((ascending)?"ASC":"DESC")};";
 
             yield return StartCoroutine( NetworkManager.GetRequest( stmt, returnValue => {
                 jsonString = returnValue;
