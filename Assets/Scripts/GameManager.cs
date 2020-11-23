@@ -655,6 +655,11 @@ public class GameManager : MonoBehaviour {
                 img.material = null;
             }
 
+            if ( player.GetComponent<MiniGameObject>().IsOnFlag() ) {
+                StopGame( true );
+                yield break;
+            }
+
             if ( gameBreakTrigger ) {
                 StopGame();
                 yield break;
@@ -662,8 +667,10 @@ public class GameManager : MonoBehaviour {
         }
 
 
-        
-        StopGame( player.GetComponent<MiniGameObject>().IsOnFlag() );
+
+        if ( !child ) {
+            StopGame( player.GetComponent<MiniGameObject>().IsOnFlag() );
+        }
     }
 
     public List<Tuple<string, Transform, List<object>>> CreateCommand( Transform target = null ) {
