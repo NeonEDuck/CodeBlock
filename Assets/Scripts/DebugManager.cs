@@ -29,6 +29,8 @@ public class DebugManager : MonoBehaviour {
         yield return StartCoroutine( NetworkManager.GetRequest( stmt, returnValue => {
             var jsonO = MiniJSON.Json.Deserialize( returnValue ) as List<object>;
 
+            int cnt = jsonO.Count;
+            int time = (int)Mathf.Ceil( cnt / 4 );
 
             foreach ( Dictionary<string, object> item in jsonO ) {
                 Transform player = null;
@@ -104,7 +106,10 @@ public class DebugManager : MonoBehaviour {
 
             }
 
+            content.GetComponent<RectTransform>().sizeDelta = new Vector2( content.GetComponent<RectTransform>().sizeDelta.x, 400 * time );
+
         } ) );
+
 
         //ScreenCapture.CaptureScreenshot( Application.dataPath + "ScreenShot.png" );
     }

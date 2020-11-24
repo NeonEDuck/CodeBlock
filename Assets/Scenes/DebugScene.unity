@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44657844, g: 0.49641222, b: 0.57481694, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -731,7 +731,7 @@ MonoBehaviour:
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 1600, y: 900}
-  m_ScreenMatchMode: 0
+  m_ScreenMatchMode: 1
   m_MatchWidthOrHeight: 1
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
@@ -1468,8 +1468,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 599657049}
   m_HandleRect: {fileID: 599657048}
   m_Direction: 2
-  m_Value: 1.0000002
-  m_Size: 0.25228572
+  m_Value: 1.0000005
+  m_Size: 0.5665714
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

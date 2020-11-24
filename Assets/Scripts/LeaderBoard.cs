@@ -114,6 +114,7 @@ public class LeaderBoard : MonoBehaviour {
             }
             else if ( jsonString.Trim() == "[]" || jsonString.Trim() == "" ) {
                 Debug.Log( "table empty" );
+                content.GetChild(0).GetComponent<RecordRow>().scoreTimeText.text = "找不到此房間!";
                 //infoText.text = "找不到此房間!";
                 //infoText.color = new Color( 1, 0, 0 );
                 yield break;
