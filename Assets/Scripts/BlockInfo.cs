@@ -35,23 +35,31 @@ public class BlockInfo : MonoBehaviour
 
     public void toggleElse() {
         hasElse = !hasElse;
+        extraRefField[0].gameObject.SetActive( hasElse );
+        extraRefField[1].gameObject.SetActive( hasElse );
+        extraRefField[2].rotation = Quaternion.Euler(0,0, hasElse?0:180 );
 
-        transform.GetChild( transform.childCount - 2 ).gameObject.SetActive( hasElse );
-        transform.GetChild( transform.childCount - 3 ).gameObject.SetActive( hasElse );
         //transform.GetComponent<RectTransform>().sizeDelta = new Vector2( transform.GetComponent<RectTransform>().sizeDelta.x, hasElse ? 244 : 154 );
         //float height = 0f;
-        for ( int i = 0; i < transform.childCount; i++ ) {
-            //height += transform.GetChild(i).GetComponent<RectTransform>().sizeDelta.y - GameUtility.CONNECTOR_HEIGHT;
+        //for ( int i = 0; i < transform.childCount; i++ ) {
+        //height += transform.GetChild(i).GetComponent<RectTransform>().sizeDelta.y - GameUtility.CONNECTOR_HEIGHT;
+        //}
+        //transform.GetComponent<RectTransform>().sizeDelta = new Vector2( transform.GetComponent<RectTransform>().sizeDelta.x, 10 );
+
+        if ( !hasElse ) {
+            extraRefField[0].SetParent( transform.GetChild( transform.childCount - 1 ) );
+            extraRefField[1].SetParent( transform.GetChild( transform.childCount - 1 ) );
+            foreach ( Transform child in refField[1] ) {
+                Destroy( child.gameObject );
+            }
         }
-        transform.GetComponent<RectTransform>().sizeDelta = new Vector2( transform.GetComponent<RectTransform>().sizeDelta.x, 10 );
+        else {
+            extraRefField[0].SetParent( transform );
+            extraRefField[1].SetParent( transform );
+            transform.GetChild( transform.childCount - 3 ).SetAsLastSibling();
+            refField[1].GetComponent<BlockGridDropZone>().Resize();
+        }
         transform.parent.GetComponent<BlockGridDropZone>().Resize();
-        transform.parent.GetComponent<BlockGridDropZone>().Resize();
-
-        //if ( hasElse ) {
-        //}
-        //else {
-
-        //}
     }
 
     //public string getBlockCodeString()

@@ -334,62 +334,68 @@ public class GameManager : MonoBehaviour {
 
     public void StopGame( bool win = false ) {
 
-        StartButton.sprite = imgStart;
+        if ( gameStarted ) {
+            StartButton.sprite = imgStart;
 
-        foreach ( Image img in gameContent.GetComponentsInChildren<Image>() ) {
-            img.material = null;
-        }
+            foreach ( Image img in gameContent.GetComponentsInChildren<Image>() ) {
+                img.material = null;
+            }
 
-        nonReactablePanels.ForEach( t => { t.gameObject.SetActive( false ); } );
-        if ( win ) {
+            nonReactablePanels.ForEach( t => { t.gameObject.SetActive( false ); } );
+            if ( win ) {
 
-            score_blocks = 0;
-            foreach ( BlockType type in blockLibrary.blockDict.Keys ) {
+                score_blocks = 0;
+                foreach ( BlockType type in blockLibrary.blockDict.Keys ) {
 
-                if ( !blockScore.ContainsKey( type ) ) continue;
+                    if ( blockScore.ContainsKey( type ) ) {
 
-                int x = blockLibrary.blockDict[type];
-                int y = blockNum[type];
-                int z = blockScore[type];
-                int n = y - 1;
-                int val = 0;
-                
-                if (x > 1) {
-                    val = z / ( ( x - x % 2 ) / 2 );
+                        int x = blockLibrary.blockDict[type];
+                        int y = blockNum[type];
+                        int z = blockScore[type];
+                        int n = y - 1;
+                        int val = 0;
+
+                        if ( x > 1 ) {
+                            val = z / ( ( x - x % 2 ) / 2 );
+                        }
+
+                        //int score = y * z - ( n * ( n + 1 ) / 2 ) * ( z / x );
+                        int score = y * z - ( n * ( n + 1 ) / 2 ) * val;
+
+                        score_blocks += score;
+
+                        Debug.Log( score_amount );
+                        score_amount += y;
+
+                        Debug.Log( type.ToString() + y.ToString() );
+                    }
                 }
-                
-                //int score = y * z - ( n * ( n + 1 ) / 2 ) * ( z / x );
-                int score = y * z - ( n * ( n + 1 ) / 2 ) * val;
-                
-                score_blocks += score;
 
-                score_amount += y;
+
+
+
+                bool timeBool = VariablesStorage.levelTime > score_time || VariablesStorage.levelTime == -1;
+                bool amountBool = VariablesStorage.levelAmount > score_amount || VariablesStorage.levelAmount == -1;
+                bool blocksBool = VariablesStorage.levelBlocks < score_blocks || VariablesStorage.levelBlocks == -1;
+
+                winPanel.gameObject.SetActive( true );
+                winPanel.time.text = score_time.ToString() + ( timeBool ? " new!" : "" );
+                winPanel.amount.text = score_amount.ToString() + ( amountBool ? " new!" : "" );
+                winPanel.blocks.text = score_blocks.ToString() + ( blocksBool ? " new!" : "" );
+                if ( timeBool || amountBool || blocksBool ) {
+                    winPanel.newScoreText.gameObject.SetActive( true );
+                    winPanel.upload.interactable = true;
+                }
             }
 
-
-
-
-            bool timeBool = VariablesStorage.levelTime > score_time || VariablesStorage.levelTime == -1;
-            bool amountBool = VariablesStorage.levelAmount > score_amount || VariablesStorage.levelAmount == -1;
-            bool blocksBool = VariablesStorage.levelBlocks < score_blocks || VariablesStorage.levelBlocks == -1;
-
-            winPanel.gameObject.SetActive( true );
-            winPanel.time.text = score_time.ToString() + ( timeBool ? " new!" : "" );
-            winPanel.amount.text = score_amount.ToString() + ( amountBool ? " new!" : "" );
-            winPanel.blocks.text = score_blocks.ToString() + ( blocksBool ? " new!" : "" );
-            if ( timeBool || amountBool || blocksBool ) {
-                winPanel.newScoreText.gameObject.SetActive( true );
-                winPanel.upload.interactable = true;
+            foreach ( Coroutine c in gameLoopCoroutines ) {
+                if ( c != null ) StopCoroutine( c );
             }
-        }
+            gameLoopCoroutines.Clear();
 
-        foreach ( Coroutine c in gameLoopCoroutines ) {
-            if ( c != null ) StopCoroutine( c );
+            gameCoroutine = null;
+            gameStarted = false;
         }
-        gameLoopCoroutines.Clear();
-
-        gameCoroutine = null;
-        gameStarted = false;
     }
 
     private int findVariableInLists( string variableName, int layer ) {
@@ -755,7 +761,7 @@ public class GameManager : MonoBehaviour {
                 StopGame();
                 yield break;
             }
-            if ( player.GetComponent<MiniGameObject>().IsOnFlag() ) {
+            else if ( player.GetComponent<MiniGameObject>().IsOnFlag() ) {
                 StopGame( true );
                 yield break;
             }
