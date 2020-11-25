@@ -115,6 +115,6 @@ public class DebugManager : MonoBehaviour {
         } ) );
 
 
-        //ScreenCapture.CaptureScreenshot( Application.dataPath + "ScreenShot.png" );
+        ScreenCapture.CaptureScreenshot( Application.dataPath + "ScreenShot.png" );
     }
 }

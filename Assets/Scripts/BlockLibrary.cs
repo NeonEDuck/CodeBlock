@@ -34,7 +34,12 @@ public class BlockLibrary : MonoBehaviour {
             spawner.localScale = Vector3.one;
             spawner.GetComponent<BlockSpawner>().blockType = block.Value.Item1;
             spawner.GetComponent<BlockSpawner>().maxCount = block.Value.Item2;
-            blockDict.Add( block.Value.Item1, block.Value.Item2 );
+            if ( blockDict.ContainsKey( block.Value.Item1 ) ) {
+                blockDict[block.Value.Item1] += block.Value.Item2;
+            }
+            else {
+                blockDict.Add( block.Value.Item1, block.Value.Item2 );
+            }
             foreach ( string key in block.Value.Item3.Keys ) {
                 spawner.GetComponent<BlockSpawner>().ModifyArgs( key, block.Value.Item3[key] );
             }

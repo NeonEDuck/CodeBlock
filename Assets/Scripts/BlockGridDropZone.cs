@@ -99,6 +99,7 @@ public class BlockGridDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandl
                     }
                     break;
                 case BlockType.SetBlock:
+                case BlockType.AddBlock:
                     ToTheNextPriority( child.GetComponent<BlockInfo>().refField[0].GetComponent<ValueBlockSwap>().valueBlockGrid );
                     ToTheNextPriority( child.GetComponent<BlockInfo>().refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid );
                     break;
