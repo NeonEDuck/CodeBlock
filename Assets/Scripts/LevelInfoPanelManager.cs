@@ -147,6 +147,7 @@ public class LevelInfoPanelManager : MonoBehaviour {
                 int temp = i++;
                 btn.GetComponent<Button>().onClick.AddListener( () => { AddOrRemovePanel( temp ); } );
                 btn.GetChild( 0 ).GetComponent<TMP_Text>().text = course_name;
+                btn.GetChild( 1 ).gameObject.SetActive( ( score_time != -1 ) );
                 levelsBtns.Add( ( topic_id, btn ) );
             }
         }

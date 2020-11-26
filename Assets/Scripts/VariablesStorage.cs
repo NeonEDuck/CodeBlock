@@ -18,4 +18,5 @@ public static class VariablesStorage {
     public static string roomId = "";
     public static bool roomOK = false;
     public static string last_played = "";
+    public static int error = 0;
 }

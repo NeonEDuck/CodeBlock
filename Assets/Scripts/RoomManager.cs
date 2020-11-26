@@ -23,9 +23,17 @@ public class RoomManager : MonoBehaviour {
         else {
             gameObject.SetActive( true );
             if ( VariablesStorage.last_played != "" ) {
-                infoText.text = "已在其他裝置登入!";
+                switch ( VariablesStorage.error ) {
+                    case 0:
+                        infoText.text = "已在其他裝置登入!";
+                        break;
+                    case 1:
+                        infoText.text = "資料遺失，請嘗試登入一次!";
+                        break;
+                }
                 infoText.color = new Color( 1, 0, 0 );
             }
+            VariablesStorage.last_played = "";
         }
     }
 

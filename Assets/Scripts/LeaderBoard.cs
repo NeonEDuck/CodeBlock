@@ -124,7 +124,7 @@ public class LeaderBoard : MonoBehaviour {
         while ( true ) {
             Debug.Log( "leaderBoard fetching" );
             
-            stmt = $"SELECT class_member.member_id, member_name, COUNT(*) AS num, coalesce(SUM(score_time),0) AS sum_score_time, coalesce(SUM(score_amount),0) AS sum_score_amount, coalesce(SUM(score_blocks),0) AS sum_score_blocks FROM class_member LEFT JOIN play_record ON class_member.member_id = play_record.member_id WHERE class_id = '{roomId}'{ ( ( courseId == null ) ? "" : $" AND course_id = '{courseId}'" ) } GROUP BY class_member.member_id ORDER BY {orderBy[orderId]} {((ascending)?"ASC":"DESC")};";
+            stmt = $"SELECT class_member.member_id, member_name, CASE WHEN SUM(score_time) IS NULL THEN 0 ELSE count(*) END AS num, coalesce(SUM(score_time),0) AS sum_score_time, coalesce(SUM(score_amount),0) AS sum_score_amount, coalesce(SUM(score_blocks),0) AS sum_score_blocks FROM class_member LEFT JOIN play_record ON class_member.member_id = play_record.member_id where class_id = '{roomId}'{ ( ( courseId == null ) ? "" : $" AND course_id = '{courseId}'" ) } GROUP BY class_member.member_id ORDER BY {orderBy[orderId]} {( ( ascending ) ? "ASC" : "DESC" )};";
 
             yield return StartCoroutine( NetworkManager.GetRequest( stmt, returnValue => {
                 jsonString = returnValue;
