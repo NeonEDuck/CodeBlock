@@ -31,8 +31,10 @@ public class RecordRow : MonoBehaviour {
         timeStart = Time.time;
 
         var rect = transform.GetComponent<RectTransform>();
-
-        Vector3 pos = new Vector3( transform.parent.GetComponent<RectTransform>().rect.width / 2, -(o + 0.5f) * rect.sizeDelta.y, 0 );
+        rect.offsetMin = new Vector2( 0, rect.offsetMin.y );
+        rect.offsetMax = new Vector2( 0, rect.offsetMax.y );
+        
+        Vector3 pos = new Vector3( transform.localPosition.x, -( o + 0.5f ) * rect.sizeDelta.y, 0 );
 
         if ( order == -1 ) {
             transform.localPosition = pos;

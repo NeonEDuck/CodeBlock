@@ -59,7 +59,11 @@ public class BlockInfo : MonoBehaviour
             transform.GetChild( transform.childCount - 3 ).SetAsLastSibling();
             refField[1].GetComponent<BlockGridDropZone>().Resize();
         }
-        transform.parent.GetComponent<BlockGridDropZone>().Resize();
+        //transform.parent.GetComponent<BlockGridDropZone>().Resize();
+
+        foreach ( Transform child in transform.parent.GetComponent<BlockGridDropZone>().gameManager.gameContent ) {
+            child.GetComponent<BlockGridDropZone>().Resize();
+        }
     }
 
     //public string getBlockCodeString()

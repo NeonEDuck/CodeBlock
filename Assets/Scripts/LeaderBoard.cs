@@ -82,15 +82,17 @@ public class LeaderBoard : MonoBehaviour {
         }
 
         foreach ( Transform child in content ) {
-            GameObject.Destroy( child.gameObject );
+            Destroy( child.gameObject );
         }
+        content.GetComponent<RectTransform>().sizeDelta = new Vector2( content.GetComponent<RectTransform>().sizeDelta.x, 300f );
         RecordRow record = Instantiate( recordRowPrefab, content ).GetComponent<RecordRow>();
         record.nameText.text = "";
         record.numText.text = "";
         record.scoreTimeText.text = "讀取中...";
         record.scoreAmountText.text = "";
         record.scoreBlocksText.text = "";
-
+        record.ChangeOrder( 0 );
+        
         currentCoroutine = StartCoroutine( DataFetch() );
     }
 
@@ -98,10 +100,8 @@ public class LeaderBoard : MonoBehaviour {
         WaitForSeconds wait = new WaitForSeconds( 1f );
         string stmt = "";
         string jsonString = null;
+        bool first = false;
         recordList.Clear();
-        foreach ( Transform child in content ) {
-            Destroy( child.gameObject );
-        }
 
         stmt = $"SELECT * FROM class WHERE class_id = '{roomId}';";
 
@@ -129,6 +129,13 @@ public class LeaderBoard : MonoBehaviour {
             yield return StartCoroutine( NetworkManager.GetRequest( stmt, returnValue => {
                 jsonString = returnValue;
             } ) );
+
+            if ( !first ) {
+                foreach ( Transform child in content ) {
+                    Destroy( child.gameObject );
+                }
+                first = true;
+            }
 
             if ( jsonString == null ) {
                 Debug.Log( "sql Error" );
