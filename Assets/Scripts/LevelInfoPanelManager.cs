@@ -20,6 +20,13 @@ public class LevelInfoPanelManager : MonoBehaviour {
     public Transform topicPanel = null;
     public Transform blockPanel = null;
     public Transform topicLabel = null;
+    [Header( "MiniPrefab" )]
+    public GameObject obstaclePrefab;
+    public GameObject playerPrefab;
+    public GameObject boxPrefab;
+    public GameObject flagPrefab;
+    public GameObject holePrefab;
+    public GameObject doorPrefab;
 
     public Dictionary<int, ( string, string, string, string, int, int, int, string)> levelsInfo = new Dictionary<int, ( string, string, string, string, int, int, int, string)>();
     public List<( string, Transform )> levelsBtns = new List<(string, Transform)>();
@@ -205,5 +212,35 @@ public class LevelInfoPanelManager : MonoBehaviour {
                 d.Item2.SetParent( transform );
             }
         }
+    }
+    
+    public GameObject GetMini( char t ) {
+        switch ( t ) {
+            case '0':
+            case 'x':
+                break;
+            case '1':
+            case 'o':
+                return obstaclePrefab;
+            case '2':
+            case 'p':
+                return playerPrefab;
+            case '3':
+            case 'b':
+                return boxPrefab;
+            case '4':
+            case 'f':
+                return flagPrefab;
+            case '5':
+            case 'h':
+                return holePrefab;
+            case '6':
+            case 'j':
+                return buttonPrefab;
+            case '7':
+            case 'd':
+                return doorPrefab;
+        }
+        return null;
     }
 }

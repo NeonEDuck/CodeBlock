@@ -84,7 +84,48 @@ public class LevelInfoPanel : MonoBehaviour {
         TMP_Name.text = levelName;
         TMP_Desc.text = levelDesc;
         TMP_Creator.text = levelCreator;
-        T_img.GetComponent<Image>().sprite = levelPreviewImg;
+        //T_img.GetComponent<Image>().sprite = levelPreviewImg;
+        makePic();
+    }
+
+    private void makePic() {
+
+
+        Vector3 origin = new Vector3( 0, 0, 0 );
+        //Debug.Log( origin );
+
+        var jsonO = MiniJSON.Json.Deserialize( levelJson ) as Dictionary<string, object>;
+
+        var gameEnv = jsonO["gameEnv"] as string;
+        gameEnv = gameEnv.Replace( "\n", "" );
+
+        var dir = Direction.DOWN;
+        if ( jsonO.ContainsKey( "playerDir" ) ) {
+            dir = (Direction)(long)jsonO["playerDir"];
+        }
+
+        Transform player = null;
+
+        for ( int i = 0; i < gameEnv.Length; i++ ) {
+
+            GameObject mini = levelInfoPanelManager.GetMini( gameEnv[i] );
+
+            if ( mini != null ) {
+
+                var spawn = Instantiate( mini, T_img ).transform;
+
+                if ( gameEnv[i] == 'p' || gameEnv[i] == '2' ) {
+                    spawn.GetComponent<MiniGameObject>().direction = dir;
+                    player = spawn;
+                }
+
+
+                int x = i % 7;
+                int y = (int)Mathf.Floor( i / 7 );
+                spawn.GetComponent<MiniGameObject>().debug = true;
+                spawn.localPosition = origin + new Vector3( ( x - 3f ) * 50f, -( y + 0.5f ) * 50f, 0f );
+            }
+        }
     }
 
     public void EnterLevel() {
