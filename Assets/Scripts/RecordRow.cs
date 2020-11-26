@@ -32,7 +32,7 @@ public class RecordRow : MonoBehaviour {
 
         var rect = transform.GetComponent<RectTransform>();
 
-        Vector3 pos = new Vector3( transform.parent.GetComponent<RectTransform>().sizeDelta.x / 2, -(o + 0.5f) * rect.sizeDelta.y, 0 );
+        Vector3 pos = new Vector3( transform.parent.GetComponent<RectTransform>().rect.width / 2, -(o + 0.5f) * rect.sizeDelta.y, 0 );
 
         if ( order == -1 ) {
             transform.localPosition = pos;
