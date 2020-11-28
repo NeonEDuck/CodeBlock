@@ -959,14 +959,12 @@ public class GameManager : MonoBehaviour {
     }
 
     public IEnumerator Upload() {
-        string stmt = "UPDATE play_record SET " +
-            "score_time = " +   ( ( VariablesStorage.levelTime == -1 || VariablesStorage.levelTime > score_time ) ? score_time : VariablesStorage.levelTime ).ToString() + "," +
-            "score_amount = " + ( ( VariablesStorage.levelAmount == -1 || VariablesStorage.levelAmount > score_amount ) ? score_amount : VariablesStorage.levelAmount ).ToString() + "," +
-            "score_blocks = " + ( ( VariablesStorage.levelBlocks == -1 || VariablesStorage.levelBlocks < score_blocks ) ? score_blocks : VariablesStorage.levelBlocks ).ToString() + " " +
-            "WHERE member_id = '" + VariablesStorage.memberId + "' AND course_id = '" + VariablesStorage.courseId + "';";
+        var t = ( ( VariablesStorage.levelTime == -1 || VariablesStorage.levelTime > score_time ) ? score_time : VariablesStorage.levelTime );
+        var a = ( ( VariablesStorage.levelAmount == -1 || VariablesStorage.levelAmount > score_amount ) ? score_amount : VariablesStorage.levelAmount );
+        var b = ( ( VariablesStorage.levelBlocks == -1 || VariablesStorage.levelBlocks < score_blocks ) ? score_blocks : VariablesStorage.levelBlocks );
 
         if ( VariablesStorage.levelTime > score_time || VariablesStorage.levelAmount > score_amount || VariablesStorage.levelBlocks < score_blocks ) {
-            yield return StartCoroutine( UploadScore( stmt ) );
+            yield return StartCoroutine( UploadScore( t, a, b ) );
 
             VariablesStorage.levelTime = score_time;
             VariablesStorage.levelAmount = score_amount;
@@ -976,16 +974,14 @@ public class GameManager : MonoBehaviour {
         
     }
 
-    private IEnumerator UploadScore( string stmt_u ) {
+    private IEnumerator UploadScore( int t, int a, int b ) {
 
         string stmt = "";
         string jsonString = null;
 
-        Debug.Log( "upload score" );
-        stmt = "SELECT * FROM play_record WHERE member_id = '" + VariablesStorage.memberId + "' AND course_id = '" + VariablesStorage.courseId + "';";
-        Debug.Log( stmt );
+        Debug.Log( $"upload score t={t}, a={a}, b={b}" );
 
-        yield return StartCoroutine( NetworkManager.GetRequest( stmt, returnValue => {
+        yield return StartCoroutine( NetworkManager.GetRequest( $"SELECT * FROM play_record WHERE member_id = '{VariablesStorage.memberId}' AND course_id = '{VariablesStorage.courseId}';", returnValue => {
             jsonString = returnValue;
         } ) );
 
@@ -997,11 +993,7 @@ public class GameManager : MonoBehaviour {
         }
         else if ( jsonString.Trim() == "[]" || jsonString.Trim() == "" ) {
             Debug.Log( "no record" );
-
-
-            stmt = "INSERT INTO play_record VALUES ('" + VariablesStorage.memberId + "','" + VariablesStorage.courseId + "', -1, -1, -1 );";
-
-            yield return StartCoroutine( NetworkManager.GetRequest( stmt, returnValue => {
+            yield return StartCoroutine( NetworkManager.GetRequest( $"INSERT INTO play_record VALUES ('{VariablesStorage.memberId}','{VariablesStorage.courseId}',{t},{a},{b} );", returnValue => {
                 jsonString = returnValue;
             } ) );
 
@@ -1009,11 +1001,11 @@ public class GameManager : MonoBehaviour {
             Debug.Log( jsonString );
 
         }
-
-        Debug.Log( stmt_u );
-        yield return StartCoroutine( NetworkManager.GetRequest( stmt_u, returnValue => {
-            Debug.Log( returnValue );
-        } ) );
+        else {
+            yield return StartCoroutine( NetworkManager.GetRequest( $"UPDATE play_record SET score_time = {t}, score_amount = {a}, score_blocks = {b} WHERE member_id = '{VariablesStorage.memberId}' AND course_id = '{VariablesStorage.courseId}'", returnValue => {
+                Debug.Log( returnValue );
+            } ) );
+        }
 
 
     }
