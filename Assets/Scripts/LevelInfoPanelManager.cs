@@ -13,6 +13,7 @@ public class LevelInfoPanelManager : MonoBehaviour {
     public Transform parentCanvas = null;
     public Transform levelButtonHolder = null;
     public GameObject buttonPrefab = null;
+    public GameObject topicButtonPrefab = null;
     public Transform loadingIcon = null;
     public List<string> previewImgKey = new List<string>();
     public List<Sprite> previewImgValue = new List<Sprite>();
@@ -61,20 +62,31 @@ public class LevelInfoPanelManager : MonoBehaviour {
             Destroy( levelButtonHolder.GetChild( i ).gameObject );
         }
 
-        yield return StartCoroutine( NetworkManager.GetRequest( "SELECT * FROM topic ORDER BY topic_id ASC", returnValue => {
+        yield return StartCoroutine( NetworkManager.GetRequest( $"select topic.* from (select unnest(string_to_array(topics, ',')) as topic_id from class where class_id = '{VariablesStorage.roomId}') as topic_list left join topic on topic_list.topic_id = topic.topic_id ORDER BY topic.topic_id ASC", returnValue => {
             var jsonO = MiniJSON.Json.Deserialize( returnValue ) as List<object>;
-            int i = 0;
             foreach ( Dictionary<string, object> item in jsonO ) {
-                Color HColor = topicPanel.GetComponent<TopicPanel>().buttons[i].GetChild( 2 ).GetComponent<Image>().color;
-                Color BColor = topicPanel.GetComponent<TopicPanel>().buttons[i].GetChild( 3 ).GetComponent<Image>().color;
+                Color BColor;
+                float H, S, V = 0f;
+
+                ColorUtility.TryParseHtmlString( $"#{item["topic_color"] as string}", out BColor );
+
+                Color.RGBToHSV( BColor, out H, out S, out V );
+                S = Mathf.Clamp( S - 0.08f, 0f, 1f );
+                V = Mathf.Clamp( V + 0.08f, 0f, 1f );
+
+                Color HColor = Color.HSVToRGB( H, S, V );
 
                 topics.Add( item["topic_id"] as string, ( item["topic_name"] as string, HColor, BColor ) );
                 Debug.Log( item["topic_id"] as string + ", " + item["topic_name"] as string );
-                if ( i < topicPanel.GetComponent<TopicPanel>().buttons.Count ) {
-                    topicPanel.GetComponent<TopicPanel>().buttons[i].GetComponent<TopicButton>().text.text = item["topic_name"] as string;
-                    topicPanel.GetComponent<TopicPanel>().buttons[i].GetComponent<Button>().onClick.AddListener( () => { ChangeType( item["topic_id"] as string ); } );
-                    i++;
-                }
+
+                var topicBtn = Instantiate( topicButtonPrefab, topicPanel ).transform;
+
+                topicBtn.GetComponent<TopicButton>().text.text = item["topic_name"] as string;
+                topicBtn.GetComponent<Button>().onClick.AddListener( () => { ChangeType( item["topic_id"] as string ); } );
+
+                topicBtn.GetComponent<TopicButton>().HColorImages.ForEach( img => { img.color = HColor; } );
+                topicBtn.GetComponent<TopicButton>().BColorImages.ForEach( img => { img.color = BColor; } );
+
             }
         } ) );
 
@@ -84,7 +96,7 @@ public class LevelInfoPanelManager : MonoBehaviour {
         //stmt = "INSERT INTO course ( course_name, type_id, player_id, course_json ) VALUES ( 'test', 'T1000000', 'P1000000', '" + cjson + "' )";
         //stmt = "DELETE FROM course WHERE course_name = 'test'";
         // {"course_id":"C1000003","course_name":"test","type_id":"T1000000","hint":null,"player_id":"P1000000","course_json":null}
-        stmt = $"SELECT course.*, play_record.score_time, play_record.score_amount, play_record.score_blocks FROM course left join (	select course_id, play_record.score_time, play_record.score_amount, play_record.score_blocks FROM play_record where member_id = '{VariablesStorage.memberId}') as play_record on course.course_id = play_record.course_id order by course.course_id";
+        stmt = $"SELECT course.*, play_record.score_time, play_record.score_amount, play_record.score_blocks FROM course left join (	select course_id, play_record.score_time, play_record.score_amount, play_record.score_blocks FROM play_record where member_id = '{VariablesStorage.memberId}') as play_record on course.course_id = play_record.course_id where topic_id in ( select unnest(string_to_array(topics, ',')) as topic_id from class where class_id = '{VariablesStorage.roomId}') order by course.course_id";
         //stmt = "INSERT INTO course_type ( type_name ) VALUES ( 'type_test' )";
 
         yield return StartCoroutine( NetworkManager.GetRequest( stmt, returnValue => {
@@ -104,26 +116,6 @@ public class LevelInfoPanelManager : MonoBehaviour {
         }
         else {
             Debug.Log( jsonString );
-
-            //List<object> jsonO2 = new List<object>();
-
-            //yield return StartCoroutine( NetworkManager.GetRequest( "SELECT * FROM play_record WHERE member_id = '" + VariablesStorage.memberId + "';", returnValue => {
-            //    if ( !( returnValue.Trim() == "[]" || returnValue.Trim() == "" ) ) {
-            //        Debug.LogWarning( "returnValue:" + returnValue );
-            //        jsonO2 = MiniJSON.Json.Deserialize( returnValue ) as List<object>;
-            //    }
-            //} ) );
-
-
-
-            //it = jsonO[0] as Dictionary<string, object>;
-
-            //foreach ( var k in it.Keys ) {
-            //    Debug.Log( k );
-            //}
-            //score_time = (int)(long)it["score_time"];
-            //score_amount = (int)(long)it["score_amount"];
-            //score_blocks = (int)(long)it["score_blocks"];
 
             var jsonO = MiniJSON.Json.Deserialize( jsonString ) as List<object>;
             int i = 1;

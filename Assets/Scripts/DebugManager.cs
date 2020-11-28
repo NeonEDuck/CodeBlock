@@ -110,11 +110,11 @@ public class DebugManager : MonoBehaviour {
                 }
             }
 
-            content.GetComponent<RectTransform>().sizeDelta = new Vector2( content.GetComponent<RectTransform>().sizeDelta.x, 400 * time );
+            content.GetComponent<RectTransform>().sizeDelta = new Vector2( content.GetComponent<RectTransform>().sizeDelta.x, 400 * ( time - 1 ) );
 
         } ) );
 
 
-        ScreenCapture.CaptureScreenshot( Application.dataPath + "ScreenShot.png" );
+        ScreenCapture.CaptureScreenshot( Application.dataPath + "/Debug/ScreenShot.png" );
     }
 }

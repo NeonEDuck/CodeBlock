@@ -85,7 +85,7 @@ GameObject:
   - component: {fileID: 5467846032966785828}
   - component: {fileID: 4744294095720744581}
   m_Layer: 5
-  m_Name: TypeButton
+  m_Name: TopicButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -172,6 +172,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   text: {fileID: 7097694223003942005}
+  HColorImages:
+  - {fileID: 5890953293199856282}
+  BColorImages:
+  - {fileID: 8440858840607915466}
+  - {fileID: 3822034427635329811}
 --- !u!1 &2370428729464884863
 GameObject:
   m_ObjectHideFlags: 0

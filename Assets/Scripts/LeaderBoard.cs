@@ -15,7 +15,6 @@ public class LeaderBoard : MonoBehaviour {
     private string roomId = null;
     private string courseId = null;
     private Coroutine currentCoroutine = null;
-    private string validRoom = "";
     private Dictionary<string, RecordRow> recordList = new Dictionary<string, RecordRow>();
 
     public void OnEnable() {
