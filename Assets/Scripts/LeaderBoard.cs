@@ -2,6 +2,7 @@
 using System.Collections;
 using TMPro;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class LeaderBoard : MonoBehaviour {
     public TMP_InputField PINInput = null;
@@ -10,8 +11,8 @@ public class LeaderBoard : MonoBehaviour {
     public GameObject recordRowPrefab = null;
     public TMP_Text courseName = null;
     private string[] orderBy = { "class_member.member_id" , "num", "sum_score_time", "sum_score_amount", "sum_score_blocks" };
-    private int orderId = 0;
-    private bool ascending = true;
+    private int orderId = 4;
+    private bool ascending = false;
     private string roomId = null;
     private string courseId = null;
     private Coroutine currentCoroutine = null;
@@ -34,7 +35,7 @@ public class LeaderBoard : MonoBehaviour {
             ascending = !ascending;
         }
         else {
-            ascending = true;
+            ascending = false;
         }
 
         orderId = num;
@@ -44,7 +45,7 @@ public class LeaderBoard : MonoBehaviour {
         }
 
         title.GetChild( orderId ).GetChild( 1 ).gameObject.SetActive( true );
-        title.GetChild( orderId ).GetChild( 1 ).localRotation = Quaternion.Euler( new Vector3( 0, 0, ( ascending ) ? 0 : 180 ) );
+        title.GetChild( orderId ).GetChild( 1 ).localRotation = Quaternion.Euler( new Vector3( 0, 0, ( ascending ) ? 180 : 0 ) );
 
         startFetching();
     }
@@ -190,6 +191,9 @@ public class LeaderBoard : MonoBehaviour {
                 else {
                     record = Instantiate( recordRowPrefab, content ).GetComponent<RecordRow>();
                     recordList.Add( member_id, record );
+                    if ( member_id == VariablesStorage.memberId ) {
+                        record.GetComponent<Image>().color = new Color( 1.0f, 0.501960784f, 0.250980392f );
+                    }
                 }
 
                 record.nameText.text = member_name;
