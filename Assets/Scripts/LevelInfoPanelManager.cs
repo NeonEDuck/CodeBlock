@@ -28,6 +28,7 @@ public class LevelInfoPanelManager : MonoBehaviour {
     public GameObject flagPrefab;
     public GameObject holePrefab;
     public GameObject doorPrefab;
+    public GameObject miniButtonPrefab;
 
     public Dictionary<int, ( string, string, string, string, int, int, int, string)> levelsInfo = new Dictionary<int, ( string, string, string, string, int, int, int, string)>();
     public List<( string, Transform )> levelsBtns = new List<(string, Transform)>();
@@ -228,7 +229,7 @@ public class LevelInfoPanelManager : MonoBehaviour {
                 return holePrefab;
             case '6':
             case 'j':
-                return buttonPrefab;
+                return miniButtonPrefab;
             case '7':
             case 'd':
                 return doorPrefab;

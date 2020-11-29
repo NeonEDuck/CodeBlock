@@ -74,7 +74,13 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public'), {
+    setHeaders: function(res, path) {
+        if(path.endsWith(".unityweb")){
+            res.set("Content-Encoding", "gzip");
+        }
+    }
+}));
 
 app.use('/', indexRouter);
 app.use('/index', indexRouter);

@@ -98,7 +98,7 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 1
+  m_UseShadowmask: 0
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -5060,7 +5060,6 @@ GameObject:
   - component: {fileID: 910274905}
   - component: {fileID: 910274904}
   - component: {fileID: 910274903}
-  - component: {fileID: 910274906}
   m_Layer: 5
   m_Name: LevelButtonHolder
   m_TagString: Untagged
@@ -5147,19 +5146,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 910274901}
   m_CullTransparentMesh: 0
---- !u!114 &910274906
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 910274901}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 22c8c166c72f72342bd8cb9397bf3f1f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  gridLayout: {fileID: 910274903}
 --- !u!1 &952629896
 GameObject:
   m_ObjectHideFlags: 0
@@ -5359,6 +5345,7 @@ GameObject:
   - component: {fileID: 1052499212}
   - component: {fileID: 1052499215}
   - component: {fileID: 1052499214}
+  - component: {fileID: 1052499216}
   - component: {fileID: 1052499213}
   m_Layer: 5
   m_Name: PINInput
@@ -5519,6 +5506,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1052499211}
   m_CullTransparentMesh: 0
+--- !u!114 &1052499216
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1052499211}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc33a39070010f94fb1c2dd721c1286d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  showHtmlElement: 0
 --- !u!1 &1080806669
 GameObject:
   m_ObjectHideFlags: 0
@@ -6815,6 +6815,8 @@ MonoBehaviour:
   holePrefab: {fileID: 3991038437378572142, guid: 73478c47e994b3340badc338241e47c4,
     type: 3}
   doorPrefab: {fileID: 3991038437378572142, guid: a75a932efdfbaea4fa26b41bb32e6413,
+    type: 3}
+  miniButtonPrefab: {fileID: 3991038437378572142, guid: 057f1a3262d43a34b8f5d24c93dcf16d,
     type: 3}
 --- !u!4 &1448477171
 Transform:
@@ -8576,6 +8578,7 @@ GameObject:
   - component: {fileID: 1796772596}
   - component: {fileID: 1796772595}
   - component: {fileID: 1796772594}
+  - component: {fileID: 1796772597}
   - component: {fileID: 1796772593}
   m_Layer: 5
   m_Name: NameInput
@@ -8736,6 +8739,19 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 130}
   m_SizeDelta: {x: 500, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1796772597
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1796772592}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc33a39070010f94fb1c2dd721c1286d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  showHtmlElement: 0
 --- !u!1 &1830698089
 GameObject:
   m_ObjectHideFlags: 0
