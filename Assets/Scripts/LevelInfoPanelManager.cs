@@ -13,11 +13,26 @@ public class LevelInfoPanelManager : MonoBehaviour {
     public Transform parentCanvas = null;
     public Transform levelButtonHolder = null;
     public GameObject buttonPrefab = null;
+    public GameObject topicButtonPrefab = null;
     public Transform loadingIcon = null;
-    public List<Sprite> previewImg = new List<Sprite>();
+    public List<string> previewImgKey = new List<string>();
+    public List<Sprite> previewImgValue = new List<Sprite>();
     public LeaderBoard leaderBoard = null;
+    public Transform topicPanel = null;
+    public Transform blockPanel = null;
+    public Transform topicLabel = null;
+    [Header( "MiniPrefab" )]
+    public GameObject obstaclePrefab;
+    public GameObject playerPrefab;
+    public GameObject boxPrefab;
+    public GameObject flagPrefab;
+    public GameObject holePrefab;
+    public GameObject doorPrefab;
+    public GameObject miniButtonPrefab;
 
-    public Dictionary<int, ( string, string, string, string, int, int, int, Sprite)> levelsInfo = new Dictionary<int, ( string, string, string, string, int, int, int, Sprite)>();
+    public Dictionary<int, ( string, string, string, string, int, int, int, string)> levelsInfo = new Dictionary<int, ( string, string, string, string, int, int, int, string)>();
+    public List<( string, Transform )> levelsBtns = new List<(string, Transform)>();
+    public Dictionary<string, (string, Color, Color)> topics = new Dictionary<string, (string, Color, Color)>();
 
     void Start() {
         //levelsInfo.Add( 1, ("First Level", "Lorem ipsum dolor sit amet, orci erat morbi interdum erat, nibh wisi erat. Sed nulla urna, at vel, vitae aliquam imperdiet placerat scelerisque.", "Creator1", "{\"blocksList\":{\"StartBlock\":1, \"SetBlock\":4, \"DefineBlock\":2, \"MoveBlock\":0}, \"gameEnv\":\"001001010010001000100013120000000001000100\"}") );
@@ -39,6 +54,7 @@ public class LevelInfoPanelManager : MonoBehaviour {
 
         print( "start" );
         loadingIcon.gameObject.SetActive( true );
+        blockPanel.gameObject.SetActive( true );
         AddOrRemovePanel(-1);
 
         levelsInfo.Clear();
@@ -47,13 +63,41 @@ public class LevelInfoPanelManager : MonoBehaviour {
             Destroy( levelButtonHolder.GetChild( i ).gameObject );
         }
 
+        yield return StartCoroutine( NetworkManager.GetRequest( $"select topic.* from (select unnest(string_to_array(topics, ',')) as topic_id from class where class_id = '{VariablesStorage.roomId}') as topic_list left join topic on topic_list.topic_id = topic.topic_id ORDER BY topic.topic_id ASC", returnValue => {
+            var jsonO = MiniJSON.Json.Deserialize( returnValue ) as List<object>;
+            foreach ( Dictionary<string, object> item in jsonO ) {
+                Color BColor;
+                float H, S, V = 0f;
+
+                ColorUtility.TryParseHtmlString( $"#{item["topic_color"] as string}", out BColor );
+
+                Color.RGBToHSV( BColor, out H, out S, out V );
+                S = Mathf.Clamp( S - 0.08f, 0f, 1f );
+                V = Mathf.Clamp( V + 0.08f, 0f, 1f );
+
+                Color HColor = Color.HSVToRGB( H, S, V );
+
+                topics.Add( item["topic_id"] as string, ( item["topic_name"] as string, HColor, BColor ) );
+                Debug.Log( item["topic_id"] as string + ", " + item["topic_name"] as string );
+
+                var topicBtn = Instantiate( topicButtonPrefab, topicPanel ).transform;
+
+                topicBtn.GetComponent<TopicButton>().text.text = item["topic_name"] as string;
+                topicBtn.GetComponent<Button>().onClick.AddListener( () => { ChangeType( item["topic_id"] as string ); } );
+
+                topicBtn.GetComponent<TopicButton>().HColorImages.ForEach( img => { img.color = HColor; } );
+                topicBtn.GetComponent<TopicButton>().BColorImages.ForEach( img => { img.color = BColor; } );
+
+            }
+        } ) );
+
         string jsonString = null;
         string stmt = "";
         //string cjson = "{\"blocksList\":{\"StartBlock\":1, \"SetBlock\":4, \"DefineBlock\":2, \"MoveBlock\":0}, \"gameEnv\":\"001001010010001000100013120000000001000100\"}";
         //stmt = "INSERT INTO course ( course_name, type_id, player_id, course_json ) VALUES ( 'test', 'T1000000', 'P1000000', '" + cjson + "' )";
         //stmt = "DELETE FROM course WHERE course_name = 'test'";
         // {"course_id":"C1000003","course_name":"test","type_id":"T1000000","hint":null,"player_id":"P1000000","course_json":null}
-        stmt = "SELECT course.*, play_record.score_time, play_record.score_amount, play_record.score_blocks FROM course left outer join play_record on course.course_id = play_record.course_id where member_id = '" + VariablesStorage.memberId + "' or member_id is null order by course.course_id;";
+        stmt = $"SELECT course.*, play_record.score_time, play_record.score_amount, play_record.score_blocks FROM course left join (	select course_id, play_record.score_time, play_record.score_amount, play_record.score_blocks FROM play_record where member_id = '{VariablesStorage.memberId}') as play_record on course.course_id = play_record.course_id where topic_id in ( select unnest(string_to_array(topics, ',')) as topic_id from class where class_id = '{VariablesStorage.roomId}') order by course.course_id";
         //stmt = "INSERT INTO course_type ( type_name ) VALUES ( 'type_test' )";
 
         yield return StartCoroutine( NetworkManager.GetRequest( stmt, returnValue => {
@@ -74,26 +118,6 @@ public class LevelInfoPanelManager : MonoBehaviour {
         else {
             Debug.Log( jsonString );
 
-            //List<object> jsonO2 = new List<object>();
-
-            //yield return StartCoroutine( NetworkManager.GetRequest( "SELECT * FROM play_record WHERE member_id = '" + VariablesStorage.memberId + "';", returnValue => {
-            //    if ( !( returnValue.Trim() == "[]" || returnValue.Trim() == "" ) ) {
-            //        Debug.LogWarning( "returnValue:" + returnValue );
-            //        jsonO2 = MiniJSON.Json.Deserialize( returnValue ) as List<object>;
-            //    }
-            //} ) );
-
-
-
-            //it = jsonO[0] as Dictionary<string, object>;
-
-            //foreach ( var k in it.Keys ) {
-            //    Debug.Log( k );
-            //}
-            //score_time = (int)(long)it["score_time"];
-            //score_amount = (int)(long)it["score_amount"];
-            //score_blocks = (int)(long)it["score_blocks"];
-
             var jsonO = MiniJSON.Json.Deserialize( jsonString ) as List<object>;
             int i = 1;
             foreach ( Dictionary<string, object> item in jsonO ) {
@@ -107,14 +131,6 @@ public class LevelInfoPanelManager : MonoBehaviour {
                 int score_blocks = ( item["score_blocks"] is null ) ? -1 : (int)(long)item["score_blocks"];
                 string topic_id = item["topic_id"] as string;
 
-                Sprite img = null;
-
-                if      ( topic_id == "T100" ) img = previewImg[0];
-                else if ( topic_id == "T101" ) img = previewImg[1];
-                else if ( topic_id == "T102" ) img = previewImg[2];
-                else if ( topic_id == "T103" ) img = previewImg[3];
-
-
                 //Debug.LogWarning( "SELECT * FROM play_record WHERE member_id = '" + VariablesStorage.memberId + "' AND course_id = '" + course_id + "';" );
 
                 //foreach ( Dictionary<string, object> item2 in jsonO2 ) {
@@ -125,19 +141,20 @@ public class LevelInfoPanelManager : MonoBehaviour {
                 //    }
                 //}
 
-                levelsInfo.Add( i, ( course_id, course_name, description, course_json, score_time, score_amount, score_blocks, img ) );
+                levelsInfo.Add( i, ( course_id, course_name, description, course_json, score_time, score_amount, score_blocks, topic_id) );
                 Transform btn = Instantiate( buttonPrefab, levelButtonHolder ).transform;
+                btn.SetParent( transform );
                 int temp = i++;
-                btn.GetComponent<Button>().onClick.AddListener( delegate { AddOrRemovePanel( temp ); } );
+                btn.GetComponent<Button>().onClick.AddListener( () => { AddOrRemovePanel( temp ); } );
                 btn.GetChild( 0 ).GetComponent<TMP_Text>().text = course_name;
+                btn.GetChild( 1 ).gameObject.SetActive( ( score_time != -1 ) );
+                levelsBtns.Add( ( topic_id, btn ) );
             }
         }
 
-        Transform btnReload = Instantiate( buttonPrefab, levelButtonHolder ).transform;
-        btnReload.GetComponent<Button>().onClick.AddListener( () => ReloadLevels() );
-        btnReload.GetChild( 0 ).GetComponent<TMP_Text>().text = "Reload";
-
+        ChangeType( VariablesStorage.levelTopic );
         loadingIcon.gameObject.SetActive( false );
+        blockPanel.gameObject.SetActive( false );
         print( "end" );
     }
 
@@ -160,9 +177,63 @@ public class LevelInfoPanelManager : MonoBehaviour {
             LevelInfoPanel gip = Instantiate( gameInfoPanelPrefab, parentCanvas ).transform.GetComponent<LevelInfoPanel>();
             levelList.Push( gip );
             gip.levelId = id;
-            gip.SetInfo( levelsInfo[id] );
             gip.levelInfoPanelManager = this;
+            gip.SetInfo( levelsInfo[id] );
             gip.PullTrigger( true );
         }
+    }
+
+    public void ChangeType(string type) {
+
+        if ( type == "" ) {
+            topicPanel.gameObject.SetActive( true );
+            AddOrRemovePanel( -1 );
+        }
+        else {
+            topicLabel.GetComponentInChildren<TMP_Text>().text = topics[type].Item1;
+            topicLabel.GetChild( 2 ).GetComponent<Image>().color = topics[type].Item2;
+            topicLabel.GetChild( 3 ).GetComponent<Image>().color = topics[type].Item3;
+            topicPanel.gameObject.SetActive( false );
+        }
+
+        foreach ( (string, Transform) d in levelsBtns ) {
+            if ( d.Item1 == type ) {
+                d.Item2.SetParent( levelButtonHolder );
+                d.Item2.localScale = Vector3.one;
+            }
+            else {
+                d.Item2.SetParent( transform );
+            }
+        }
+    }
+    
+    public GameObject GetMini( char t ) {
+        switch ( t ) {
+            case '0':
+            case 'x':
+                break;
+            case '1':
+            case 'o':
+                return obstaclePrefab;
+            case '2':
+            case 'p':
+                return playerPrefab;
+            case '3':
+            case 'b':
+                return boxPrefab;
+            case '4':
+            case 'f':
+                return flagPrefab;
+            case '5':
+            case 'h':
+                return holePrefab;
+            case '6':
+            case 'j':
+                return miniButtonPrefab;
+            case '7':
+            case 'd':
+                return doorPrefab;
+        }
+        return null;
     }
 }

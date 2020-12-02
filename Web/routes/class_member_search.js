@@ -17,10 +17,9 @@ router.post('/', function(req, res, next) {
     
     class_member.search(newData).then(d => {
         if (d!=[]){
-            console.log("==========================")
-            console.log(d)
-            console.log(d.member_name)
-            res.send(d.member_name);  
+           
+            console.log(d.member_data)
+            res.send(d.member_data);  
             
             //console.log(d);
         }else{

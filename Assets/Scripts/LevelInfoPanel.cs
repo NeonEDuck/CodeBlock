@@ -3,6 +3,7 @@ using System.Collections;
 using TMPro;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 public class LevelInfoPanel : MonoBehaviour {
 
@@ -19,6 +20,7 @@ public class LevelInfoPanel : MonoBehaviour {
     public string levelDesc = "";
     public string levelCreator = "";
     public string levelJson = "";
+    public string levelTopic = "";
     public int levelScoreTime = 0;
     public int levelScoreAmount = 0;
     public int levelScoreBlocks = 0;
@@ -46,11 +48,11 @@ public class LevelInfoPanel : MonoBehaviour {
         pullOutState = pullOut;
         if ( pullOut ) {
             fromPos = transform.localPosition;
-            toPos = new Vector3( Screen.width / 2, 0, 0 );
+            toPos = new Vector3( ( Screen.width / transform.lossyScale.x ) / 2, 0, 0 );
         }
         else {
             fromPos = transform.localPosition;
-            toPos = new Vector3( Screen.width, transform.localPosition.y );
+            toPos = new Vector3( ( Screen.width / transform.lossyScale.x ), transform.localPosition.y );
         }
 
         delta = 0f;
@@ -64,7 +66,7 @@ public class LevelInfoPanel : MonoBehaviour {
         levelInfoPanelManager.FetchLevelLeaderBoard( levelId );
     }
 
-    public void SetInfo( (string, string, string, string, int, int, int, Sprite) info ) {
+    public void SetInfo( (string, string, string, string, int, int, int, string) info ) {
         courseId = info.Item1;
         levelName = info.Item2;
         levelDesc = info.Item3;
@@ -72,14 +74,58 @@ public class LevelInfoPanel : MonoBehaviour {
         levelScoreTime = info.Item5;
         levelScoreAmount = info.Item6;
         levelScoreBlocks = info.Item7;
-        levelPreviewImg = info.Item8;
+        levelTopic = info.Item8;
+
+        levelPreviewImg = levelInfoPanelManager.previewImgValue[(int)Mathf.Max( levelInfoPanelManager.previewImgKey.IndexOf( levelTopic ), 0 )];
+
         DisplayInfo();
     }
     public void DisplayInfo() {
         TMP_Name.text = levelName;
         TMP_Desc.text = levelDesc;
         TMP_Creator.text = levelCreator;
-        T_img.GetComponent<Image>().sprite = levelPreviewImg;
+        //T_img.GetComponent<Image>().sprite = levelPreviewImg;
+        makePic();
+    }
+
+    private void makePic() {
+
+
+        Vector3 origin = new Vector3( 0, 0, 0 );
+        //Debug.Log( origin );
+
+        var jsonO = MiniJSON.Json.Deserialize( levelJson ) as Dictionary<string, object>;
+
+        var gameEnv = jsonO["gameEnv"] as string;
+        gameEnv = gameEnv.Replace( "\n", "" );
+
+        var dir = Direction.DOWN;
+        if ( jsonO.ContainsKey( "playerDir" ) ) {
+            dir = (Direction)(long)jsonO["playerDir"];
+        }
+
+        Transform player = null;
+
+        for ( int i = 0; i < gameEnv.Length; i++ ) {
+
+            GameObject mini = levelInfoPanelManager.GetMini( gameEnv[i] );
+
+            if ( mini != null ) {
+
+                var spawn = Instantiate( mini, T_img ).transform;
+
+                if ( gameEnv[i] == 'p' || gameEnv[i] == '2' ) {
+                    spawn.GetComponent<MiniGameObject>().direction = dir;
+                    player = spawn;
+                }
+
+
+                int x = i % 7;
+                int y = (int)Mathf.Floor( i / 7 );
+                spawn.GetComponent<MiniGameObject>().debug = true;
+                spawn.localPosition = origin + new Vector3( ( x - 3f ) * 50f, -( y + 0.5f ) * 50f, 0f );
+            }
+        }
     }
 
     public void EnterLevel() {
@@ -89,6 +135,7 @@ public class LevelInfoPanel : MonoBehaviour {
         VariablesStorage.levelTime = levelScoreTime;
         VariablesStorage.levelAmount = levelScoreAmount;
         VariablesStorage.levelBlocks = levelScoreBlocks;
+        VariablesStorage.levelTopic = levelTopic;
         SceneManager.LoadScene( "SampleScene" );
     }
 }

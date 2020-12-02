@@ -74,7 +74,13 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public'), {
+    setHeaders: function(res, path) {
+        if(path.endsWith(".unityweb")){
+            res.set("Content-Encoding", "gzip");
+        }
+    }
+}));
 
 app.use('/', indexRouter);
 app.use('/index', indexRouter);
@@ -116,7 +122,18 @@ app.get('/user/logout', function(req, res){
     res.redirect('/');   //導向登出頁面
 });    
 app.get('/teacher_guide_book', (req, res) => {
-    const path = './public/pdf/123.pdf'
+    const path = './public/pdf/teacher.pdf'
+    if (fs.existsSync(path)) {
+        res.contentType("application/pdf");
+        fs.createReadStream(path).pipe(res)
+    } else {
+        res.status(500)
+        console.log('File not found')
+        res.send('File not found')
+    }
+})
+app.get('/student_guide_book', (req, res) => {
+    const path = './public/pdf/student.pdf'
     if (fs.existsSync(path)) {
         res.contentType("application/pdf");
         fs.createReadStream(path).pipe(res)

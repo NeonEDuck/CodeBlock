@@ -99,6 +99,7 @@ public class BlockGridDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandl
                     }
                     break;
                 case BlockType.SetBlock:
+                case BlockType.AddBlock:
                     ToTheNextPriority( child.GetComponent<BlockInfo>().refField[0].GetComponent<ValueBlockSwap>().valueBlockGrid );
                     ToTheNextPriority( child.GetComponent<BlockInfo>().refField[1].GetComponent<ValueBlockSwap>().valueBlockGrid );
                     break;
@@ -142,8 +143,13 @@ public class BlockGridDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandl
         for ( int i = 0; i < transform.childCount; i++ ) {
             Transform child = transform.GetChild( i );
             switch ( child.GetComponent<BlockInfo>().blockType ) {
-                case BlockType.ForBlock:
                 case BlockType.IfBlock:
+                    child.GetChild( 1 ).GetChild( 1 ).GetComponent<BlockGridDropZone>().Resize();
+                    if ( child.childCount > 3 ) {
+                        child.GetChild( 3 ).GetChild( 1 ).GetComponent<BlockGridDropZone>().Resize();
+                    }
+                    break;
+                case BlockType.ForBlock:
                 case BlockType.RepeatBlock:
                     child.GetChild( 1 ).GetChild( 1 ).GetComponent<BlockGridDropZone>().Resize();
                     break;

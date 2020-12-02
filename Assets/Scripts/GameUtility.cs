@@ -36,7 +36,7 @@ public static class GameUtility
 
     static public bool OptionTextToNumber( string s, out int num ) {
         num = 0;
-        if      ( s == "小人偶" ) {
+        if      ( s == "機器人" ) {
             num = 2;
         }
         else if ( s == "箱子" ) {
@@ -78,6 +78,7 @@ public enum BlockType
     TurnBlock,
     BreakBlock,
     LogicSelectorBlock,
+    AddBlock,
     Other
 }
 public enum BlockGridType {

@@ -156,13 +156,13 @@ function gotopdf($name){
     );
 }
 
-function check( class_id ){
+function check( class_id,i ){
     event.stopPropagation();
     var enter = prompt("確定要刪除此課程的話，請輸入'" + class_id + "'");
     console.log(enter)
     if(enter==class_id){
         console.log("HERE")
-        document.getElementById("delete_class").submit();
+        document.getElementById("delete_class_"+i).submit();
         alert("刪除成功");
         
         
@@ -202,7 +202,7 @@ async function search_class(class_id, table_i,class_name,id){
                             break;
                         }
                         console.log(data[cnt].member_name);
-                        tr.append('<td class="'+data[cnt].member_name+'_'+class_id+'" onclick="deleteMember(\''+data[cnt].member_name+'\',\''+class_id+'\',\''+class_name+'\',\''+data.length+'\',\''+table_i+'\',\''+id+'\')">'+data[cnt].member_name+'</td>');
+                        tr.append('<td class="'+data[cnt].member_name+'_'+class_id+'" onclick="deleteMember(\''+data[cnt].member_name+'\',\''+class_id+'\',\''+class_name+'\',\''+data.length+'\',\''+table_i+'\',\''+id+'\')">'+data[cnt].member_name+'\#'+data[cnt].pin+'</td>');
                         console.log("第" + cnt + "次");
                         //$("#member_"+id).slideToggle("slow");
                     }
@@ -263,4 +263,15 @@ async function deleteMember(member_id, class_id ,class_name,length,table_i,id) {
 
 
     
+}
+function playAudio(text) {
+    event.stopPropagation();
+    var msg = new SpeechSynthesisUtterance(text);
+    msg.lang = 'en-US';
+    msg.voiceURI = 'native';
+    msg.rate = 0.6; // 0.1 to 10
+    window.speechSynthesis.speak(msg);
+}
+function checkbox(){
+    $("#ap").prop('checked', true);
 }

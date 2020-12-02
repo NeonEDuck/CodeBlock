@@ -11,7 +11,6 @@ public class RoomManager : MonoBehaviour {
     public TMP_Text infoText = null;
     public TMP_Text debugText = null;
     public TMP_Text welcomeText = null;
-    public TMP_Text warningText = null;
     public LevelInfoPanelManager lipm = null;
     public Transform blockPanel = null;
     public Transform namePanel = null;
@@ -24,9 +23,17 @@ public class RoomManager : MonoBehaviour {
         else {
             gameObject.SetActive( true );
             if ( VariablesStorage.last_played != "" ) {
-                infoText.text = "已在其他裝置登入!";
+                switch ( VariablesStorage.error ) {
+                    case 0:
+                        infoText.text = "已在其他裝置登入!";
+                        break;
+                    case 1:
+                        infoText.text = "資料遺失，請嘗試登入一次!";
+                        break;
+                }
                 infoText.color = new Color( 1, 0, 0 );
             }
+            VariablesStorage.last_played = "";
         }
     }
 
@@ -189,6 +196,15 @@ public class RoomManager : MonoBehaviour {
                     VariablesStorage.memberId = it["member_id"] as string;
                     VariablesStorage.memberPin = it["pin"] as string;
                 } ) );
+
+
+                yield return StartCoroutine( NetworkManager.GetRequest( $"select updatetime('{VariablesStorage.memberId}');", returnValue => {
+                    jsonO = MiniJSON.Json.Deserialize( returnValue ) as List<object>;
+
+                    it = jsonO[0] as Dictionary<string, object>;
+                    VariablesStorage.last_played = it["updatetime"] as string;
+                } ) );
+
                 nameText.text = $"{VariablesStorage.memberName}#{VariablesStorage.memberPin}";
                 namePanel.gameObject.SetActive( true );
             }

@@ -70,6 +70,8 @@ MonoBehaviour:
     type: 3}
   logicSelectorBlockPrefab: {fileID: 3691007400728678226, guid: 9ad80e8047bc5f34496f5f0e718ce86c,
     type: 3}
+  addBlockPrefab: {fileID: 4021561308965321757, guid: e5645a19f8ebf1f4db241132f0dbe9fb,
+    type: 3}
   spawnerPrefab: {fileID: 262286372814367248, guid: d042f5051cd4a4b4699ffb95669a5435,
     type: 3}
   obstaclePrefab: {fileID: 3376909157183936004, guid: bdc1108417042f24db874b970dcbf758,
@@ -96,9 +98,12 @@ MonoBehaviour:
   canvas: {fileID: 0}
   toolBar: {fileID: 0}
   outsideRect: {fileID: 0}
-  nonReactablePanel: {fileID: 0}
+  nonReactablePanels: []
   winPanel: {fileID: 0}
   debugBack: 1
+  StartButton: {fileID: 0}
+  imgStart: {fileID: 21300000, guid: 7cbb0c5adf667c7449ed9a87184ff221, type: 3}
+  imgStop: {fileID: 21300000, guid: 55fabec40be1cab49b51d12e1b0f39ab, type: 3}
   blockGridsUnderPointer: []
   player: {fileID: 0}
   isDraging: 0

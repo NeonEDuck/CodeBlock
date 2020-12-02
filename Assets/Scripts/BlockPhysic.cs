@@ -118,7 +118,7 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
         // It's holding BlockGrid, move it up half of height ( BlockGrid's pivot point is on the top )
         if ( GameVariable.mouseInWindow ) {
-            gameManager.targetBlock.position = eventData.position + pointerOffset + new Vector2( 0f, rect.sizeDelta.y / 2 );
+            gameManager.targetBlock.position = eventData.position + pointerOffset + new Vector2( 0f, rect.sizeDelta.y * transform.lossyScale.y / 2 );
         }
 
         //Debug.DrawLine(eventData.position, eventData.position + new Vector2(0, (GameUtility.BLOCK_HEIGHT - GameUtility.CONNECTOR_HEIGHT) / 2) , Color.red);
@@ -291,7 +291,10 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
             placeHolder.transform.SetSiblingIndex( gameManager.whichStack );
         }
         if ( ( gameManager.blockGridsUnderPointer.Count == 0 && placeHolderParent != null ) || ( gameManager.preSelectedBlockGrids != placeHolderParent ) ) {
-            placeHolderParent.GetComponent<BlockGridDropZone>().Resize();
+            //placeHolderParent.GetComponent<BlockGridDropZone>().Resize();
+            foreach ( Transform child in gameManager.gameContent ) {
+                child.GetComponent<BlockGridDropZone>().Resize();
+            }
         }
         if ( gameManager.blockGridsUnderPointer.Count > 0 ) {
             if ( gameManager.preSelectedBlockGrids != null ) gameManager.preSelectedBlockGrids.GetComponent<BlockGridDropZone>().Resize();
