@@ -291,7 +291,10 @@ public class BlockPhysic : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
             placeHolder.transform.SetSiblingIndex( gameManager.whichStack );
         }
         if ( ( gameManager.blockGridsUnderPointer.Count == 0 && placeHolderParent != null ) || ( gameManager.preSelectedBlockGrids != placeHolderParent ) ) {
-            placeHolderParent.GetComponent<BlockGridDropZone>().Resize();
+            //placeHolderParent.GetComponent<BlockGridDropZone>().Resize();
+            foreach ( Transform child in gameManager.gameContent ) {
+                child.GetComponent<BlockGridDropZone>().Resize();
+            }
         }
         if ( gameManager.blockGridsUnderPointer.Count > 0 ) {
             if ( gameManager.preSelectedBlockGrids != null ) gameManager.preSelectedBlockGrids.GetComponent<BlockGridDropZone>().Resize();

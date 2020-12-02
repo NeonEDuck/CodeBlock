@@ -79,21 +79,21 @@ public class MiniGameObject : MonoBehaviour {
 
 
         if ( objectType == 2 ) {
-            delta = GetDirection( direction, out id );
+            delta = GetDirection( (Direction)(( (int)direction + id ) % 4 ), out id );
         }
         else {
             switch ( id ) {
                 case 0:
-                    delta = new Vector2Int( 0, 1 );
-                    break;
-                case 1:
                     delta = new Vector2Int( 0, -1 );
                     break;
+                case 1:
+                    delta = new Vector2Int( 1, 0 );
+                    break;
                 case 2:
-                    delta = new Vector2Int( -1, 0 );
+                    delta = new Vector2Int( 0, 1 );
                     break;
                 case 3:
-                    delta = new Vector2Int( 1, 0 );
+                    delta = new Vector2Int( -1, 0 );
                     break;
             }
         }
@@ -216,32 +216,32 @@ public class MiniGameObject : MonoBehaviour {
 
     public Vector2Int GetDirection( Direction direction, out int num ) {
         switch ( direction ) {
-            case Direction.DOWN:
-                num = 0;
-                return new Vector2Int( 0, 1 );
             case Direction.UP:
-                num = 1;
+                num = 0;
                 return new Vector2Int( 0, -1 );
-            case Direction.LEFT:
-                num = 2;
-                return new Vector2Int( -1, 0 );
             case Direction.RIGHT:
-                num = 3;
+                num = 1;
                 return new Vector2Int( 1, 0 );
+            case Direction.DOWN:
+                num = 2;
+                return new Vector2Int( 0, 1 );
+            case Direction.LEFT:
+                num = 3;
+                return new Vector2Int( -1, 0 );
         }
         num = -1;
         return new Vector2Int( 0, 0 );
     }
     public Vector2Int GetDirection( Direction direction ) {
         switch ( direction ) {
-            case Direction.DOWN:
-                return new Vector2Int( 0, 1 );
             case Direction.UP:
                 return new Vector2Int( 0, -1 );
-            case Direction.LEFT:
-                return new Vector2Int( -1, 0 );
             case Direction.RIGHT:
                 return new Vector2Int( 1, 0 );
+            case Direction.DOWN:
+                return new Vector2Int( 0, 1 );
+            case Direction.LEFT:
+                return new Vector2Int( -1, 0 );
         }
         return new Vector2Int( 0, 0 );
     }

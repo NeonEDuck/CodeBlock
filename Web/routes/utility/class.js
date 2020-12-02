@@ -11,9 +11,7 @@ var add = async function(newData){
     var data =(newData.topics).join();
     // to = string.Join(',', newData.topics)
 
-    console.log(data)
-
-    await sql('INSERT INTO "class" (class_id, school, name, email, max_number, topics) VALUES ($1, $2, $3, $4, $5, $6)', [newData.class_id, newData.school, newData.name, newData.email, newData.max_number, data])
+    await sql('call addnewclass($1, $2, $3, $4, $5);', [newData.school, newData.name, newData.email, newData.max_number, data])
         .then((data) => {
             console.log("sucess")
             result = 0;  

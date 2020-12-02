@@ -98,6 +98,24 @@ public class BlockSpawner : MonoBehaviour
             if ( args.ContainsKey( "direction" ) ) {
                 BlockInfo bi = block.GetComponent<BlockInfo>();
                 bi.refField[0].GetComponent<TMP_Dropdown>().value = int.Parse( args["direction"] );
+
+                TMP_Text valueText = bi.extraRefField[0].GetComponent<TMP_Text>();
+
+                switch ( args["direction"] ) {
+                    case "0":
+                        valueText.text = "向前移動";
+                        break;
+                    case "1":
+                        valueText.text = "向右移動";
+                        break;
+                    case "2":
+                        valueText.text = "向後移動";
+                        break;
+                    case "3":
+                        valueText.text = "向左移動";
+                        break;
+                }
+                
             }
             if ( args.ContainsKey( "repeat_n" ) ) {
                 BlockInfo bi = block.GetComponent<BlockInfo>();

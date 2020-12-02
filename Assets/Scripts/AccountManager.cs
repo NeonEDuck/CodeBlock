@@ -32,12 +32,27 @@ public class AccountManager : MonoBehaviour {
         string stmt = $"select to_char(last_played, 'YYYY-MM-DD HH24:MI:SS:MS') as last_played from class_member where member_id = '{VariablesStorage.memberId}';";
 
         yield return StartCoroutine( NetworkManager.GetRequest( stmt, returnValue => {
-            var jsonO = MiniJSON.Json.Deserialize( returnValue ) as List<object>;
-            var it = jsonO[0] as Dictionary<string, object>;
-            string last_played = it["last_played"] as string;
-            if ( last_played != VariablesStorage.last_played ) { 
+
+            if ( returnValue == null ) {
+                Debug.Log( "sql Error" );
+            }
+            else if ( returnValue.Trim() == "[]" || returnValue.Trim() == "" ) {
+                VariablesStorage.error = 1;
                 VariablesStorage.roomOK = false;
                 SceneManager.LoadScene( "GameListScene" );
+            }
+            else {
+                var jsonO = MiniJSON.Json.Deserialize( returnValue ) as List<object>;
+
+                var it = jsonO[0] as Dictionary<string, object>;
+                string last_played = it["last_played"] as string;
+                Debug.Log( last_played );
+
+                if ( last_played != VariablesStorage.last_played ) {
+                    VariablesStorage.error = 0;
+                    VariablesStorage.roomOK = false;
+                    SceneManager.LoadScene( "GameListScene" );
+                }
             }
         }));
         Debug.Log( "ok" );
