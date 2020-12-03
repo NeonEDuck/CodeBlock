@@ -19,6 +19,7 @@ var class_member_search = require('./routes/class_member_search');
 var class_member_delete = require('./routes/class_member_delete');
 var sqlRouter = require('./routes/sql');
 var gameRouter = require('./routes/game');
+var gitRouter = require('./routes/github');
 var app = express();
 
 //---------------------------------------------
@@ -92,6 +93,7 @@ app.use('/class_member_search',class_member_search);
 app.use('/class_member_delete',class_member_delete);
 app.use('/sql', sqlRouter);
 app.use('/game',gameRouter);
+app.use('/github',gitRouter);
 
 //---------------------------------------------
 // 設定登入及登出方法內容
