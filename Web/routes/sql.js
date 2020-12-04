@@ -11,7 +11,6 @@ router.post('/', function(req, res, next) {
 
     
     sql.request( stmt ).then(d => {
-        console.log(d);
         res.send( d );
     });
     

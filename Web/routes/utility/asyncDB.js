@@ -8,10 +8,18 @@ const {Client} = require('pg');
 //-----------------------
 // 自己的資料庫連結位址
 //-----------------------
-console.log("DATABASEEEEEEEEEEEEEEEEEEEEE")
-console.log(process.env.DB_CONN)
 var pgConn = process.env.DB_CONN;
+var ssl = true;
 
+if ( process.env.USE_LOCAL !== undefined && process.env.USE_LOCAL === "TRUE"  ) {
+	var pass = process.env.DB_CONN.split(':')[2].split("@")[0]
+	
+	pgConn = "postgres://postgres:" + pass + "@localhost:5432/postgres";
+	ssl = false
+}
+
+console.log("DATABASEEEEEEEEEEEEEEEEEEEEE")
+console.log(pgConn)
 
 
 process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
@@ -22,7 +30,7 @@ function query(sql, value=null) {
         //產生資料庫連線物件
         var client = new Client({
             connectionString: pgConn,
-            ssl: true
+            ssl: ssl
         })     
 
         //連結資料庫
