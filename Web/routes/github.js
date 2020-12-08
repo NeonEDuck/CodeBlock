@@ -76,6 +76,7 @@ router.post('/', function(req, res, next) {
 		}
 	}
 	else {
+		console.log('ignore non-master update.');
 		res.send('ignore non-master update.');
 	}
 });
