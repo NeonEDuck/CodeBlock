@@ -51,25 +51,21 @@ router.post('/', function(req, res, next) {
 						pulling = false
 						return;
 					}
-					console.log('fetching...');
 
 					exec("git reset --hard origin/master", (error, stdout, stderr) => {
 						pulling = false
 						if (error) {
-							res.send(error.message);
 							console.log(`error: ${error.message}`);
 							return;
 						}
 						if (stderr) {
-							res.send(stderr);
 							console.log(`stderr: ${stderr}`);
 							return;
 						}
-						res.send(stdout);
 						console.log(`stdout: ${stdout}`);
 					})
 				})
-				res.send('processing.');
+				res.send('received.');
 			}
 			else {
 				res.send('cancel, because the git is already pulling.');
