@@ -9,16 +9,24 @@ router.get('/', function(req, res, next) {
 		if ( pulling === false ) {
 			pulling = true
 			
-			exec("git reset --hard origin/master", (error, stdout, stderr) => {
+			exec("git fetch", (error, stdout, stderr) => {
 				if (error) {
 					console.log(`error: ${error.message}`);
 					return;
 				}
-				if (stderr) {
-					console.log(`stderr: ${stderr}`);
-					return;
-				}
-				console.log(`stdout: ${stdout}`);
+				console.log('fetching...');
+
+				exec("git reset --hard origin/master", (error, stdout, stderr) => {
+					if (error) {
+						console.log(`error: ${error.message}`);
+						return;
+					}
+					if (stderr) {
+						console.log(`stderr: ${stderr}`);
+						return;
+					}
+					console.log(`stdout: ${stdout}`);
+				})
 			})
 			
 			pulling = false
@@ -33,16 +41,24 @@ router.post('/', function(req, res, next) {
 		if ( pulling === false ) {
 			pulling = true
 			
-			exec("git reset --hard origin/master", (error, stdout, stderr) => {
+			exec("git fetch", (error, stdout, stderr) => {
 				if (error) {
 					console.log(`error: ${error.message}`);
 					return;
 				}
-				if (stderr) {
-					console.log(`stderr: ${stderr}`);
-					return;
-				}
-				console.log(`stdout: ${stdout}`);
+				console.log('fetching...');
+
+				exec("git reset --hard origin/master", (error, stdout, stderr) => {
+					if (error) {
+						console.log(`error: ${error.message}`);
+						return;
+					}
+					if (stderr) {
+						console.log(`stderr: ${stderr}`);
+						return;
+					}
+					console.log(`stdout: ${stdout}`);
+				})
 			})
 			
 			pulling = false
