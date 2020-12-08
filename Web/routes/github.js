@@ -12,11 +12,13 @@ router.get('/', function(req, res, next) {
 			exec("git fetch", (error, stdout, stderr) => {
 				if (error) {
 					console.log(`error: ${error.message}`);
+					pulling = false
 					return;
 				}
 				console.log('fetching...');
 
 				exec("git reset --hard origin/master", (error, stdout, stderr) => {
+					pulling = false
 					if (error) {
 						console.log(`error: ${error.message}`);
 						return;
@@ -28,8 +30,6 @@ router.get('/', function(req, res, next) {
 					console.log(`stdout: ${stdout}`);
 				})
 			})
-			
-			pulling = false
 		}
 	}
 	res.redirect('back');
@@ -44,11 +44,13 @@ router.post('/', function(req, res, next) {
 			exec("git fetch", (error, stdout, stderr) => {
 				if (error) {
 					console.log(`error: ${error.message}`);
+					pulling = false
 					return;
 				}
 				console.log('fetching...');
 
 				exec("git reset --hard origin/master", (error, stdout, stderr) => {
+					pulling = false
 					if (error) {
 						console.log(`error: ${error.message}`);
 						return;
@@ -60,8 +62,6 @@ router.post('/', function(req, res, next) {
 					console.log(`stdout: ${stdout}`);
 				})
 			})
-			
-			pulling = false
 		}
 	}
 	res.redirect('back');
