@@ -1,5 +1,10 @@
-
 require('dotenv').config();
+
+if ( process.env.CLIENT_ID === undefined || process.env.CLIENT_SECRET === undefined ) {
+    console.log( '停止：需要設定google OAuth才可以開啟！' )
+    process.exit()
+}
+
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
@@ -90,7 +95,9 @@ app.use('/class_member_search',class_member_search);
 app.use('/class_member_delete',class_member_delete);
 app.use('/sql', sqlRouter);
 app.use('/game',gameRouter);
-app.use('/github',gitRouter);
+if ( process.env.GIT_PASSWORD !== undefined ) {
+    app.use('/github',gitRouter);
+}
 
 //---------------------------------------------
 // 設定登入及登出方法內容
