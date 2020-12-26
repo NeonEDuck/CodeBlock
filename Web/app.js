@@ -47,9 +47,6 @@ passport.deserializeUser(function(user, done) {
 //載入google oauth2
 var GoogleStrategy = require('passport-google-oauth20').Strategy;
 
-console.log(process.env.DB_CONN)
-console.log(process.env.CLIENT_ID)
-console.log(process.env.CLIENT_SECRET)
 //填入自己在google cloud platform建立的憑證
 passport.use(
     new GoogleStrategy({
@@ -105,10 +102,10 @@ app.get('/auth/google/callback',
     passport.authenticate('google', { failureRedirect: '/login' }),   //導向登入失敗頁面	
     function(req, res) {
         // 如果登入成功, 使用者資料已存在session
-        console.log(req.session.passport.user.id);
-        console.log(req.session.passport.user.displayName);
-        console.log(req.session.passport.user.emails[0].value);	   
-        console.log(req.session.passport.user.photos[0].value);
+        // console.log(req.session.passport.user.id);
+        // console.log(req.session.passport.user.displayName);
+        // console.log(req.session.passport.user.emails[0].value);	   
+        // console.log(req.session.passport.user.photos[0].value);
         
         
         res.redirect('/user');   //導向登入成功頁面

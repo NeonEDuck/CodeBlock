@@ -23,11 +23,9 @@ router.post('/', function(req, res, next) {
         email:email,
         max_number:max_number,
         topics:topics
-    } 
-    console.log(newData)
+    }
     class1.add(newData).then(d => {
         if (d==0){
-            console.log("SUCESS")
             res.redirect('back');
             //res.render('class');  //傳至成功頁面
         }else{

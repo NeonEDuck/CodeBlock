@@ -11,7 +11,6 @@ router.post('/', function(req, res, next) {
     class1.remove(class_id).then(d => {
         if(d>=0){
             res.redirect('back');
-            // res.render('removeSuccess', {results:d});  //傳至成功頁面     
         }else{
             res.render('removeFail');     //導向錯誤頁面
         }

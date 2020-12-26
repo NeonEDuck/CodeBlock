@@ -18,10 +18,6 @@ if ( process.env.USE_LOCAL !== undefined && process.env.USE_LOCAL === "TRUE"  ) 
 	ssl = false
 }
 
-console.log("DATABASEEEEEEEEEEEEEEEEEEEEE")
-console.log(pgConn)
-
-
 process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
 
 //產生可同步執行sql的函式

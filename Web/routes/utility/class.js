@@ -13,7 +13,6 @@ var add = async function(newData){
 
     await sql('call addnewclass($1, $2, $3, $4, $5);', [newData.school, newData.name, newData.email, newData.max_number, data])
         .then((data) => {
-            console.log("sucess")
             result = 0;  
         }, (error) => {
             result = -1;
