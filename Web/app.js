@@ -57,7 +57,7 @@ passport.use(
     new GoogleStrategy({
         clientID: process.env.CLIENT_ID, 
         clientSecret: process.env.CLIENT_SECRET,
-        callbackURL: "http://codeblock.ntub.edu.tw/auth/google/callback"
+        callbackURL: process.env.DOMAIN_NAME + "http://codeblock.ntub.edu.tw/auth/google/callback"
     },
     function(accessToken, refreshToken, profile, done) {
         if (profile) {

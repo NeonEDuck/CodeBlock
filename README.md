@@ -6,7 +6,7 @@
 2.[系統簡介](/Documents/系統簡介.md)  
 3.[每周討論進度](/Documents/每周討論進度.md)
 
-## 軟體版本
+## 使用軟體
 - Unity 2019.3.6f1
 - Node.js
 - Git
