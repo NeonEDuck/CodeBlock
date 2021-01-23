@@ -82,7 +82,8 @@ jQuery(document).ready(function($) {
             //  },
             });
             $( "#click" ).click(function() {
-                $( "#dialog-4" ).dialog( "open" );
+                $( "#survey" ).show();
+                // $( "#dialog-4" ).dialog( "open" );
             });
         });
 
@@ -155,10 +156,9 @@ function check( class_id,i ){
     console.log(enter)
     if(enter==class_id){
         console.log("HERE")
+        showLoading();
         document.getElementById("delete_class_"+i).submit();
         alert("刪除成功");
-        
-        
     }else if(enter==null){
         alert("取消刪除");
     }else {
@@ -265,6 +265,41 @@ function playAudio(text) {
     msg.rate = 0.6; // 0.1 to 10
     window.speechSynthesis.speak(msg);
 }
-function checkbox(){
+
+function alwayson(){
     $("#ap").prop('checked', true);
+}
+
+function checkOne(){
+    var allTrue = true;
+    $("#survey .select-group--right input").each(function () {
+        if (!this.checked) {
+            allTrue = false;
+        }
+    })
+
+    if (allTrue) {
+        $("#survey .select-group--left input").prop('checked', true);
+    }
+    else {
+        $("#survey .select-group--left input").prop('checked', false);
+    }
+}
+
+function checkAll(){
+    if ($("#survey .select-group--left input").is(':checked')) {
+        $("#survey .select-group--right input").prop('checked', true);
+    }
+    else {
+        $("#survey .select-group--right input").prop('checked', false);
+        $("#ap").prop('checked', true);
+    }
+}
+
+function closeSurvey() {
+    $( "#survey" ).hide();
+}
+
+function showLoading() {
+    $("#loading").show();
 }

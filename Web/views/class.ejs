@@ -88,43 +88,10 @@
 
         </section>
 
-        <!-- <div id="dialog-4" title="">
-
-            <div class="containerrr">
-                <form id="contact" action="class/add" method="post">
-                    <h3>新增班級</h3>
-                    <h4>Contact us for custom quote</h4>
-                    <fieldset>
-                        <input placeholder="Your school" type="text" name="school" tabindex="1" required autofocus>
-                    </fieldset>
-                    <fieldset>
-                        <input placeholder="Your class name" type="text" name="name" tabindex="2" required>
-                    </fieldset>
-                    <fieldset>
-                        <input placeholder="Max number" type="number" name="max_number" tabindex="3" required>
-                    </fieldset>
-
-                    <div class="abc">
-                        <h2 text>選取關卡</h2>
-                        <label><input type="checkbox" name="topics" value="T100" checked id="ap" onclick="checkbox()">
-                            基礎</label>
-                        <label><input type="checkbox" name="topics" value="T101"> 機關 </label>
-                        <label><input type="checkbox" name="topics" value="T102"> 迴圈 </label>
-                        <label><input type="checkbox" name="topics" value="T103"> 條件式 </label>
-                    </div>
-
-                    <fieldset>
-                        <button name="submitbtn" type="submit" id="contact-submit"
-                            data-submit="...Sending">Submit</button>
-                    </fieldset>
-                </form>
-            </div>
-
-        </div> -->
         <div class="buttons">
             <div class="button_container">
 
-                <div class="btn effect04" data-sm-link-text="CLICK" target="_blank" id="click"><span>增加班級</span></a>
+                <div class="btn effect04" data-sm-link-text="CLICK" target="_blank" id="click"><span>增加班級</span>
                 </div>
             </div>
         </div>
@@ -140,10 +107,48 @@
 
 </div>
 
-<div id="survey">
+<div id="survey" style="display: none;">
     <div class="ui-widget-overlay ui-front"></div>
     <div class="ui-front survey">
+        <form action="class/add" method="post">
+            <button id="close-button" onclick="closeSurvey()">
+                <span class="cross"></span>
+            </button>
+            <h1>新增班級</h1>
+            <fieldset>
+                <h3>班級資料</h3>
+                <input placeholder="Your school" type="text" name="school" tabindex="1" required autofocus>
+                <input placeholder="Your class name" type="text" name="name" tabindex="2" required>
+                <input placeholder="Max number" type="number" name="max_number" tabindex="3" required>
+            </fieldset>
+
+            <fieldset>
+                <h3>選取關卡</h3>
+                <div class="select-group">
+                    <div class="select-group--left">
+                        <input type="checkbox" id="checkall" onclick="checkAll()">
+                        <span class="bracket"></span>
+                    </div>
+                    <div class="select-group--right">
+                        <label><input type="checkbox" name="topics" value="T100" checked id="ap" onclick="alwayson();checkOne()"> 基礎 </label>
+                        <label><input type="checkbox" name="topics" value="T101" onclick="checkOne()"> 機關 </label>
+                        <label><input type="checkbox" name="topics" value="T102" onclick="checkOne()"> 迴圈 </label>
+                        <label><input type="checkbox" name="topics" value="T103" onclick="checkOne()"> 條件式 </label>
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <button name="submitbtn" type="submit" id="contact-submit"
+                    data-submit="...Sending" onclick="showLoading()">新增</button>
+            </fieldset>
+        </form>
     </div>
+</div>
+
+<div id="loading" style="display: none;">
+    <div class="ui-widget-overlay ui-front"></div>
+    <img src="\img\abc.gif">
 </div>
 
 <%- include('footer') -%>
